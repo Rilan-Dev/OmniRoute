@@ -1,0 +1,383 @@
+{
+  "schema_version": 1,
+  "source": {
+    "repository": "Rilan-Dev/OmniRoute",
+    "ref": "release/v3.8.52",
+    "commit": "453918ab64f147604576e72d33e2bbfc12b2d1af",
+    "tree": "76f3546d48a7293b199b7571d13808bebadb6d1f"
+  },
+  "status": "baseline-not-final",
+  "immutable_copy_started": false,
+  "capabilities": [
+    {
+      "id": "providers",
+      "tier": 1,
+      "class": "A+B",
+      "roots": [
+        "open-sse/config/providerRegistry.ts",
+        "open-sse/config/providerModels.ts",
+        "src/lib/providers/",
+        "open-sse/services/provider.ts"
+      ],
+      "api": [
+        "src/app/api/providers/**"
+      ],
+      "ui": [
+        "src/app/(dashboard)/dashboard/providers",
+        "src/app/(dashboard)/dashboard/provider-stats",
+        "src/app/(dashboard)/dashboard/discovery"
+      ],
+      "db": [
+        "src/lib/db/providers.ts",
+        "src/lib/db/providerStats.ts",
+        "src/lib/db/providerLimits.ts"
+      ],
+      "runtime": [
+        "provider network endpoints",
+        "credentials/OAuth",
+        "environment secrets"
+      ],
+      "closure_status": "resolved-roots"
+    },
+    {
+      "id": "models",
+      "tier": 1,
+      "class": "A+B",
+      "roots": [
+        "open-sse/config/*Registry.ts",
+        "open-sse/services/model*.ts",
+        "src/lib/model*.ts",
+        "src/lib/providers/"
+      ],
+      "api": [
+        "src/app/api/models/**"
+      ],
+      "ui": [
+        "src/app/(dashboard)/dashboard/models"
+      ],
+      "db": [
+        "src/lib/db/models.ts",
+        "src/lib/db/modelCapabilityOverrides.ts",
+        "src/lib/db/modelContextOverrides.ts",
+        "src/lib/db/modelIntelligence.ts"
+      ],
+      "closure_status": "resolved-roots"
+    },
+    {
+      "id": "routing",
+      "tier": 1,
+      "class": "A+B",
+      "roots": [
+        "src/lib/routing/",
+        "open-sse/services/routing/",
+        "open-sse/services/routingStrategies.ts",
+        "open-sse/services/taskAwareRouter.ts",
+        "open-sse/services/reasoning*",
+        "src/domain/tagRouter.ts"
+      ],
+      "api": [
+        "src/app/api/routing/**",
+        "src/app/api/usage/route-explain"
+      ],
+      "ui": [
+        "src/app/(dashboard)/dashboard/orchestration",
+        "src/app/(dashboard)/dashboard/resilience"
+      ],
+      "db": [
+        "src/lib/db/reasoningRoutingRules.ts",
+        "src/lib/db/autoCandidateOverrides.ts"
+      ],
+      "closure_status": "resolved-roots"
+    },
+    {
+      "id": "combos",
+      "tier": 1,
+      "class": "A+B",
+      "roots": [
+        "src/domain/comboResolver.ts",
+        "src/lib/combos/",
+        "open-sse/services/combo/",
+        "open-sse/services/autoCombo/"
+      ],
+      "api": [
+        "src/app/api/combos/**"
+      ],
+      "ui": [
+        "src/app/(dashboard)/dashboard/combos",
+        "src/app/(dashboard)/dashboard/auto-combo"
+      ],
+      "db": [
+        "src/lib/db/combos.ts",
+        "src/lib/db/modelComboMappings.ts",
+        "src/lib/db/comboForecast.ts"
+      ],
+      "closure_status": "resolved-roots"
+    },
+    {
+      "id": "usage-quota",
+      "tier": 1,
+      "class": "A+B+C",
+      "roots": [
+        "src/lib/usage/",
+        "src/lib/quota/",
+        "src/lib/db/costLedger.ts",
+        "src/domain/keyQuota.ts"
+      ],
+      "api": [
+        "src/app/api/usage/**",
+        "src/app/api/quota/**"
+      ],
+      "ui": [
+        "src/app/(dashboard)/dashboard/usage",
+        "src/app/(dashboard)/dashboard/costs",
+        "src/app/(dashboard)/dashboard/quota",
+        "src/app/(dashboard)/dashboard/limits"
+      ],
+      "db": [
+        "src/lib/db/usageHistory.ts",
+        "src/lib/db/usageLogs.ts",
+        "src/lib/db/usageAnalytics.ts",
+        "src/lib/db/costLedger.ts",
+        "src/lib/db/quotaConsumption.ts",
+        "src/lib/db/quotaPools.ts",
+        "src/lib/db/quotaGroups.ts"
+      ],
+      "closure_status": "resolved-roots"
+    },
+    {
+      "id": "compression",
+      "tier": 1,
+      "class": "A+B",
+      "roots": [
+        "open-sse/services/compression/",
+        "src/lib/compression/",
+        "open-sse/services/contextManager.ts"
+      ],
+      "api": [
+        "src/app/api/compression/**",
+        "src/app/api/context/**"
+      ],
+      "ui": [
+        "src/app/(dashboard)/dashboard/compression",
+        "src/app/(dashboard)/dashboard/context"
+      ],
+      "db": [
+        "src/lib/db/compression.ts",
+        "src/lib/db/compressionAnalytics.ts",
+        "src/lib/db/compressionCacheStats.ts",
+        "src/lib/db/compressionCombos.ts"
+      ],
+      "closure_status": "bounded-tree"
+    },
+    {
+      "id": "memory-context",
+      "tier": 1,
+      "class": "A+B+C",
+      "roots": [
+        "src/lib/memory/",
+        "open-sse/services/contextManager.ts",
+        "open-sse/services/contextHandoff.ts",
+        "src/lib/contextWindowResolver.ts"
+      ],
+      "api": [
+        "src/app/api/memory/**",
+        "src/app/api/context/**",
+        "src/app/api/conversations/**"
+      ],
+      "ui": [
+        "src/app/(dashboard)/dashboard/memory",
+        "src/app/(dashboard)/dashboard/context",
+        "src/app/(dashboard)/dashboard/conversations"
+      ],
+      "db": [
+        "src/lib/db/memoryVec.ts",
+        "src/lib/db/contextHandoffs.ts",
+        "src/lib/db/agenticConversations.ts"
+      ],
+      "external": [
+        "Qdrant",
+        "Obsidian",
+        "SQLite"
+      ],
+      "closure_status": "bounded-tree"
+    },
+    {
+      "id": "cache",
+      "tier": 1,
+      "class": "A+B",
+      "roots": [
+        "open-sse/services/cache/",
+        "src/lib/cache/",
+        "src/lib/semanticCache.ts",
+        "src/lib/promptCache/",
+        "src/lib/reasoningCache.ts"
+      ],
+      "api": [
+        "src/app/api/cache/**"
+      ],
+      "ui": [
+        "src/app/(dashboard)/dashboard/cache"
+      ],
+      "db": [
+        "src/lib/db/semanticCache.ts",
+        "src/lib/db/reasoningCache.ts"
+      ],
+      "closure_status": "bounded-tree"
+    },
+    {
+      "id": "streaming-translation",
+      "tier": 1,
+      "class": "A+B",
+      "roots": [
+        "open-sse/handlers/",
+        "open-sse/translator/",
+        "open-sse/transformer/",
+        "src/server/ws/"
+      ],
+      "api": [
+        "src/app/api/[...omnirouteApiCatchAll]",
+        "src/app/api/v1/**",
+        "src/app/api/v1beta/**",
+        "src/app/api/translator/**"
+      ],
+      "ui": [
+        "src/app/(dashboard)/dashboard/playground",
+        "src/app/(dashboard)/dashboard/endpoint"
+      ],
+      "external": [
+        "HTTP",
+        "SSE",
+        "WebSocket",
+        "provider streaming protocols"
+      ],
+      "closure_status": "bounded-tree"
+    },
+    {
+      "id": "mcp",
+      "tier": 1,
+      "class": "A+B+C",
+      "roots": [
+        "open-sse/mcp-server/",
+        "src/app/api/mcp"
+      ],
+      "api": [
+        "src/app/api/mcp/**"
+      ],
+      "ui": [
+        "src/app/(dashboard)/dashboard/mcp"
+      ],
+      "db": [
+        "src/lib/db/audit*",
+        "mcp_tool_audit"
+      ],
+      "external": [
+        "MCP peers",
+        "HTTP/SSE/streamable HTTP",
+        "auth scopes"
+      ],
+      "closure_status": "bounded-tree"
+    },
+    {
+      "id": "a2a",
+      "tier": 1,
+      "class": "A+B+C",
+      "roots": [
+        "src/lib/a2a/",
+        "src/app/api/a2a/",
+        "src/app/a2a/"
+      ],
+      "api": [
+        "src/app/api/a2a/**"
+      ],
+      "ui": [
+        "src/app/(dashboard)/dashboard/a2a"
+      ],
+      "db": [
+        "src/lib/db/a2aTasks.ts"
+      ],
+      "external": [
+        "remote A2A agents"
+      ],
+      "closure_status": "bounded-tree"
+    },
+    {
+      "id": "tools-skills-plugins",
+      "tier": 1,
+      "class": "A+B+C",
+      "roots": [
+        "tool registry/handlers/schemas",
+        "src/lib/agentSkills/",
+        "skills/",
+        "src/lib/plugins/"
+      ],
+      "api": [
+        "src/app/api/tools/**",
+        "src/app/api/skills/**",
+        "src/app/api/agent-skills/**",
+        "src/app/api/plugins/**"
+      ],
+      "ui": [
+        "src/app/(dashboard)/dashboard/tools",
+        "src/app/(dashboard)/dashboard/agent-skills",
+        "src/app/(dashboard)/dashboard/plugins"
+      ],
+      "db": [
+        "src/lib/db/skills.ts",
+        "src/lib/db/plugins.ts",
+        "src/lib/db/pluginMetrics.ts",
+        "src/lib/db/skillExecutionFence.ts"
+      ],
+      "closure_status": "bounded-tree"
+    },
+    {
+      "id": "security-observability-audit",
+      "tier": 1,
+      "class": "A+B+C",
+      "roots": [
+        "src/lib/security/",
+        "src/lib/monitoring/",
+        "src/lib/audit/",
+        "src/server/authz/",
+        "src/lib/events/"
+      ],
+      "api": [
+        "src/app/api/health/**",
+        "src/app/api/monitoring/**",
+        "src/app/api/telemetry/**",
+        "src/app/api/audit/**"
+      ],
+      "ui": [
+        "src/app/(dashboard)/dashboard/health",
+        "src/app/(dashboard)/dashboard/analytics",
+        "src/app/(dashboard)/dashboard/audit"
+      ],
+      "db": [
+        "src/lib/db/detailedLogs.ts",
+        "src/lib/db/configAudit*",
+        "src/lib/db/usageAnalytics.ts"
+      ],
+      "closure_status": "resolved-roots"
+    }
+  ],
+  "persistence_migration_families": [
+    "001-014",
+    "015-024",
+    "028-043",
+    "044-058",
+    "064-080",
+    "083-098",
+    "101-110",
+    "118-150",
+    "154-158",
+    "161",
+    "169-174",
+    "182-196"
+  ],
+  "unresolved": [
+    "full recursive import graph",
+    "exact db module-to-table graph",
+    "exact dashboard component/hook/store/dialog graph",
+    "transitive npm dependency recomputation",
+    "complete Tier-2 cross-cutting second pass"
+  ]
+}

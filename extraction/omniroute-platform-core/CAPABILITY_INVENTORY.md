@@ -1,46 +1,49 @@
-# OmniRoute Capability Inventory — Phase 0/1 Working Baseline
+# OmniRoute Capability Inventory — Phase 1 Closure Baseline
 
-| Capability | Primary source anchors | Tier | Class | UI surface |
-|---|---|---|---|---|
-| Provider registry/catalog | `open-sse/config/providerRegistry.ts`, `providerModels.ts`, `src/lib/providers/` | 1 | A | providers, discovery, models |
-| Model registry/capabilities | `src/lib/model*`, `open-sse/config/*Registry*`, `open-sse/services/model*` | 1 | A | models, provider models |
-| Credential/account pooling | `open-sse/services/account*`, `apiKeyRotator.ts`, `credentialGate.ts` | 1 | A+B | providers, keys |
-| OAuth/credential lifecycle | `src/lib/oauth/`, `src/lib/credentialHealth/` | 1 | A+B | provider connection/config dialogs |
-| Routing engine | `src/lib/routing/`, `open-sse/services/routing*`, task/reasoning routers | 1 | A | routing, auto-combo |
-| Combo/fusion | `src/domain/comboResolver.ts`, `src/lib/combos/`, `open-sse/services/combo/` | 1 | A+B | combos |
-| Auto-combo | `open-sse/services/autoCombo/` | 1 | A+B | auto-combo |
-| Fallback/degradation | `src/domain/fallbackPolicy.ts`, degradation, lockout, provider expiration | 1 | A+B | fallback/resilience |
-| Resilience/circuit breakers | `src/lib/resilience/`, connection/error/retry services | 1 | A+B | resilience, health |
-| Quota/budget | `src/lib/quota/`, `open-sse/services/quota*`, `keyQuota.ts` | 1 | A+B | quota, limits, costs |
-| Usage/cost | `src/lib/usage/`, `src/lib/db/costLedger.ts`, usage DB | 1 | A+B | usage, costs, provider stats |
-| Compression | `open-sse/services/compression/`, `src/lib/compression/` | 1 | A+B | compression, context |
-| Context/memory | `src/lib/memory/`, context services/resolvers | 1 | A+B | memory, context, conversations |
-| Cache | semantic/prompt/reasoning cache trees | 1 | A+B | cache |
-| Streaming/protocol translation | `open-sse/handlers/`, `translator/`, `transformer/`, `src/server/ws/` | 1 | A+B | playground/streaming states |
-| MCP | `open-sse/mcp-server/`, `src/app/api/mcp`, `src/app/(dashboard)/dashboard/mcp` | 1 | A+B | MCP |
-| A2A | `src/lib/a2a/`, `src/app/api/a2a`, dashboard A2A | 1 | A+B | A2A |
-| Tools | tool handlers, schemas, tool sanitizer/latency services, tools API/UI | 1 | A+B | tools |
-| Skills | `src/lib/agentSkills/`, `skills/`, skills APIs/UI | 1/2 | A+B | agent-skills, omni-skills |
-| Plugins | `src/lib/plugins/`, plugin APIs/UI | 1/2 | A+B | plugins |
-| Multimodal | image/audio/video/embedding/rerank/OCR/search handlers and registries | 1 | A+B | media providers/search tools |
-| Search/web fetch | `src/lib/search/`, search/web-fetch handlers/executors | 2 | A+B | search tools |
-| Guardrails/security | guardrails, security, authz, sanitizers, exposure controls | 1 | A+B+C | guardrails/security/settings |
-| Observability | monitoring, routing OTel, events, telemetry APIs | 1 | A+B+C | health, analytics, telemetry |
-| Audit | `src/lib/audit/`, config/MCP audit, audit APIs/UI | 1 | A+B+C | audit |
-| Evaluations | `src/lib/evals/`, `src/lib/routerEval/`, compression eval | 1/2 | A+B | evals |
-| CLI integrations | `src/lib/cliTools/`, `bin/cli/`, provider-specific CLI services, skills | 2 | A+B | cli-agents, cli-code |
-| API compatibility | catch-all API, OpenAI/Claude/Gemini/Responses translators | 1 | A+B | endpoint/API manager |
-| Remote/cloud agents | `src/lib/cloudAgent/`, ACP, remote services | 2 | A+B+C | cloud agents, ACP |
-| Browser runtime | browser pool/backed chat/VNC | 2 | A+B | runtime, VNC |
-| MITM/TPROXY | `src/mitm/` | 2 | A+B | runtime/settings |
-| Tunnels | Cloudflare/ngrok/tunnel APIs and services | 2 | A+B | tunnels |
-| Backup/sync/versioning | DB backup, cloud sync, version manager | 2 | A+B+C | settings/system |
-| Webhooks/events | webhooks API/UI, event bus, deliveries | 2 | A+B+C | webhooks |
-| Desktop/PWA | `electron/`, PWA shell | 2 | D/A | desktop shell |
-| Product billing/branding | product pages, subscriptions and hosted commercial concerns | 3 | D | product UI |
+| Capability | Tier | Class | Source closure | Persistence | API/UI closure | Status |
+|---|---:|---|---|---|---|---|
+| Provider registry/catalog | 1 | A+B | `open-sse/config/providerRegistry.ts`, `providerModels.ts`, `src/lib/providers/**`, provider services | provider connections/nodes | `src/app/api/providers/**`; providers/discovery/provider-stats UI | resolved-roots |
+| Model registry/capabilities | 1 | A+B | `src/lib/model*.ts`, `open-sse/config/*Registry.ts`, model services | model/capability/context/intelligence DB modules | model/provider-model APIs + models UI | resolved-roots |
+| Credential/account pooling | 1 | A+B | account selector/fallback/semaphore/rotator/gate/refresh + credential health | api keys/registered keys/runtime state | keys/providers APIs + keys/provider dialogs | resolved-roots |
+| OAuth/credential lifecycle | 1 | A+B+C | `src/lib/oauth/**`, credential health | provider connection/token state | provider auth routes + connection UI | resolved-roots |
+| Routing engine | 1 | A+B | `src/lib/routing/**`, routing services, task/reasoning/wildcard routers | routing rules/decisions | routing/route-explain/orchestration UI | resolved-roots |
+| Combo/fusion + auto-combo | 1 | A+B | combo resolver/lib + `open-sse/services/combo/**` + autoCombo | combos/mappings/forecast/adaptive state | combo + auto-combo APIs/UI | resolved-roots |
+| Fallback/degradation/resilience | 1 | A+B | domain fallback/degradation/lockout + resilience/circuit/retry/recovery trees | fallback/lockout/circuit/runtime state | fallback/resilience/health UI | resolved-roots |
+| Quota/budget | 1 | A+B+C | `src/lib/quota/**`, key quota, quota services | quota snapshots/consumption/pools/groups/schedules/provider state | quota/limits APIs/UI | resolved-roots |
+| Usage/cost | 1 | A+B+C | `src/lib/usage/**`, cost ledger/token accounting/call logs | usage/call logs/cost ledger/quota counters/aggregation | usage/cost/analytics/provider-stats UI | resolved-roots |
+| Compression | 1 | A+B | full `open-sse/services/compression/**` + `src/lib/compression/**` | compression settings/analytics/cache/receipts/tokens/combos | compression/context APIs/UI | bounded-tree |
+| Context/memory | 1 | A+B+C | full `src/lib/memory/**` + context services/resolvers | memories/vector/FTS/context handoffs/conversations | memory/context/conversation APIs/UI | bounded-tree |
+| Cache | 1 | A+B | cache service/lib trees + semantic/prompt/reasoning cache | semantic/reasoning cache | cache API/UI | bounded-tree |
+| Streaming/protocol translation | 1 | A+B | handlers/translator/transformer/WebSocket trees | continuation/session/request state as referenced | catch-all/v1/v1beta/translator + playground/endpoint | bounded-tree |
+| MCP | 1 | A+B+C | full `open-sse/mcp-server/**` + MCP API | MCP tool audit/access state | MCP API/UI | bounded-tree |
+| A2A | 1 | A+B+C | full `src/lib/a2a/**` + A2A app/API | A2A tasks/events | A2A API/UI | bounded-tree |
+| Tools | 1 | A+B+C | tool registry/handlers/schemas/execution trees | server tool executions/audit | tools/search-tools API/UI | resolved-roots |
+| Skills | 1/2 | A+B+C | full `src/lib/agentSkills/**` + `skills/**` | skills/executions/fences | agent-skills/omni-skills API/UI | bounded-tree |
+| Plugins | 1/2 | A+B+C | full `src/lib/plugins/**` + plugin runtime | plugins/metrics/analytics | plugins API/UI | bounded-tree |
+| Multimodal | 1 | A+B+C | media registries/handlers/translators/bridge | modality bridge + usage/log fields | media/search APIs/UI | resolved-roots |
+| Guardrails/security | 1 | A+B+C | guardrails/security/authz/CORS/origin/sanitizers | key/security/audit state | guardrail/security/auth UI | resolved-roots |
+| Observability | 1 | A+B+C | monitoring/events/OTel/telemetry/provider metrics | logs/usage analytics/provider stats | health/analytics/telemetry/log UI | resolved-roots |
+| Audit | 1 | A+B+C | audit/config/MCP/event audit trees | config/MCP/tool audit | audit API/UI | resolved-roots |
+| Evaluations | 1/2 | A+B | eval/router/compression evaluation trees | eval runs/suites/cases | eval API/UI + test fixtures | resolved-roots |
+| Search/web fetch | 2 | A+B | search/web-fetch services and handlers | search request/log state | search API/UI | deferred to Phase 7 |
+| CLI integrations | 2 | A+B | CLI tools/runtime/provider-specific CLI trees | CLI tool/access state | CLI APIs/UI | deferred to Phase 7 |
+| Remote/cloud agents | 2 | A+B+C | cloud/ACP/remote agent trees | agent credentials/bridge state | cloud/ACP API/UI | deferred to Phase 7 |
+| Browser/VNC/runtime | 2 | A+B | browser-pool/browser-backed/VNC trees | runtime/VNC session state | runtime/VNC API/UI | deferred to Phase 7 |
+| MITM/TPROXY/tunnels | 2 | A+B | `src/mitm/**`, tunnel services/APIs | interception/tunnel state | runtime/tunnel UI | deferred to Phase 7 |
+| Backup/sync/versioning | 2 | A+B+C | backup/sync/version-manager trees | backup/sync/version state | settings/system UI | deferred to Phase 7 |
+| Webhooks/events | 2 | A+B+C | webhook/event/delivery trees | webhooks/deliveries | webhook API/UI | deferred to Phase 7 |
+| Desktop/PWA | 2 | D/A | electron/PWA shell | desktop-specific state | desktop shell | deferred to Phase 7 |
+| Product billing/branding | 3 | D | hosted product surface | commercial product state | pricing/subscription/product UI | product-only |
 
-## Classification rule
-A = reusable implementation; B = required immutable dependency closure; C = host adapter boundary; D = product-only.
+### Classification rule
 
-## Current status
-This inventory is a working classification. Final classification is blocked on dependency-closure analysis and source/UI closure verification.
+- **A** = reusable implementation.
+- **B** = immutable first-party dependency closure required by A.
+- **C** = host adapter boundary.
+- **D** = product-only.
+
+A capability may be **A+B+C**: the implementation is reusable, but its identity, tenancy, secret storage, billing, transport, or external-service ownership must be supplied by a host adapter.
+
+### Phase 1 conclusion
+
+Tier-1 closures are sufficiently bounded to drive Phase 2 extraction planning, but **machine-complete recursive closure is still required before copying**. The extraction gate therefore remains closed.
