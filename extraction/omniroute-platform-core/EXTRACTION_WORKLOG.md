@@ -6,41 +6,43 @@
 - Source commit: 453918ab64f147604576e72d33e2bbfc12b2d1af
 - Source tree: 76f3546d48a7293b199b7571d13808bebadb6d1f
 - Branch: extraction/omniroute-platform-core
-- Previous completion: 0d9587024d556068ecaeb6b4486f35a302d9ce1d
-- Current completion: 003 — deterministic closure scanner
+- Previous completion: 003 — deterministic Phase 1 closure scanner
+- Current completion: 004 — supplemental closure analyzer tooling
 
-## Completion 003 — deterministic Phase 1 closure scanner
+## Completion 004 — supplemental Phase 1 closure analyzer tooling
 
 ### Exact prompt used
-> Continue OmniRoute extraction with the machine-complete Phase 1 closure pass. Do not copy or modify immutable source yet. Starting from the pinned source commit/tree and the Phase 1 closure baseline, build a deterministic first-party import/re-export graph for every Tier-1 root. Resolve relative TS/TSX/JS/MJS imports, directory indexes, package workspace imports, path aliases, generated/runtime-loaded modules and explicit dynamic imports across src, open-sse, @omniroute, packages, bin, scripts and config. For each Tier-1 capability, emit the full transitive source path set and classify each edge as first-party, external package, host boundary, generated/runtime-only or unresolved. Separately map every referenced src/lib/db module to concrete tables/columns and the exact migration files that create/alter them; map every dashboard route to page/layout/component/hook/store/dialog and loading/empty/error/disabled/success/permission states; map tests to source capabilities. Recompute all package.json/workspace dependencies and environment-variable references. Treat unresolved dynamic imports or runtime filesystem discovery as explicit closure blockers, not guesses. Update capability-closure.json and CAPABILITY_CLOSURE.md with the machine-complete graph and unresolved blockers. Do not start exact source copying until Tier-1 graph closure is complete enough for fail-closed extraction. At completion update this worklog with exact prompt, completed/not-done/evidence/commit and replace the next-work prompt, then commit all changes atomically.
+> Continue OmniRoute extraction from current commit 86104338c3c1663ffb9376f67b1dccc4dcdab348. Keep immutable source copying BLOCKED. First obtain a complete local checkout pinned exactly to 453918ab64f147604576e72d33e2bbfc12b2d1af and run both Phase 1 closure tools. Resolve every blocker without guessing: complete first-party import/re-export/workspace/alias closure, literal and non-literal dynamic imports, runtime filesystem discovery, exact package dependency closure, DB module-to-table/column-to-migration mapping, dashboard route-to-page/layout/component/hook/store/dialog-to-state mapping, test-to-capability mapping, and host-boundary classification. Generate deterministic reports and fail closed on every unresolved edge. Do not begin Phase 2 exact source copying until the report is PASS. Update CAPABILITY_CLOSURE.md, capability-closure.json and EXTRACTION_WORKLOG.md with actual evidence, blocker counts, exact commit and the next prompt, then commit atomically.
 
 ### Planned
-- Turn the closure methodology into a deterministic executable scanner.
-- Make unresolved first-party imports fail closed.
-- Capture source hashes, external imports, env references, API/dashboard counts and package manifests.
-- Keep source copying blocked.
+- Extend the existing deterministic closure scanner with a separate read-only analyzer.
+- Detect dynamic runtime loading, filesystem discovery, package workspace edges, DB evidence, dashboard state evidence, tests, and env references.
+- Keep exact source extraction blocked until actual local execution and mapping evidence exist.
 
 ### Completed
-- Added `verification/phase1-closure-scanner.mjs`.
-- Added scanner documentation.
-- Scanner is read-only and designed to run against the pinned upstream checkout.
-- It resolves relative imports, directory indexes and `@/` aliases; records external imports; captures env references; enumerates package manifests/API/dashboard files; records SHA-256 source snapshots; and exits with status 2 on unresolved first-party imports.
-- No immutable source was copied or changed.
+- Added `verification/phase1-supplemental-closure-analyzer.mjs`.
+- Added `verification/PHASE1-SUPPLEMENTAL-CLOSURE-ANALYZER.md`.
+- Analyzer is read-only and fail-closed.
+- It records dynamic imports/requires, runtime filesystem signals, env references, DB SQL-like references, migration evidence, dashboard state signals, test imports, package manifests and workspace references.
+- No immutable OmniRoute source was copied or modified.
 
 ### Not done
-- The connected GitHub API cannot execute arbitrary repository-local Node tooling, so the scanner has not been run against a complete local checkout in this ChatGPT environment.
-- Therefore the final machine-complete graph is NOT claimed yet.
-- DB table/column-to-module mapping, dynamic runtime loading, UI state graph and transitive package dependency closure remain to be generated by the scanner plus dedicated analyzers.
-- Exact extraction remains blocked.
+- The GitHub connector still cannot execute repository-local Node tooling against a complete checkout in this environment.
+- Therefore no machine-complete PASS is claimed.
+- Exact DB table/column-to-migration mapping is still open.
+- Exact dashboard route-to-component/hook/store/dialog/state mapping is still open.
+- Full package dependency closure and dynamic runtime path resolution are still open.
+- Test-to-capability attribution and host-boundary classification are still open.
+- Phase 2 exact source copying remains blocked.
 
 ### Evidence
+- Branch HEAD before this completion: 86104338c3c1663ffb9376f67b1dccc4dcdab348.
+- New analyzer and documentation are being committed atomically.
 - Pinned source commit/tree remain unchanged.
-- Scanner source is committed on the extraction branch.
-- Existing Phase 1 closure baseline remains the reference inventory.
-- Fail-closed behavior is explicit in the scanner.
+- The analyzer's explicit blocker policy prevents false closure.
 
 ### Gate
-**Completion 003: tooling PASS. Machine-complete closure: OPEN. Source extraction: BLOCKED.**
+**Completion 004: supplemental tooling PASS. Machine-complete closure: OPEN. Source extraction: BLOCKED.**
 
 ## Next-work prompt
-> Continue OmniRoute extraction by running the deterministic closure scanner against a local checkout exactly at commit 453918ab64f147604576e72d33e2bbfc12b2d1af. Then extend the generated report with workspace/package dependency closure, explicit dynamic-import/runtime filesystem discovery, DB SQL table/column references mapped to src/lib/db modules and migration files, dashboard route-to-component/hook/store/dialog/state mapping, and test-to-capability mapping. Do not copy or modify immutable source. Treat every unresolved first-party import, dynamic runtime path, missing DB mapping, missing UI state mapping or ambiguous host boundary as a blocker. Re-run until the Tier-1 closure report is deterministic and fail-closed. Only after that report is PASS may Phase 2 exact source copying begin. Update CAPABILITY_CLOSURE.md, capability-closure.json and this worklog with the generated evidence, blockers, exact commit and the next-work prompt, then commit atomically.
+> Continue OmniRoute extraction from the current extraction branch. First verify the branch HEAD and pinned upstream source commit. Obtain or create a complete local checkout at 453918ab64f147604576e72d33e2bbfc12b2d1af, run the primary and supplemental closure tools, and preserve their raw JSON reports as verification evidence. Then build the deterministic closure-mapping pass: resolve every first-party edge; enumerate all literal and non-literal dynamic imports and runtime filesystem loaders; recompute workspace/package dependency closure; map every src/lib/db consumer to tables, columns and exact migration create/alter history; map every dashboard route to page/layout/component/hook/store/dialog plus loading/empty/error/disabled/success/permission states; map tests to capabilities; and classify external packages, services, secrets, network endpoints and host-owned boundaries. Any unresolved item is a blocker. Do not copy immutable source. Only after the closure report is PASS may Phase 2 exact source copying begin. Update CAPABILITY_CLOSURE.md, capability-closure.json and EXTRACTION_WORKLOG.md with actual evidence, blockers, exact commit and the next-work prompt, then commit atomically.
