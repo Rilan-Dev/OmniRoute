@@ -210,3 +210,27 @@ Completion 019: lexer correction prepared and committed; machine execution OPEN.
 
 ### Next-work prompt
 Continue from Completion 019. Observe the Actions run and inspect every residual import. If the fixture-string false positives disappear, classify only the remaining generated/runtime references explicitly and preserve them as dependency evidence rather than hiding them. If any true first-party unresolved import remains, resolve it using exact source evidence. Only then allow the complete collector sequence and combined Phase 1 gate to run.
+
+
+## Completion 020 — repair generated lexer syntax
+
+### Planned
+Continue from Completion 019 using the actual Actions failure. Repair only the verifier syntax defect introduced by the regex-literal lexer change.
+
+### Completed
+- Observed workflow run `36680327135`, job `109774135916`.
+- Exact pinned source worktree creation succeeded and verified commit `453918ab64f147604576e72d33e2bbfc12b2d1af` with tree `76f3546d48a7293b199b7571d13808bebadb6d1f`.
+- The evidence collector stopped immediately because the generated scanner contained malformed quote syntax at line 94.
+- Corrected that verifier-only syntax defect; no source-tree behavior or extraction logic was changed.
+- No pinned OmniRoute source files were modified.
+
+### Not done
+- Regex-aware scanner execution remains pending.
+- Phase 1 machine PASS remains unclaimed.
+- Supplemental analyzer, closure mapper, Phase 7 scanner, combined gate, reconciliation, and immutable source copying remain blocked.
+
+### Gate
+Completion 020: syntax defect corrected; machine execution OPEN. Phase 1 PASS OPEN. Phase 2 BLOCKED.
+
+### Next-work prompt
+Continue from Completion 020. Observe the Actions run from this commit. If the scanner executes, inspect its unresolved evidence. If it reaches the next collector, inspect that collector's exact failure and fix only that concrete tooling defect. Never convert unresolved first-party evidence into a pass merely to advance the phase gate.

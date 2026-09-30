@@ -91,7 +91,7 @@ function collectLiteralImports(text) {
   let i=0,lastSig="",lastWord="";
   while(i<n){
     const c=text[i];
-    if(c==="'"||c==="""){const q=readQuoted(i);i=q?q.next:i+1;continue}
+    if(c==="'"||c==='"'){const q=readQuoted(i);i=q?q.next:i+1;continue}
     if(c==="\x60"){let j=i+1;while(j<n){if(text[j]==="\\"){j+=2;continue}if(text[j]==="\x60"){j++;break}j++}i=j;continue}
     if(text.startsWith("//",i)){const e=text.indexOf("\n",i+2);i=e<0?n:e+1;continue}
     if(text.startsWith("/*",i)){const e=text.indexOf("*/",i+2);i=e<0?n:e+2;continue}
