@@ -8,7 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 
-const ROOT = process.cwd();
+const ROOT = path.resolve(process.argv[2]||".");
 const SOURCE_ROOTS = ["src","open-sse","@omniroute","packages","bin","scripts","config"];
 const EXTS = [".ts",".tsx",".js",".jsx",".mjs",".cjs",".json"];
 const IGNORE = new Set(["node_modules",".git",".next","dist","build","coverage"]);
@@ -72,7 +72,7 @@ const result={
  environment_references:[...envRefs].sort(),
  source_file_sha256:Object.fromEntries(sourceFiles.map(p=>[rel(p),hash(fs.readFileSync(p))]))
 };
-const out=process.argv[2]??"phase1-closure-report.json";
+const out=path.resolve(process.argv[3]??"phase1-closure-report.json");
 fs.writeFileSync(out,JSON.stringify(result,null,2)+"\n");
 console.log(JSON.stringify({scanned_files:files.length,source_files:sourceFiles.length,edges:edges.length,unresolved:unresolved.length,output:out},null,2));
 if (unresolved.length) process.exitCode=2;
