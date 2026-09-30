@@ -49,3 +49,26 @@ Completion 025: verifier false-positive/truncation correction committed. Phase 1
 
 ### Next-work prompt
 Observe the Actions run from 9c86cf531b7f2efdeae0b6047083c70a9de8a3f9. Inspect the new blocker count/sample. If only genuinely dynamic loaders remain, classify them by proven closure: repository-bounded runtime path, registry/plugin discovery, optional native dependency, or externally supplied module. Add explicit evidence fields rather than broad suppression. Continue until the supplemental collector is genuinely clean, then run closure mapper, Phase 7 second pass, combined gate, reconciliation, immutable copy, and exact Git-tree integrity verification.
+## Completion 026 — preserve source offsets in dynamic-loader scanner
+
+### Planned
+Continue from Completion 025 by executing the corrected supplemental scanner remotely. Before classifying any remaining dynamic loader, fix the newly observed extraction bug if the code-aware mask changes source offsets.
+
+### Completed
+- Observed Actions run `36691253038` for the prior Completion 025 worklog commit.
+- Primary closure scanner remained machine-clean: 12,562 files walked, 5,902 source files, 22,320 import edges, 0 genuine unresolved imports, 4 generated-runtime references.
+- The new supplemental output exposed a verifier defect: masking comments and quoted strings with a single space destroyed source offsets, so the scanner sliced the original source at incorrect positions and produced character-level/garbled dynamic-import details.
+- Updated only the verifier to replace each masked non-newline character with a space, preserving exact source offsets while still removing comments and quoted strings from executable-code detection.
+- Tooling commit: 869ca9ce20506673c0074f7aef0d40806f2703b1.
+- No pinned OmniRoute source files were modified.
+
+### Not done
+- The offset-preserving scanner has not yet executed remotely.
+- Dynamic-loader closure classification is still intentionally fail-closed.
+- Combined Phase 1 gate, Phase 7 reconciliation, immutable source copy, and Git-tree integrity verification remain blocked.
+
+### Gate
+Completion 026: dynamic-loader scanner offset correctness fixed. Phase 1 PASS OPEN.
+
+### Next-work prompt
+Observe the Actions run from 869ca9ce20506673c0074f7aef0d40806f2703b1. Inspect the complete blocker summary/sample. If blockers remain, classify the actual expressions and call sites from the pinned source without broad suppression. If the supplemental collector becomes clean, immediately inspect closure-mapper and Phase 7 outputs, then run the combined gate/reconciliation and proceed to immutable source copying only after all gates genuinely PASS.
