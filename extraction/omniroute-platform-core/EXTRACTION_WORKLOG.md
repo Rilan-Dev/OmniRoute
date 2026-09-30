@@ -600,3 +600,30 @@ Completion 047: PASS for the demonstrated mapper verifier defect repairs. Phase 
 
 ### Next-work prompt
 Observe the Actions run triggered by `e203d7a4e64e2d5dc7c89bc1971f906ead678b34`. Inspect the primary scanner first, then supplemental analyzer and closure mapper. For every remaining mapper blocker, inspect the exact pinned-source evidence; repair only demonstrated verifier defects and preserve fail-closed behavior for genuine unresolved imports/database references. If Phase 1 evidence becomes clean, immediately run Phase 7 second pass, combined Phase 1 gate, and Phase 7 reconciliation before creating the complete immutable pinned-tree snapshot and running exact Git blob/tree integrity verification.
+
+
+## Completion 048 — Repair Phase 7 second-pass discovery regexes
+
+### Planned
+Continue from Completion 047 by fixing only the demonstrated Phase 7 verifier defect before accepting any second-pass result. The current scanner used escaped word-boundary/path regexes that matched literal backslashes rather than the intended tokens, so the discovery pass could under-report candidates.
+
+### Completed
+- Inspected the current Phase 7 second-pass verifier at the extraction branch head.
+- Confirmed the category regexes contained over-escaped word-boundary/path patterns in the JavaScript source, making the discovery signals semantically incorrect.
+- Repaired the Phase 7 verifier regex literals without changing pinned OmniRoute source.
+- Corrected the remaining git word-boundary case after reviewing the updated file.
+- Phase 7 remains discovery-only and fail-closed; no candidate has been silently classified or discarded.
+- Verifier commits: 8dd6ee8c2f5c3a5c30485eae2fd053ec57e0922b, followed by adfd3df0841ed9b63442fb5f7dc22bf3fade42d7.
+
+### Not done
+- The corrected Phase 7 verifier has not yet been machine-executed against the pinned source at the current extraction branch head.
+- Phase 1 primary/supplemental/mapper outputs have not yet been regenerated from the current tooling head.
+- Phase 1 combined gate and Phase 7 reconciliation are still not machine-PASS.
+- No immutable source tree, dependency closure, UI reference tree, capability manifests, contracts, or adapters have been copied/created.
+- Host integration remains blocked.
+
+### Gate
+Completion 048: PASS for the demonstrated Phase 7 verifier repair. Overall extraction gate remains OPEN.
+
+### Next-work prompt
+Run the extraction verification workflow from the current branch head. Inspect primary scanner, supplemental analyzer, closure mapper, and corrected Phase 7 output in order. For every remaining blocker, inspect exact pinned-source evidence and repair only verifier defects; preserve fail-closed behavior for genuine closure gaps. Once the four collectors are clean, add/execute the combined Phase 1 gate and explicit Phase 7 reconciliation so every discovered candidate has a documented disposition. Only after those gates genuinely PASS may Phase 2 exact immutable source copying begin.
