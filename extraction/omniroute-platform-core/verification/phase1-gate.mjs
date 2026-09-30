@@ -59,8 +59,10 @@ if (reconciliation) {
   if (!Array.isArray(reconciliation.candidates)) blockers.push({kind:"missing-reconciliation-candidates"});
 }
 if (supplemental) {
-  if (supplemental.pinned_source_required !== EXPECTED_COMMIT)
-    blockers.push({kind:"wrong-supplemental-pin",actual:supplemental.pinned_source_required,expected:EXPECTED_COMMIT});
+  if (supplemental.pinned_source_commit !== EXPECTED_COMMIT)
+    blockers.push({kind:"wrong-or-missing-supplemental-source-commit",actual:supplemental.pinned_source_commit ?? null,expected:EXPECTED_COMMIT});
+  if (supplemental.pinned_source_tree !== EXPECTED_TREE)
+    blockers.push({kind:"wrong-or-missing-supplemental-source-tree",actual:supplemental.pinned_source_tree ?? null,expected:EXPECTED_TREE});
   if (!Array.isArray(supplemental.blockers))
     blockers.push({kind:"missing-supplemental-blockers-list"});
   else if (supplemental.blockers.length)
@@ -70,7 +72,9 @@ if (supplemental) {
 const required = [
   ["primary","edges"],["primary","environment_references"],["primary","source_file_sha256"],
   ["supplemental","dynamic_imports"],["supplemental","runtime_filesystem_signals"],
-  ["supplemental","database"],["supplemental","dashboard"],["supplemental","tests"],["supplemental","packages"],["mapped","database"],["mapped","dashboard"],["mapped","tests"],["mapped","packages"],["mapped","host_boundaries"],["phase7","categories"],["phase7","api_route_families"],["reconciliation","candidates"]
+  ["supplemental","database"],["supplemental","dashboard"],["supplemental","tests"],["supplemental","packages"],
+  ["mapped","database"],["mapped","dashboard"],["mapped","tests"],["mapped","packages"],["mapped","host_boundaries"],
+  ["phase7","categories"],["phase7","api_route_families"],["reconciliation","candidates"]
 ];
 for (const [which,key] of required) {
   const obj=which==="primary"?primary:which==="supplemental"?supplemental:which==="mapped"?mapped:which==="phase7"?phase7:reconciliation;
