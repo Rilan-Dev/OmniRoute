@@ -234,3 +234,28 @@ Completion 020: syntax defect corrected; machine execution OPEN. Phase 1 PASS OP
 
 ### Next-work prompt
 Continue from Completion 020. Observe the Actions run from this commit. If the scanner executes, inspect its unresolved evidence. If it reaches the next collector, inspect that collector's exact failure and fix only that concrete tooling defect. Never convert unresolved first-party evidence into a pass merely to advance the phase gate.
+
+
+## Completion 021 — classify verified generated-runtime import references
+
+### Planned
+Continue from Completion 020 using the actual four-case unresolved sample. Preserve fail-closed first-party closure checking while distinguishing verified build/generated runtime references intentionally absent from Git source.
+
+### Completed
+- Observed Actions run 36683255328, job 109783226773.
+- Exact pinned source checkout completed successfully at commit 453918ab64f147604576e72d33e2bbfc12b2d1af and tree 76f3546d48a7293b199b7571d13808bebadb6d1f.
+- Primary scanner reduced residuals to two OpenCode test imports of built dist/index.js, the standalone server generated ./server.js, and generated Fumadocs .source/server.
+- Inspected the pinned source files and confirmed these are generated/build/runtime artifacts rather than missing first-party source modules.
+- Updated the verifier to record these as generated_runtime_references. Genuine unresolved first-party imports remain fail-closed.
+- No pinned OmniRoute source files were modified.
+
+### Not done
+- Updated classifier has not yet executed remotely.
+- Supplemental analyzer argument compatibility has not yet been observed.
+- Combined Phase 1 gate, Phase 7 reconciliation, immutable copying, and integrity verification remain blocked.
+
+### Gate
+Completion 021: generated-runtime classification correction prepared; machine execution OPEN. Phase 1 PASS OPEN. Phase 2 BLOCKED.
+
+### Next-work prompt
+Continue from Completion 021. Observe the next Actions run. Verify zero genuine unresolved imports while retaining generated-runtime evidence. Then inspect the supplemental analyzer exact execution and fix only concrete tooling defects, including its source/output argument contract if exposed. Continue through closure mapping, Phase 7 second-pass, combined Phase 1 gate, and Phase 7 reconciliation. Only after genuine machine-complete gates PASS begin immutable source copying and immediately run the Git-tree integrity verifier.
