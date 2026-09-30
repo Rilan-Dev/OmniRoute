@@ -119,3 +119,28 @@ Completion 028: proven JSON false-positive correction committed. Phase 1 PASS OP
 
 ### Next-work prompt
 Observe the Actions run from `cec5cb98b9c6aa0f69a1cdcfc4c24012d9c4758e`. Inspect the complete supplemental blocker summary/sample. For every remaining blocker, inspect the exact pinned source expression and prove whether it is a repository-bounded static path, finite registry/plugin discovery, optional external dependency, or genuinely externally supplied runtime module. Preserve fail-closed behavior for anything not proven closed. If supplemental closure becomes clean, continue immediately through closure mapper, Phase 7 second pass, combined Phase 1 gate, Phase 7 reconciliation, immutable source copying, and exact Git-tree integrity verification.
+
+
+## Completion 029 — prove repository-bounded dynamic loader targets
+
+### Planned
+Continue from Completion 028. The remote run still reports non-literal dynamic imports, but several expressions are deterministic repository paths constructed from ROOT/PROJECT_ROOT/REPO. Do not suppress these by pattern alone; require the constructed target to exist in the exact pinned source checkout.
+
+### Completed
+- Inspected the remote blocker evidence from run 36692285604: the JSON false-positive disappeared, leaving 34 dynamic-import blockers.
+- Confirmed multiple remaining records are deterministic repository paths, including projectFileUrl("src/lib/db/combos.ts"), pathToFileURL(path.join(ROOT, ...)), and path.join(REPO, ...) imports.
+- Updated only the verifier with a repository-bounded target resolver. It accepts only known repository-root variables and literal path segments, constructs the target under the exact source root, and requires fs.existsSync(target) before classification.
+- Bounded records now retain explicit target evidence in repository_bounded_dynamic_imports; unproven loaders remain blockers.
+- Tooling commit: bcadfe1a2f572e034da3a3da351c0599c6e8428a.
+- No pinned OmniRoute source files were modified.
+
+### Not done
+- The new target-verification logic has not yet executed remotely.
+- Runtime-supplied loaders such as hookUrl.href, entry, entryPath, specifier, getCloakbrowserModuleId(), and systrayModuleSpecifier(...) remain fail-closed until their closure is separately proven.
+- Combined Phase 1 gate, Phase 7 reconciliation, immutable source copy, and Git-tree integrity verification remain blocked.
+
+### Gate
+Completion 029: deterministic repository-path classification is now evidence-backed by target existence. Phase 1 PASS OPEN.
+
+### Next-work prompt
+Observe the Actions run from bcadfe1a2f572e034da3a3da351c0599c6e8428a. Inspect the new blocker count/sample and every remaining expression. Do not broadly suppress runtime-supplied module IDs. For bounded candidates, require exact target existence and preserve the target in the report. For external/optional/plugin/native loaders, add explicit dependency-closure evidence and host-boundary classification. Once all blockers are genuinely resolved, run closure mapper, Phase 7, combined gate, reconciliation, immutable copy, and exact Git-tree verification.
