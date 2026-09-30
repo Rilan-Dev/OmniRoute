@@ -56,3 +56,28 @@ Completion 013: remote execution path prepared. Machine execution OPEN. Phase 1 
 
 ## Next-work prompt
 Continue from Completion 013. Observe the GitHub Actions verification run produced by the extraction-branch update. Retrieve its jobs/logs and raw artifact. If it failed, fix only the verification workflow/tooling defect and rerun; if it succeeded, inspect every raw report for blockers and execute the combined Phase 1 gate. Then create and complete the Phase 7 reconciliation report for every candidate, rerun the reconciliation gate, and resolve all evidence gaps. Only after genuine PASS may Phase 2 begin complete immutable source copying. Immediately run the exact extraction-integrity verifier over the copied snapshot. Commit every completed work unit with the worklog and next-work prompt; never claim PASS from an unexecuted or partially observed run.
+
+## Completion 014 — Correct remote scanner invocation contract
+
+### Planned
+Continue remote verification from Completion 013, inspect the failed GitHub Actions execution, fix only verification-tool defects, and preserve the immutable source pin and extraction gate.
+
+### Completed
+- Observed GitHub Actions runs for the extraction branch and inspected the failing job logs.
+- Confirmed the pinned source worktree was created successfully at commit `453918ab64f147604576e72d33e2bbfc12b2d1af` with tree `76f3546d48a7293b199b7571d13808bebadb6d1f`.
+- Identified the next verification-tool defect after the regex correction: `phase1-closure-scanner.mjs` was ignoring its source-directory argument and treating the first positional argument as the output path, causing an `EISDIR` failure when the workflow passed the documented source/output arguments.
+- Corrected the scanner to use positional argument 2 as the source checkout and positional argument 3 as the report output path.
+- No OmniRoute source files at the pinned source commit were changed.
+
+### Not done
+- Corrected scanner has not yet completed successfully in Actions.
+- No Phase 1 machine-complete PASS is claimed.
+- Phase 7 candidate reconciliation is not complete.
+- Immutable source copying remains blocked.
+- Extraction integrity verification remains blocked until the immutable snapshot exists.
+
+### Gate
+Completion 014: verification-tool invocation contract corrected; remote machine execution remains OPEN. Phase 1 PASS OPEN. Phase 2 BLOCKED.
+
+### Next-work prompt
+Continue from Completion 014. Observe the GitHub Actions run produced by commit `bb4e30274ca6413c7a80abf0ab0758d379e9bda7`. Inspect the job logs. If the verification tools fail, fix only the specific tooling defect and commit the fix with this worklog pattern. If the tools execute, inspect the generated evidence and identify every blocker rather than treating tool exit success as extraction PASS. Then run the combined Phase 1 gate, reconcile every Phase 7 candidate against closure evidence and the capability inventory, run the Phase 7 reconciliation gate, and resolve all evidence gaps. Only after both gates genuinely PASS may Phase 2 begin complete immutable source copying. Immediately run the exact extraction-integrity verifier against the copied snapshot. Commit every completed work unit with an updated worklog and explicit next-work prompt.
