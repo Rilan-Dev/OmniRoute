@@ -723,3 +723,27 @@ Completion 052: **PASS for the demonstrated combined-gate schema defect repair. 
 
 ### Next-work prompt
 Inspect the Actions run triggered by the current extraction branch head. Read the first failing step and its raw report. If the workflow still does not expose a run, do not fabricate one or weaken the gate; verify branch/workflow state through available GitHub evidence and keep Phase 2 blocked. If a run is available, inspect primary → supplemental → mapper → Phase 7 → reconciliation → combined gate in order and repair only concrete verifier defects. Once the complete machine gate genuinely PASSes, freeze the pinned source and begin Phase 2 exact full-tree copying with Git blob/tree identity verification.
+
+
+## Completion 053 — Repair absolute package-root path join in primary closure resolver
+
+### Planned
+Continue from the remote verification failure reporting 1,435 unresolved imports. Inspect the first unresolved class against the pinned source and repair only the demonstrated verifier defect while preserving fail-closed behavior.
+
+### Completed
+- Inspected the failing primary scanner output from the exact pinned-source workflow execution: 12,562 files, 5,902 source files, 22,328 import edges, and 1,435 unresolved imports.
+- The unresolved sample consistently uses the repository workspace alias `@omniroute/open-sse/*`, which is a first-party workspace package declared by `open-sse/package.json` and explicitly mapped by the pinned root `tsconfig.json`.
+- The scanner already discovered the workspace package metadata, but constructed the deep-import candidate with `path.join(ROOT, pkgRoot, suffix)` even though `pkgRoot` was already absolute. This produced an incorrect package-root path and caused valid first-party workspace imports to be reported unresolved.
+- Corrected only the verifier to join the suffix directly to the already-absolute package root: `path.join(pkgRoot, suffix)`.
+- No unresolved-import category was suppressed; unknown packages and genuinely missing first-party files remain blockers.
+- No pinned OmniRoute source files were modified.
+
+### Not done
+- The repaired primary scanner has not yet been machine-executed from this tooling head.
+- Supplemental analyzer, closure mapper, Phase 7 second pass/reconciliation, combined Phase 1 gate, immutable source copying, and exact Git blob/tree verification remain pending.
+
+### Gate
+Completion 053: **PASS for the demonstrated absolute package-root resolver defect. Overall Phase 1 remains OPEN pending remote execution.**
+
+### Next-work prompt
+Inspect the Actions run triggered by this verifier repair. Read the primary scanner result first. If unresolved imports remain, inspect representative records and determine whether they are another resolver defect or genuine closure gaps; repair only evidence-proven verifier defects. If primary becomes clean, inspect supplemental and mapper outputs in order, then Phase 7, reconciliation, and the combined fail-closed gate. Do not begin Phase 2 until the complete machine gate genuinely PASSes.
