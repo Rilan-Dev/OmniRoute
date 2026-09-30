@@ -39,17 +39,28 @@ for (const file of source) {
   let t;
   try { t=read(file); } catch { continue; }
 
-  for (const m of t.matchAll(/\bimport\s*\(([^)]*)\)/g)) {
-    const expr=m[1].trim();
-    const literal=/^["'][^"']+["']$/.test(expr);
-    dynamic.push({file:r,expression:expr,literal});
-    if (!literal) blockers.push({kind:"dynamic-import",file:r,detail:expr});
-  }
-  for (const m of t.matchAll(/\brequire\s*\(([^)]*)\)/g)) {
-    const expr=m[1].trim();
-    if (!/^["'][^"']+["']$/.test(expr)) {
-      dynamic.push({file:r,expression:expr,literal:false,kind:"require"});
-      blockers.push({kind:"dynamic-require",file:r,detail:expr});
+  // Code-aware dynamic-loader scan. This prevents examples inside comments
+  // (for example a documented require()) from becoming false blockers, and
+  // balances nested parentheses in path.join()/path.resolve() expressions.
+  const masked=t
+    .replace(/\/\*[\s\S]*?\*\//g," ")
+    .replace(/\/\/[^\n]*/g," ")
+    .replace(/"(?:\\.|[^"\\])*"/g," ")
+    .replace(/'(?:\\.|[^'\\])*'/g," ");
+  for (const re of [/\bimport\s*\(/g,/\brequire\s*\(/g]) {
+    const kind=re.source.startsWith("\\bimport")?"import":"require";
+    let m;
+    while((m=re.exec(masked))){
+      let depth=1,j=m.index+m[0].length;
+      while(j<masked.length&&depth){
+        if(masked[j]==="(") depth++;
+        else if(masked[j]===")") depth--;
+        j++;
+      }
+      const expr=t.slice(m.index+m[0].length,j-1).trim();
+      const literal=/^["'][^"']+["']$/.test(expr);
+      dynamic.push({file:r,kind,expression:expr,literal});
+      if(!literal) blockers.push({kind:kind==="import"?"dynamic-import":"dynamic-require",file:r,detail:expr});
     }
   }
 
