@@ -39,7 +39,7 @@ function resolveImport(from,spec) {
 }
 
 const edges=[], unresolved=[];
-const importRE=/(?:import\\s+(?:[^'"]+?\\s+from\\s+)?|export\\s+[^'"]*?\\s+from\\s+|require\\s*\\(\\s*|import\\s*\\(\\s*)(['"])([^'"]+)\\1/g;
+const importRE=/(?:import\s+(?:[^'"]+?\s+from\s+)?|export\s+[^'"]*?\s+from\s+|require\s*\(\s*|import\s*\(\s*)(['"])([^'"]+)\\1/g;
 for (const file of sourceFiles) {
   const text=fs.readFileSync(file,"utf8");
   for (const m of text.matchAll(importRE)) {
