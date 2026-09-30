@@ -31,7 +31,7 @@ const sourceFiles=files.filter(p=>SOURCE_ROOTS.some(r=>rel(p)===r||rel(p).starts
 function resolveImport(from,spec) {
   if (!spec.startsWith(".") && !spec.startsWith("@/")) return {kind:"external",spec};
   const basePath=spec.startsWith("@/") ? path.join(ROOT,"src",spec.slice(2)) : path.resolve(path.dirname(from),spec);
-  const candidates=[];
+  const candidates=[basePath];
   for (const e of EXTS) candidates.push(basePath.endsWith(e)?basePath:basePath+e);
   for (const e of EXTS) candidates.push(path.join(basePath,"index"+e));
   for (const c of candidates) if (fs.existsSync(c) && fs.statSync(c).isFile()) return {kind:"first-party",path:rel(c)};

@@ -81,3 +81,29 @@ Completion 014: verification-tool invocation contract corrected; remote machine 
 
 ### Next-work prompt
 Continue from Completion 014. Observe the GitHub Actions run produced by commit `bb4e30274ca6413c7a80abf0ab0758d379e9bda7`. Inspect the job logs. If the verification tools fail, fix only the specific tooling defect and commit the fix with this worklog pattern. If the tools execute, inspect the generated evidence and identify every blocker rather than treating tool exit success as extraction PASS. Then run the combined Phase 1 gate, reconcile every Phase 7 candidate against closure evidence and the capability inventory, run the Phase 7 reconciliation gate, and resolve all evidence gaps. Only after both gates genuinely PASS may Phase 2 begin complete immutable source copying. Immediately run the exact extraction-integrity verifier against the copied snapshot. Commit every completed work unit with an updated worklog and explicit next-work prompt.
+
+## Completion 015 — inspect and harden first-party import resolution
+
+### Planned
+Continue from Completion 014 by observing the corrected scanner on the exact pinned checkout. Inspect the first concrete failure before changing verification logic, and make only a narrowly justified resolver correction.
+
+### Completed
+- Observed GitHub Actions run `36678493477` and job `109768599057`.
+- Confirmed the exact pinned source worktree was created successfully at commit `453918ab64f147604576e72d33e2bbfc12b2d1af` and tree `76f3546d48a7293b199b7571d13808bebadb6d1f`.
+- Confirmed the primary scanner now executes against the intended source checkout and produces a report instead of the previous `EISDIR` invocation failure.
+- Scanner evidence: 5,902 scanned files, 5,902 source files, 22,296 import edges, and 196 unresolved first-party imports; the fail-closed exit code 2 stopped the remaining evidence collectors.
+- Identified a verifier coverage defect: first-party relative imports were only resolved through code/JSON extensions, so existing extensionless non-code assets could be falsely classified as unresolved. The resolver is corrected to test the exact imported path before extension/index candidates.
+- Added a compact unresolved sample to the scanner console output so the next remote run exposes concrete residual cases without weakening the fail-closed gate.
+- No pinned source files were modified.
+
+### Not done
+- The corrected resolver has not yet executed remotely.
+- No Phase 1 machine PASS is claimed.
+- Supplemental analyzer, closure mapper, Phase 7 scanner, combined gate, and Phase 7 reconciliation remain unexecuted in the successful path.
+- Immutable source copying remains BLOCKED.
+
+### Gate
+Completion 015: verification-tool correction prepared; machine execution OPEN. Phase 1 PASS OPEN. Phase 2 BLOCKED.
+
+### Next-work prompt
+Continue from Completion 015. Observe the GitHub Actions run produced by this commit. If the primary scanner still reports unresolved first-party imports, inspect the emitted unresolved sample and classify the actual causes before changing the resolver again. If the primary scanner passes, inspect the next collector failure and fix only that concrete tooling defect. Do not suppress unresolved imports or convert first-party files into externals merely to obtain a pass. Once all four collectors execute, inspect their raw evidence and run the combined Phase 1 gate. Then reconcile every Phase 7 candidate against closure evidence and capability inventory. Keep Phase 2 immutable copying BLOCKED until genuine machine-complete PASS.
