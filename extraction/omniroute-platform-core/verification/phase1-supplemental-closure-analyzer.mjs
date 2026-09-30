@@ -39,7 +39,7 @@ for (const file of source) {
   let t;
   try { t=read(file); } catch { continue; }
 
-  // Code-aware dynamic-loader scan. This prevents examples inside comments
+  // JSON is data, not executable source; strings inside JSON can contain examples\n  // such as `import(` that must never become runtime-loader blockers.\n  if (path.extname(file) !== ".json") {\n  // Code-aware dynamic-loader scan. This prevents examples inside comments
   // (for example a documented require()) from becoming false blockers, and
   // balances nested parentheses in path.join()/path.resolve() expressions.
   // Preserve source offsets while masking non-code regions. A one-character
