@@ -24,15 +24,12 @@ jobs:
         run: |
           node extraction/omniroute-platform-core/verification/phase1-closure-scanner.mjs ../omniroute-source extraction/omniroute-platform-core/verification/phase1-closure-report.json
           node extraction/omniroute-platform-core/verification/phase1-supplemental-closure-analyzer.mjs ../omniroute-source extraction/omniroute-platform-core/verification/phase1-supplemental-report.json
-          node extraction/omniroute-platform-core/verification/phase1-closure-mapper.mjs ../omniroute-source extraction/omniroute-source/phase1-closure-map.json
-          node extraction/omniroute-platform-core/verification/phase7-second-pass.mjs ../omniroute-source extraction/omniroute-source/phase7-second-pass.json
+          node extraction/omniroute-platform-core/verification/phase1-closure-mapper.mjs ../omniroute-source extraction/omniroute-platform-core/verification/phase1-closure-map.json
+          node extraction/omniroute-platform-core/verification/phase7-second-pass.mjs ../omniroute-source extraction/omniroute-platform-core/verification/phase7-second-pass.json
 
       - name: Upload raw verification reports
         uses: actions/upload-artifact@v4
         with:
           name: omniroute-extraction-verification-reports
-          path: |
-            extraction/omniroute-platform-core/verification/*.json
-            ../omniroute-source/phase1-closure-map.json
-            ../omniroute-source/phase7-second-pass.json
+          path: extraction/omniroute-platform-core/verification/*.json
           if-no-files-found: error
