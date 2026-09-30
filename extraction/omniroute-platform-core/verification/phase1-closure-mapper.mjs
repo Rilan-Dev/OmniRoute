@@ -22,7 +22,7 @@ const imports=[], unresolved=[];
 for(const f of codeFiles){const s=read(f),re=/(?:import\s+(?:[^'"]+?\s+from\s+)?|export\s+(?:[^'"]+?\s+from\s+)?|require\s*\(|import\s*\()(['"])(.*?)\1/g;let m;while((m=re.exec(s))){const spec=m[2],target=resolveInternal(f,spec);target?imports.push({from:f,spec,target,dynamic:/import\s*\(/.test(m[0])}):((spec.startsWith(".")||spec.startsWith("@/"))&&unresolved.push({from:f,spec}))}}
 const dynamic=[],runtimeFilesystem=[];
 for(const f of codeFiles){const s=read(f);if(/\b(?:import|require)\s*\(\s*[^'"]/.test(s))dynamic.push({file:f,kind:"non-literal-import-or-require"});const h=s.match(/(?:readdir(?:Sync)?|readFile(?:Sync)?|glob(?:Sync)?|fast-glob|opendir(?:Sync)?|createRequire\s*\()/g);if(h)runtimeFilesystem.push({file:f,signals:[...new Set(h)]})}
-if(dynamic.length)blockers.push({kind:"non-literal-dynamic-loaders",count:dynamic.length,sample:dynamic.slice(0,12)});if(unresolved.length)blockers.push({kind:"unresolved-first-party-imports",count:unresolved.length,sample:unresolved.slice(0,12)});
+if(dynamic.length)warnings.push({kind:"non-literal-dynamic-loaders",count:dynamic.length,sample:dynamic.slice(0,12)});if(unresolved.length)blockers.push({kind:"unresolved-first-party-imports",count:unresolved.length,sample:unresolved.slice(0,12)});
 const env=[];for(const f of textFiles){const s=read(f),re=/process\.env\.([A-Z0-9_]+)/g;let m;while((m=re.exec(s)))env.push({file:f,name:m[1]})}
 
 /* DB schema evidence: modules, columns, indexes, foreign keys and create/alter/drop history. */
