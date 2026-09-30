@@ -22,7 +22,7 @@ const imports=[], unresolved=[];
 for(const f of codeFiles){const s=read(f),re=/(?:import\s+(?:[^'"]+?\s+from\s+)?|export\s+(?:[^'"]+?\s+from\s+)?|require\s*\(|import\s*\()(['"])(.*?)\1/g;let m;while((m=re.exec(s))){const spec=m[2],target=resolveInternal(f,spec);target?imports.push({from:f,spec,target,dynamic:/import\s*\(/.test(m[0])}):((spec.startsWith(".")||spec.startsWith("@/"))&&unresolved.push({from:f,spec}))}}
 const dynamic=[],runtimeFilesystem=[];
 for(const f of codeFiles){const s=read(f);if(/\b(?:import|require)\s*\(\s*[^'"]/.test(s))dynamic.push({file:f,kind:"non-literal-import-or-require"});const h=s.match(/(?:readdir(?:Sync)?|readFile(?:Sync)?|glob(?:Sync)?|fast-glob|opendir(?:Sync)?|createRequire\s*\()/g);if(h)runtimeFilesystem.push({file:f,signals:[...new Set(h)]})}
-if(dynamic.length)blockers.push({kind:"non-literal-dynamic-loaders",count:dynamic.length});if(unresolved.length)blockers.push({kind:"unresolved-first-party-imports",count:unresolved.length});
+if(dynamic.length)blockers.push({kind:"non-literal-dynamic-loaders",count:dynamic.length,sample:dynamic.slice(0,12)});if(unresolved.length)blockers.push({kind:"unresolved-first-party-imports",count:unresolved.length,sample:unresolved.slice(0,12)});
 const env=[];for(const f of textFiles){const s=read(f),re=/process\.env\.([A-Z0-9_]+)/g;let m;while((m=re.exec(s)))env.push({file:f,name:m[1]})}
 
 /* DB schema evidence: modules, columns, indexes, foreign keys and create/alter/drop history. */
@@ -34,7 +34,7 @@ for(const f of migrationFiles){const s=read(f);migrations.push(f);
  for(const m of s.matchAll(/\b(?:CREATE\s+UNIQUE\s+)?INDEX\s+["']?([A-Za-z0-9_-]+)["']?\s+ON\s+["']?([A-Za-z0-9_.$-]+)["']?\s*\(([^)]+)\)/gi))add(m[2],"create-index",f,{index:m[1],columns:m[3].split(",").map(v=>v.trim())});
  for(const m of s.matchAll(/\bDROP\s+(?:TABLE|INDEX)\s+["']?([A-Za-z0-9_.$-]+)["']?/gi))add(m[1],"drop-object",f,{})}
 for(const f of textFiles.filter(f=>f.startsWith("src/lib/db/"))){const s=read(f),tables=new Set(),columns=new Map();for(const m of s.matchAll(/\b(?:FROM|JOIN|UPDATE|INTO|DELETE\s+FROM|CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|ALTER\s+TABLE)\s+["']?([A-Za-z0-9_.$-]+)/gi))tables.add(m[1]);for(const m of s.matchAll(/\b([A-Za-z_][A-Za-z0-9_]*)\s*\.\s*([A-Za-z_][A-Za-z0-9_]*)\b/g)){if(!columns.has(m[1]))columns.set(m[1],new Set());columns.get(m[1]).add(m[2])}if(tables.size)dbModules.push({module:f,tables:[...tables],qualified_column_usage:Object.fromEntries([...columns].map(([k,v])=>[k,[...v]]))})}
-const unknownDb=dbModules.flatMap(x=>x.tables.filter(t=>!schema.has(t)).map(t=>({module:x.module,table:t})));if(unknownDb.length)blockers.push({kind:"db-table-not-found-in-migrations",count:unknownDb.length});
+const unknownDb=dbModules.flatMap(x=>x.tables.filter(t=>!schema.has(t)).map(t=>({module:x.module,table:t})));if(unknownDb.length)blockers.push({kind:"db-table-not-found-in-migrations",count:unknownDb.length,sample:unknownDb.slice(0,12)});
 
 /* Recursive dashboard dependency/state evidence. */
 const dashboard=all.filter(f=>f.startsWith("src/app/(dashboard)/dashboard/")&&/\.(tsx|ts|jsx|js)$/.test(f)),importMap=new Map();for(const i of imports){if(!importMap.has(i.from))importMap.set(i.from,[]);importMap.get(i.from).push(i.target)}
