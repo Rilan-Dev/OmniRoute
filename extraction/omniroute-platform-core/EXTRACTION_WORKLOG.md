@@ -652,3 +652,25 @@ Completion 049: verification architecture is now fail-closed at the workflow lev
 
 ### Next-work prompt
 Inspect the Actions run triggered by the latest extraction-branch commit. Use the raw verification artifacts/logs to resolve the first concrete failure only. Do not weaken closure requirements. Once all collectors and reconciliation pass, confirm the combined Phase 1 gate PASS; only then begin Phase 2 exact full-tree copying from commit 453918ab64f147604576e72d33e2bbfc12b2d1af with Git blob/tree verification.
+
+## Completion 050 — Make source pin evidence mandatory
+
+### Planned
+Continue the fail-closed gate hardening. A report that omits its source commit/tree must not be accepted merely because it does not explicitly contradict the expected pin.
+
+### Completed
+- Changed phase1-gate.mjs so primary closure evidence must contain the exact pinned commit and tree.
+- Changed closure-map evidence so both commit and tree must be explicitly present and exact.
+- Missing pin metadata now produces a blocker instead of being treated as acceptable.
+- No OmniRoute source files were modified.
+
+### Not done
+- A real Actions execution is still required; the GitHub connector exposes workflow-run inspection but not dispatch for this repository, and local network execution is unavailable in this environment.
+- Phase 2 exact copying remains blocked.
+- No host integration has started.
+
+### Gate
+Completion 050: PASS for fail-closed pin enforcement. Overall Phase 1 remains OPEN pending a real machine run.
+
+### Next-work prompt
+Trigger or run the OmniRoute Extraction Verification workflow from the extraction branch. Inspect the generated reports in this order: primary closure → supplemental closure → closure mapper → Phase 7 → Phase 7 reconciliation → combined gate. Resolve only the first concrete failure using pinned-source evidence. Do not weaken blockers to make the gate pass. If the complete gate genuinely PASSes, freeze the pinned source and begin Phase 2 exact tree copying with blob/tree SHA verification.
