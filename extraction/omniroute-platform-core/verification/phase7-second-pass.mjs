@@ -19,7 +19,7 @@ const categories={
  attachments_media_generation:[/\b(?:attachment|upload|download|media|image|video|audio|ocr|vision|multimodal|file)\b/i,/\b(?:attachment|multipart|image_url|image generation|generateImage|OCR|vision|multimodal|media)\b/i],
  project_runtime_generation:[/\b(?:project|runtime|sandbox|scaffold|generator|codegen|template|workspace|executor|execution)\b/i,/\b(?:generate(?:d|s)?\s+(?:project|code|app)|scaffold|sandbox|execute|runtime|workspace)\b/i],
  templates_scaffolding_frameworks:[/\b(?:template|templates|scaffold|starter|preset|framework|boilerplate)\b/i,/\b(?:Next\.js|React|Vue|Svelte|Angular|framework|template|scaffold|starter|preset)\b/i],
- version_control_diff_restore:[/\b(?:version|versions|snapshot|diff|restore|rollback|backup|sync|history|revision)\b/i,/\b(?:git\\b|commit|diff|restore|rollback|snapshot|backup|version)\b/i],
+ version_control_diff_restore:[/\b(?:version|versions|snapshot|diff|restore|rollback|backup|sync|history|revision)\b/i,/\b(?:git\b|commit|diff|restore|rollback|snapshot|backup|version)\b/i],
  analytics_usage_credits:[/\b(?:analytics|usage|credit|quota|meter|cost|billing|pricing|telemetry|metrics)\b/i,/\b(?:usage|credits?|quota|meter(?:ing)?|cost|analytics|telemetry|metrics)\b/i],
  notifications_email:[/\b(?:notification|email|mail|webhook|event|alert)\b/i,/\b(?:sendEmail|mailer|notification|webhook|event bus|alert)\b/i],
  browser_cli_cloud_agents:[/\b(?:browser|playwright|puppeteer|cli|cloud.?agent|remote.?agent|agent)\b/i,/\b(?:Playwright|Puppeteer|browser|CLI|remote agent|cloud agent|child_process|spawn|exec)\b/i],
