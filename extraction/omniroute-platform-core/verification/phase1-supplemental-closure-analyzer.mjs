@@ -129,7 +129,9 @@ const result={
 };
 const out=path.resolve(process.argv[3]??"phase1-supplemental-closure.json");
 fs.writeFileSync(out,JSON.stringify(result,null,2)+"\n");
+const blockerSummary=Object.fromEntries([...blockers.reduce((m,b)=>{m.set(b.kind,(m.get(b.kind)||0)+1);return m;},new Map())].sort((a,b)=>a[0].localeCompare(b[0])));
 console.log(JSON.stringify({
+  blocker_summary:blockerSummary,
   scanned_files:result.scanned_files,source_files:result.source_files,
   dynamic_imports:dynamic.length,runtime_filesystem_signals:result.runtime_filesystem_signals.length,
   db_references:dbRefs.length,dashboard_files:ui.length,tests:tests.length,
