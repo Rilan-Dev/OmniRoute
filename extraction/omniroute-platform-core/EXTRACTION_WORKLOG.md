@@ -196,3 +196,29 @@ Observe the Actions run from bcadfe1a2f572e034da3a3da351c0599c6e8428a. Inspect t
 - Observe the Actions run for `1031c7b72f8f0c2bf1da60ecffcb37a12913440d`.
 - If blockers remain, inspect every remaining expression individually and prove its repository/runtime provenance or leave it fail-closed.
 - If supplemental blockers reach zero, immediately execute closure mapper, Phase 7 second pass, combined Phase 1 gate, Phase 7 reconciliation, then immutable source copy and exact Git-tree integrity verification.
+
+
+## Completion 032 — Repair classifier comment-strip regex
+
+### Planned
+- Observe the first remote execution after Completion 031 and repair any verifier-only execution defect without changing pinned OmniRoute source.
+
+### Completed
+- Remote run `36693660499` on worklog head `576e97178444bf906630dc35e7ceee619ad8aa12` confirmed the primary closure scanner is clean: **12,562 scanned files, 5,902 source files, 22,320 edges, 0 unresolved imports**.
+- The supplemental analyzer failed before producing blocker evidence because its leading-comment normalization regex had been over-escaped and Node reported an invalid regular-expression syntax error.
+- Replaced only that malformed verifier regex with the valid executable regex. Pinned OmniRoute source remains untouched.
+- Verifier repair commit: `094690098b48930d13a00dbf0c18349a9f72be58`.
+
+### Not done
+- The repaired supplemental analyzer has not yet executed remotely.
+- Closure mapper, Phase 7 second pass, combined Phase 1 gate, Phase 7 reconciliation, immutable source copy, and exact Git-tree integrity verification remain pending.
+
+### Gate
+- **Completion 032: PASS for verifier repair. Phase 1 overall remains OPEN.**
+- Primary closure evidence remains clean; supplemental evidence must execute successfully before any blocker count can be accepted.
+
+### Next-work prompt
+- Observe the Actions run for `094690098b48930d13a00dbf0c18349a9f72be58`.
+- Inspect supplemental blocker summary/sample and do not infer cleanliness from the primary scanner.
+- If supplemental blockers are zero, immediately run/verify closure mapper + Phase 7 second pass + combined Phase 1 gate + Phase 7 reconciliation.
+- If those gates pass, begin the immutable full pinned-tree copy and exact Git-tree integrity verification. Do not omit product-specific source from the immutable snapshot.
