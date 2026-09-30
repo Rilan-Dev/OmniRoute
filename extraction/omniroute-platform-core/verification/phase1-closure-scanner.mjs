@@ -120,13 +120,17 @@ function collectLiteralImports(text) {
   }
   return out;
 }
-const edges=[], unresolved=[];
+const edges=[], unresolved=[], generatedRuntimeRefs=[];
+function classifyMissing(from,spec) {
+  if (/(?:^|\/)dist\//.test(spec) || /(?:^|\/)\.source(?:\/|$)/.test(spec) || (from==="scripts/dev/standalone-server-ws.mjs" && spec==="./server.js")) return "generated-runtime";
+  return null;
+}
 for (const file of sourceFiles) {
   const text=fs.readFileSync(file,"utf8");
   for (const spec of collectLiteralImports(text)) {
     const r=resolveImport(file,spec);
     edges.push({from:rel(file),to:r.path??r.spec,kind:r.kind});
-    if (r.kind==="unresolved") unresolved.push({from:rel(file),spec});
+    if (r.kind==="unresolved") { const generatedKind=classifyMissing(rel(file),spec); if (generatedKind) generatedRuntimeRefs.push({from:rel(file),spec,kind:generatedKind}); else unresolved.push({from:rel(file),spec}); }
   }
 }
 const envRefs=new Set();
@@ -155,5 +159,5 @@ const result={
 };
 const out=path.resolve(process.argv[3]??"phase1-closure-report.json");
 fs.writeFileSync(out,JSON.stringify(result,null,2)+"\n");
-console.log(JSON.stringify({scanned_files:files.length,source_files:sourceFiles.length,edges:edges.length,unresolved:unresolved.length,unresolved_sample:unresolved.slice(0,30),output:out},null,2));
+console.log(JSON.stringify({scanned_files:files.length,source_files:sourceFiles.length,edges:edges.length,unresolved:unresolved.length,generated_runtime_references:generatedRuntimeRefs.length,unresolved_sample:unresolved.slice(0,30),output:out},null,2));
 if (unresolved.length) process.exitCode=2;
