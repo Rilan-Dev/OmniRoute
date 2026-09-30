@@ -674,3 +674,27 @@ Completion 050: PASS for fail-closed pin enforcement. Overall Phase 1 remains OP
 
 ### Next-work prompt
 Trigger or run the OmniRoute Extraction Verification workflow from the extraction branch. Inspect the generated reports in this order: primary closure → supplemental closure → closure mapper → Phase 7 → Phase 7 reconciliation → combined gate. Resolve only the first concrete failure using pinned-source evidence. Do not weaken blockers to make the gate pass. If the complete gate genuinely PASSes, freeze the pinned source and begin Phase 2 exact tree copying with blob/tree SHA verification.
+
+## Completion 051 — Trigger the fail-closed verification workflow
+
+### Planned
+Continue from Completion 050 by forcing a fresh GitHub Actions execution from the current extraction branch head. Do not begin Phase 2 until the complete machine gate is proven against the pinned OmniRoute source.
+
+### Completed
+- Inspected the extraction branch workflow configuration and confirmed the verification workflow runs on pushes to `extraction/omniroute-platform-core` and supports manual dispatch.
+- Checked workflow runs associated with the latest recorded tooling commit `e176e1b419d9631b6efa2a11e474848980dc4667`; no completed workflow run was exposed by the GitHub connector for that commit.
+- Confirmed the workflow still creates a detached worktree from the exact pinned source commit `453918ab64f147604576e72d33e2bbfc12b2d1af` and verifies tree `76f3546d48a7293b199b7571d13808bebadb6d1f` before running any collector.
+- Confirmed the current combined sequence is primary closure → supplemental closure → closure mapper → Phase 7 second pass → Phase 7 reconciliation → fail-closed Phase 1 gate, with raw JSON artifacts retained on failure.
+- Added this worklog completion so the extraction-branch push itself triggers a fresh verification run from the current tooling head.
+- No pinned OmniRoute source files were modified.
+
+### Not done
+- The newly triggered workflow must still complete before its reports can be inspected.
+- Phase 1 overall PASS is not claimed until the actual run proves every collector, reconciliation, source pin, required section, and zero-blocker condition.
+- Phase 2 immutable source copying, dependency/UI closure packaging, contracts/adapters, and host integration remain blocked.
+
+### Gate
+Completion 051: **PASS for verification triggering preparation. Overall Phase 1 remains OPEN pending the fresh machine run.**
+
+### Next-work prompt
+Inspect the fresh Actions run triggered by this commit. Read the first failing step and its raw artifact output. If a verifier defect is demonstrated, repair only that mechanism and preserve fail-closed behavior. If all collectors and reconciliation pass, inspect the combined Phase 1 gate result; only after a genuine PASS begin Phase 2 exact pinned-tree copying and Git blob/tree identity verification.
