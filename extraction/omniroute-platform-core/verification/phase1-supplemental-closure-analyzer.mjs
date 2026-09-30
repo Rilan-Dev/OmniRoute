@@ -7,7 +7,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const ROOT = process.cwd();
+const ROOT = path.resolve(process.argv[2]||".");
 const SOURCE_ROOTS = ["src","open-sse","@omniroute","packages","bin","scripts","config"];
 const CODE_EXTS = new Set([".ts",".tsx",".js",".jsx",".mjs",".cjs",".json"]);
 const IGNORE = new Set(["node_modules",".git",".next","dist","build","coverage"]);
@@ -127,7 +127,7 @@ const result={
   database:{references:dbRefs,migration_files:[...new Set(migrations)].sort()},
   dashboard:{state_signals:ui},tests,packages,blockers
 };
-const out=process.argv[2]??"phase1-supplemental-closure.json";
+const out=path.resolve(process.argv[3]??"phase1-supplemental-closure.json");
 fs.writeFileSync(out,JSON.stringify(result,null,2)+"\n");
 console.log(JSON.stringify({
   scanned_files:result.scanned_files,source_files:result.source_files,
