@@ -27,7 +27,7 @@ const code=all.filter(p=>CODE_EXTS.has(path.extname(p)));
 const source=code.filter(p=>SOURCE_ROOTS.some(r=>rel(p)===r||rel(p).startsWith(r+"/")));
 const read=p=>fs.readFileSync(p,"utf8");
 
-const blockers=[], dynamic=[], runtimeFs=[], dbRefs=[], migrations=[], ui=[], tests=[], packages=[];
+const blockers=[], dynamic=[], boundedDynamic=[], runtimeFs=[], dbRefs=[], migrations=[], ui=[], tests=[], packages=[];
 const env=new Map();
 function add(map,key,value) {
   if (!map.has(key)) map.set(key,[]);
@@ -70,8 +70,18 @@ for (const file of source) {
         .replace(/^(?:\/\*[\s\S]*?\*\/|\/\/[^\n]*(?:\n|$))\s*/g,"")
         .trim();
       const literal=/^["'][^"']+["']$/.test(executableExpr);
-      dynamic.push({file:r,kind,expression:expr,literal});
-      if(!literal) blockers.push({kind:kind==="import"?"dynamic-import":"dynamic-require",file:r,detail:expr});
+      const bounded =
+        /^projectFileUrl\\s*\\(\\s*["'][^"']+["']\\s*\\)$/.test(executableExpr) ||
+        /^pathToFileURL\\s*\\(\\s*(?:path\\.)?(?:join|resolve)\\s*\\(\\s*(?:ROOT|PROJECT_ROOT|REPO)\\s*,/.test(executableExpr);
+      if (literal) {
+        dynamic.push({file:r,kind,expression:expr,literal:true});
+      } else if (bounded) {
+        dynamic.push({file:r,kind,expression:expr,literal:false,bounded_repository:true});
+        boundedDynamic.push({file:r,kind,expression:expr});
+      } else {
+        dynamic.push({file:r,kind,expression:expr,literal:false});
+        blockers.push({kind:kind==="import"?"dynamic-import":"dynamic-require",file:r,detail:expr});
+      }
     }
   }
 
@@ -144,6 +154,7 @@ const result={
   pinned_source_required:"453918ab64f147604576e72d33e2bbfc12b2d1af",
   scanned_files:all.length,source_files:source.length,
   dynamic_imports:dynamic,
+  repository_bounded_dynamic_imports:boundedDynamic,
   runtime_filesystem_signals:[...new Map(runtimeFs.map(x=>[JSON.stringify(x),x])).values()],
   environment_references:Object.fromEntries([...env.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([k,v])=>[k,[...new Set(v)].sort()])),
   database:{references:dbRefs,migration_files:[...new Set(migrations)].sort()},
@@ -156,7 +167,7 @@ const blockerSample=blockers.slice(0,25);
 console.log(JSON.stringify({
   blocker_summary:blockerSummary,blocker_sample:blockerSample,
   scanned_files:result.scanned_files,source_files:result.source_files,
-  dynamic_imports:dynamic.length,runtime_filesystem_signals:result.runtime_filesystem_signals.length,
+  dynamic_imports:dynamic.length,repository_bounded_dynamic_imports:boundedDynamic.length,runtime_filesystem_signals:result.runtime_filesystem_signals.length,
   db_references:dbRefs.length,dashboard_files:ui.length,tests:tests.length,
   packages:packages.length,blockers:blockers.length,output:out
 },null,2));
