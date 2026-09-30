@@ -27,11 +27,16 @@ const files=walk(ROOT).filter(p=>EXTS.includes(path.extname(p)));
 const rel=p=>path.relative(ROOT,p).replaceAll(path.sep,"/");
 const fileSet=new Set(files.map(rel));
 const packageNameToRoot=new Map();
+const packageMetadata=new Map();
 for (const p of files) {
   if (path.basename(p)!=="package.json") continue;
   try {
     const pkg=JSON.parse(fs.readFileSync(p,"utf8"));
-    if (typeof pkg.name==="string" && pkg.name.startsWith("@")) packageNameToRoot.set(pkg.name,path.dirname(p));
+    if (typeof pkg.name==="string") {
+      const root=path.dirname(p);
+      packageMetadata.set(pkg.name,{root,pkg});
+      packageNameToRoot.set(pkg.name,root);
+    }
   } catch {}
 }
 const sourceFiles=files.filter(p=>SOURCE_ROOTS.some(r=>rel(p)===r||rel(p).startsWith(r+"/")));
@@ -45,6 +50,27 @@ function resolveImport(from,spec) {
       const candidates=[basePath];
       for (const e of EXTS) candidates.push(basePath.endsWith(e)?basePath:basePath+e);
       for (const e of EXTS) candidates.push(path.join(basePath,"index"+e));
+      const meta=packageMetadata.get(pkgRoot);
+      if (meta && suffix==="") {
+        const entryCandidates=[];
+        const addEntry=v=>{
+          if (typeof v!=="string") return;
+          const clean=v.replace(/^\\.\\//,"");
+          entryCandidates.push(path.join(meta.root,clean));
+        };
+        if (typeof meta.pkg.exports==="string") addEntry(meta.pkg.exports);
+        else if (meta.pkg.exports && typeof meta.pkg.exports==="object") {
+          for (const v of Object.values(meta.pkg.exports)) {
+            if (typeof v==="string") addEntry(v);
+            else if (v && typeof v==="object") for (const key of ["types","import","require","default"]) addEntry(v[key]);
+          }
+        }
+        for (const key of ["types","typings","module","main"]) addEntry(meta.pkg[key]);
+        for (const entry of entryCandidates) {
+          candidates.push(entry);
+          for (const e of EXTS) candidates.push(entry.endsWith(e)?entry:entry+e);
+        }
+      }
       for (const c of candidates) if (fs.existsSync(c) && fs.statSync(c).isFile()) return {kind:"first-party",path:rel(c)};
       return {kind:"unresolved",spec};
     }
