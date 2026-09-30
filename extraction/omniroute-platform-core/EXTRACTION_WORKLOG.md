@@ -72,3 +72,27 @@ Completion 026: dynamic-loader scanner offset correctness fixed. Phase 1 PASS OP
 
 ### Next-work prompt
 Observe the Actions run from 869ca9ce20506673c0074f7aef0d40806f2703b1. Inspect the complete blocker summary/sample. If blockers remain, classify the actual expressions and call sites from the pinned source without broad suppression. If the supplemental collector becomes clean, immediately inspect closure-mapper and Phase 7 outputs, then run the combined gate/reconciliation and proceed to immutable source copying only after all gates genuinely PASS.
+## Completion 027 — remove remaining dynamic-loader scanner false positives
+
+### Planned
+Inspect the remote Completion 026 blocker sample and correct only scanner artifacts before classifying genuine runtime module loading.
+
+### Completed
+- Actions run `36691646292` reached the supplemental analyzer on the exact pinned source.
+- Primary closure scanner remained clean: 0 unresolved first-party imports.
+- Supplemental analysis found 37 dynamic-import blockers, reduced from the earlier 91/79+12 blocker state.
+- Two additional verifier-only false-positive mechanisms were proven from the emitted sample: Vite/webpack directive comments immediately after `import(` were included in the evidence expression, preventing literal classification; and template/string content can contain textual `import(` patterns that must not be treated as executable calls.
+- Updated only the supplemental verifier to mask template literals while preserving offsets and to strip only leading loader-directive comments for literal-argument classification. Original evidence expressions remain retained in the report.
+- Tooling commit: `71a2df0476654996c863497129b7958925ddc928`.
+- No pinned OmniRoute source files were modified.
+
+### Not done
+- The new scanner has not yet executed remotely.
+- Genuine non-literal loaders remain fail-closed and unclassified.
+- Closure mapper, Phase 7 reconciliation, combined gate, immutable source copy, and Git-tree integrity verification remain blocked.
+
+### Gate
+Completion 027: verifier-only false-positive correction committed. Phase 1 PASS OPEN.
+
+### Next-work prompt
+Observe the Actions run from `71a2df0476654996c863497129b7958925ddc928`. Inspect the complete blocker summary/sample. For every remaining blocker, inspect the pinned source call site and classify only with explicit evidence: static repository-bounded path, finite registry/plugin discovery, optional external dependency, or externally supplied runtime module. Do not broadly suppress non-literal loaders. Once supplemental closure is genuinely complete, continue immediately through closure mapping, Phase 7, gate, reconciliation, immutable copy, and exact Git-tree verification.
