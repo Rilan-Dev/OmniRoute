@@ -294,3 +294,28 @@ Observe the Actions run from bcadfe1a2f572e034da3a3da351c0599c6e8428a. Inspect t
 - Observe the Actions run for `79d440b6f78892b65cd73152472804e21f75a33c` and inspect the actual supplemental blocker summary/sample.
 - If blockers remain, inspect and prove each category; do not suppress unresolved first-party/runtime edges broadly.
 - If supplemental is clean, proceed immediately through closure mapper, Phase 7 second pass, combined Phase 1 gate, and Phase 7 reconciliation before creating the immutable full pinned-tree snapshot.
+
+
+## Completion 036 — Harden dynamic-loader evidence guards
+
+### Planned
+- Inspect the completed supplemental report from Completion 035, prove the four remaining blockers, and repair only verifier classification defects.
+
+### Completed
+- Run `36694930924` executed the supplemental analyzer successfully for the first time and produced: **1,086 dynamic imports, 16 repository-bounded dynamic imports, 14 runtime-resolved dynamic imports, 1,141 runtime filesystem signals, 1,836 DB references, 642 dashboard files, 162 tests, 8 packages, 4 blockers**.
+- Three blockers were previously proven repository runtime loaders but their regex guards were too brittle; replaced them with exact/literal checks for `aliasResolver`, and the two fixed doctor loaders.
+- The fourth blocker came from `config/quality/file-size-baseline.json`, which contains textual examples but is not executable source. The supplemental executable source set now explicitly excludes JSON while JSON remains available to the broader repository inventory.
+- Verifier commit: `995cdaec7ace522a7c85c16609649d2cf348f460`.
+- Pinned OmniRoute source remains untouched.
+
+### Not done
+- Need remote execution to confirm blocker count reaches zero and inspect any newly exposed evidence.
+- Closure mapper, Phase 7, combined gate, reconciliation, and immutable copy remain pending.
+
+### Gate
+- **Completion 036: PASS for verifier repair. Phase 1 overall remains OPEN until remote supplemental blockers = 0.**
+
+### Next-work prompt
+- Observe the Actions run for `995cdaec7ace522a7c85c16609649d2cf348f460`.
+- If supplemental blockers are zero, immediately execute/verify closure mapper and Phase 7, then the combined gate and Phase 7 reconciliation.
+- Only after those gates pass, perform the complete immutable pinned-tree copy and exact Git blob/tree integrity verification.
