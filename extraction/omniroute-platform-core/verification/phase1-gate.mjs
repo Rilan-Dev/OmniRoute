@@ -27,9 +27,9 @@ const mapped = readJson(mapPath);
 const phase7 = readJson(phase7Path);
 
 if (primary) {
-  if (primary.source_commit && primary.source_commit !== EXPECTED_COMMIT)
+  if (primary.source_commit !== EXPECTED_COMMIT)
     blockers.push({kind:"wrong-source-commit",actual:primary.source_commit,expected:EXPECTED_COMMIT});
-  if (primary.source_tree && primary.source_tree !== EXPECTED_TREE)
+  if (primary.source_tree !== EXPECTED_TREE)
     blockers.push({kind:"wrong-source-tree",actual:primary.source_tree,expected:EXPECTED_TREE});
   if (!Array.isArray(primary.unresolved))
     blockers.push({kind:"missing-primary-unresolved-list"});
@@ -38,6 +38,7 @@ if (primary) {
 }
 if (mapped) {
   if (mapped.pinned_source_commit !== EXPECTED_COMMIT) blockers.push({kind:"wrong-map-pin",actual:mapped.pinned_source_commit,expected:EXPECTED_COMMIT});
+  if (mapped.pinned_source_tree !== EXPECTED_TREE) blockers.push({kind:"wrong-map-tree",actual:mapped.pinned_source_tree,expected:EXPECTED_TREE});
   if (!Array.isArray(mapped.blockers)) blockers.push({kind:"missing-map-blockers-list"});
   else if (mapped.blockers.length) blockers.push({kind:"closure-map-blockers",count:mapped.blockers.length});
   for (const key of ["database","dashboard","tests","packages","host_boundaries"]) if (mapped[key] === undefined) blockers.push({kind:"missing-map-section",section:key});
@@ -48,6 +49,8 @@ if (phase7) {
   if (!Array.isArray(phase7.blockers)) blockers.push({kind:"missing-phase7-blockers-list"});
   else if (phase7.blockers.length) blockers.push({kind:"phase7-blockers",count:phase7.blockers.length});
   if (!phase7.categories || typeof phase7.categories !== "object") blockers.push({kind:"missing-phase7-categories"});
+  if (phase7.acceptance?.phase2_requires_phase1_gate_pass_first !== true) blockers.push({kind:"phase7-acceptance-not-confirmed"});
+  if (phase7.acceptance?.candidate_files_must_be_reviewed !== true) blockers.push({kind:"phase7-candidate-review-not-required"});
 }
 if (supplemental) {
   if (supplemental.pinned_source_required !== EXPECTED_COMMIT)
