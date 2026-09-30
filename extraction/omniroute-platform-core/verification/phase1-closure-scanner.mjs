@@ -88,13 +88,24 @@ function collectLiteralImports(text) {
     }
     return null;
   };
-  let i=0;
+  let i=0,lastSig="",lastWord="";
   while(i<n){
     const c=text[i];
-    if(c==="'"||c==="\""){const q=readQuoted(i);i=q?q.next:i+1;continue}
+    if(c==="'"||c==="""){const q=readQuoted(i);i=q?q.next:i+1;continue}
     if(c==="\x60"){let j=i+1;while(j<n){if(text[j]==="\\"){j+=2;continue}if(text[j]==="\x60"){j++;break}j++}i=j;continue}
     if(text.startsWith("//",i)){const e=text.indexOf("\n",i+2);i=e<0?n:e+1;continue}
     if(text.startsWith("/*",i)){const e=text.indexOf("*/",i+2);i=e<0?n:e+2;continue}
+    if(c==="/" && text[i+1]!=="/" && text[i+1]!=="*" && (["","(","[","{","=",":",",",";","!","?","&","|","+","-","*","%","^","~"].includes(lastSig)||["return","throw","case","yield","await","else","do"].includes(lastWord))){
+      let j=i+1,inClass=false;
+      while(j<n){
+        if(text[j]==="\\"){j+=2;continue}
+        if(text[j]==="[")inClass=true;
+        else if(text[j]==="]")inClass=false;
+        else if(text[j]==="/"&&!inClass){j++;while(j<n&&/[A-Za-z]/.test(text[j]))j++;break}
+        j++;
+      }
+      i=j;lastSig="/";lastWord="";continue;
+    }
     if(isIdStart(c)){
       let j=i+1;while(j<n&&isIdChar(text[j]))j++;
       const word=text.slice(i,j);
@@ -102,8 +113,9 @@ function collectLiteralImports(text) {
         const target=readImportTarget(j);
         if(target)out.push(target.value);
       }
-      i=j;continue;
+      i=j;lastSig="a";lastWord=word;continue;
     }
+    if(!/\s/.test(c))lastSig=c;
     i++;
   }
   return out;

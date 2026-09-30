@@ -184,3 +184,29 @@ Completion 018: verified overmatching defect corrected; machine execution OPEN. 
 
 ### Next-work prompt
 Continue from Completion 018. Observe the Actions run produced by this commit. Inspect the unresolved count and sample. If residuals are only generated-output references such as dist/*, classify them as generated runtime artifacts in the report rather than silently treating them as resolved source. If true first-party source imports remain, fix their exact resolution semantics. Once primary scanning is clean or its residuals are explicitly and machine-justifiably classified, allow all remaining collectors to run and inspect their blockers.
+
+
+## Completion 019 — handle regex literals in lexical import scanning
+
+### Planned
+Continue from Completion 018 using the actual 20-case residual sample. Correct the lexer state transition responsible for quote characters inside JavaScript regex literals being mistaken for string delimiters.
+
+### Completed
+- Observed workflow run 36679909799 and job 109772880664 for commit 07ba88d912091562d5390f3b736ba02a5de155ee.
+- The primary scanner reported 20 unresolved imports after the code-aware lexical correction.
+- The emitted sample was inspected: 17 entries originate from generated module snippets embedded in scripts/check/check-docs-counts-sync.mjs; two are generated dist/index.js references; one is scripts/dev/standalone-server-ws.mjs -> ./server.js; and one is src/lib/source.ts -> ../../.source/server.
+- Inspected the documentation checker and confirmed generated snippets occur alongside regex literals; the lightweight lexer did not skip regex literals, allowing quote characters inside regex bodies to desynchronize string handling and produce false import tokens.
+- Updated the lexical scanner to recognize and skip regex literals in expression-start contexts while retaining comment, string, template, static import/export, require, and dynamic import handling.
+- No pinned OmniRoute source files were modified.
+
+### Not done
+- The regex-aware lexer has not yet executed remotely.
+- Generated-output references have not yet been formalized as a separate evidence class in the report.
+- Supplemental analyzer, closure mapper, Phase 7 scanner, combined gate, and Phase 7 reconciliation remain blocked by primary collector failure.
+- Immutable source copying remains BLOCKED.
+
+### Gate
+Completion 019: lexer correction prepared and committed; machine execution OPEN. Phase 1 PASS OPEN. Phase 2 BLOCKED.
+
+### Next-work prompt
+Continue from Completion 019. Observe the Actions run and inspect every residual import. If the fixture-string false positives disappear, classify only the remaining generated/runtime references explicitly and preserve them as dependency evidence rather than hiding them. If any true first-party unresolved import remains, resolve it using exact source evidence. Only then allow the complete collector sequence and combined Phase 1 gate to run.
