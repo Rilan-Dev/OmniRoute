@@ -42,11 +42,15 @@ for (const file of source) {
   // Code-aware dynamic-loader scan. This prevents examples inside comments
   // (for example a documented require()) from becoming false blockers, and
   // balances nested parentheses in path.join()/path.resolve() expressions.
+  // Preserve source offsets while masking non-code regions. A one-character
+  // replacement shifts every later match and corrupts the extracted expression.
+  const blankPreservingOffsets = (match) =>
+    match.replace(/[^\n]/g, " ");
   const masked=t
-    .replace(/\/\*[\s\S]*?\*\//g," ")
-    .replace(/\/\/[^\n]*/g," ")
-    .replace(/"(?:\\.|[^"\\])*"/g," ")
-    .replace(/'(?:\\.|[^'\\])*'/g," ");
+    .replace(/\/\*[\s\S]*?\*\//g, blankPreservingOffsets)
+    .replace(/\/\/[^\n]*/g, blankPreservingOffsets)
+    .replace(/"(?:\\.|[^"\\])*"/g, blankPreservingOffsets)
+    .replace(/'(?:\\.|[^'\\])*'/g, blankPreservingOffsets);
   for (const re of [/\bimport\s*\(/g,/\brequire\s*\(/g]) {
     const kind=re.source.startsWith("\\bimport")?"import":"require";
     let m;
