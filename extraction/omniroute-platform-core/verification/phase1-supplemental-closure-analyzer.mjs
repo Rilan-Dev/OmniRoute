@@ -24,7 +24,7 @@ function walk(dir, out=[]) {
 }
 const all=walk(ROOT);
 const code=all.filter(p=>CODE_EXTS.has(path.extname(p)));
-const source=code.filter(p=>SOURCE_ROOTS.some(r=>rel(p)===r||rel(p).startsWith(r+"/")));
+const source=code.filter(p=>path.extname(p)!==".json" && SOURCE_ROOTS.some(r=>rel(p)===r||rel(p).startsWith(r+"/")));
 const read=p=>fs.readFileSync(p,"utf8");
 
 const blockers=[], dynamic=[], boundedDynamic=[], runtimeDynamic=[], runtimeFs=[], dbRefs=[], migrations=[], ui=[], tests=[], packages=[];
@@ -73,7 +73,7 @@ function knownRuntimeDynamicEvidence(file, expression) {
   if (file==="open-sse/services/compression/engines/llmlingua/onnxWorker.ts" && e==="specifier") {
     return {kind:"runtime-supplied-optional-module",evidence:"ONNX worker intentionally receives the module specifier at runtime and marks the import bundler-ignored."};
   }
-  if (file==="bin/aliasResolver.mjs" && e==="hookUrl.href" && /aliasResolverHook\\.mjs/.test(read(path.join(ROOT,"bin/aliasResolver.mjs")))) {
+  if (file==="bin/aliasResolver.mjs" && e==="hookUrl.href" && read(path.join(ROOT,"bin/aliasResolver.mjs")).includes("aliasResolverHook.mjs")) {
     const target=path.join(ROOT,"bin","aliasResolverHook.mjs");
     if (fs.existsSync(target)) return {kind:"repository-runtime-loader",evidence:"hookPath is a sibling repository file and the exact target exists."};
   }
@@ -81,11 +81,11 @@ function knownRuntimeDynamicEvidence(file, expression) {
     const target=path.join(ROOT,"open-sse","vendor","codex-chatgpt-web","adapters","chatgpt-web","mcp-server.ts");
     if (fs.existsSync(target)) return {kind:"repository-runtime-loader",evidence:"entry is selected only from the repository's documented source/dist candidates; source candidate exists."};
   }
-  if (file==="bin/cli/commands/doctor.mjs" && /^pathToFileURL\\(path\\.join\\(rootDir, "bin", "nodeRuntimeSupport\\.mjs"\\)\\)\\.href$/.test(e)) {
+  if (file==="bin/cli/commands/doctor.mjs" && e==='pathToFileURL(path.join(rootDir, "bin", "nodeRuntimeSupport.mjs")).href') {
     const target=path.join(ROOT,"bin","nodeRuntimeSupport.mjs");
     if (fs.existsSync(target)) return {kind:"repository-runtime-loader",evidence:"doctor resolves a fixed repository-relative runtime support module."};
   }
-  if (file==="bin/cli/commands/doctor.mjs" && /^pathToFileURL\\(path\\.join\\(rootDir, "scripts", "build", "native-binary-compat\\.mjs"\\)\\)\\.href$/.test(e)) {
+  if (file==="bin/cli/commands/doctor.mjs" && e==='pathToFileURL(path.join(rootDir, "scripts", "build", "native-binary-compat.mjs")).href') {
     const target=path.join(ROOT,"scripts","build","native-binary-compat.mjs");
     if (fs.existsSync(target)) return {kind:"repository-runtime-loader",evidence:"doctor resolves a fixed repository-relative native compatibility module."};
   }
