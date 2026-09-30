@@ -7,8 +7,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
+import { spawnSync } from "node:child_process";
 
 const ROOT = path.resolve(process.argv[2]||".");
+const git = args => { const r=spawnSync("git",args,{cwd:ROOT,encoding:"utf8"}); return r.status===0 ? r.stdout.trim() : null; };
+const source_commit=git(["rev-parse","HEAD"]), source_tree=git(["rev-parse","HEAD^{tree}"]);
 const SOURCE_ROOTS = ["src","open-sse","@omniroute","packages","bin","scripts","config"];
 const EXTS = [".ts",".tsx",".js",".jsx",".mjs",".cjs",".json",".d.ts"];
 const IGNORE = new Set(["node_modules",".git",".next","dist","build","coverage"]);
@@ -112,7 +115,7 @@ const packageFiles=files.filter(p=>path.basename(p)==="package.json").map(rel);
 const routes=files.filter(p=>rel(p).startsWith("src/app/api/")).map(rel);
 const dashboard=files.filter(p=>rel(p).startsWith("src/app/(dashboard)/dashboard/")).map(rel);
 const hash=s=>createHash("sha256").update(s).digest("hex");
-const result={schema_version:2,root:ROOT,source_roots:SOURCE_ROOTS,scanned_files:files.length,source_files:sourceFiles.length,package_manifests:packageFiles,api_route_files:routes.length,dashboard_files:dashboard.length,edges,unresolved,environment_references:[...envRefs].sort(),source_file_sha256:Object.fromEntries(sourceFiles.map(p=>[rel(p),hash(fs.readFileSync(p))]))};
+const result={schema_version:2,root:ROOT,source_commit,source_tree,source_roots:SOURCE_ROOTS,scanned_files:files.length,source_files:sourceFiles.length,package_manifests:packageFiles,api_route_files:routes.length,dashboard_files:dashboard.length,edges,unresolved,environment_references:[...envRefs].sort(),source_file_sha256:Object.fromEntries(sourceFiles.map(p=>[rel(p),hash(fs.readFileSync(p))]))};
 const out=path.resolve(process.argv[3]??"phase1-closure-report.json");
 fs.writeFileSync(out,JSON.stringify(result,null,2)+"\n");
 console.log(JSON.stringify({scanned_files:files.length,source_files:sourceFiles.length,edges:edges.length,unresolved:unresolved.length,generated_runtime_references:generatedRuntimeRefs.length,unresolved_sample:unresolved.slice(0,30),output:out},null,2));
