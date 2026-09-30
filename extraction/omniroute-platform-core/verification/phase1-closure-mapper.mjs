@@ -21,10 +21,6 @@ const workspacePackages=new Map();
 for(const pf of all.filter(f=>path.basename(f)==="package.json")){
   try { const pkg=JSON.parse(read(pf)); if(pkg?.name) workspacePackages.set(pkg.name,{root:norm(path.dirname(pf)),pkg}); } catch {}
 }
-const workspacePackages=new Map();
-for(const pf of all.filter(f=>path.basename(f)==="package.json")){
-  try { const pkg=JSON.parse(read(pf)); if(pkg?.name) workspacePackages.set(pkg.name,{root:norm(path.dirname(pf)),pkg}); } catch {}
-}
 function resolveInternal(from,spec){
   if(!spec.startsWith(".")&&!spec.startsWith("@/")&&!spec.startsWith("@omniroute/"))return null;
   let base;
