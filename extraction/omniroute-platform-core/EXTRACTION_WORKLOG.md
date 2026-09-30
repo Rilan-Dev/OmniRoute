@@ -319,3 +319,29 @@ Observe the Actions run from bcadfe1a2f572e034da3a3da351c0599c6e8428a. Inspect t
 - Observe the Actions run for `995cdaec7ace522a7c85c16609649d2cf348f460`.
 - If supplemental blockers are zero, immediately execute/verify closure mapper and Phase 7, then the combined gate and Phase 7 reconciliation.
 - Only after those gates pass, perform the complete immutable pinned-tree copy and exact Git blob/tree integrity verification.
+
+
+## Completion 037 — Expose concrete closure-mapper blockers
+
+### Planned
+- Inspect the first successful supplemental run from Completion 036 and diagnose the three closure-mapper blockers without suppressing evidence requirements.
+
+### Completed
+- Remote run `36695308489` proved the supplemental collector is now clean: 1,085 dynamic imports, 16 repository-bounded dynamic imports, 17 runtime-resolved dynamic imports, 1,141 runtime filesystem signals, 1,836 DB references, 642 dashboard files, 162 tests, 8 packages, 0 blockers.
+- The primary scanner is also clean on the exact pinned source: 12,562 scanned files, 5,902 source files, 22,320 edges, 0 unresolved imports.
+- Closure mapper failed closed with 3 blockers, but its previous console output exposed only the count. Updated the mapper to emit the complete concrete blocker records while preserving the JSON report and fail-closed exit behavior.
+- Tooling commit: 1d53a04c953ae7d0f2fa5b625ca9a774a6cbd06c.
+- No pinned OmniRoute source was modified.
+
+### Not done
+- The concrete three closure-mapper blockers have not yet been inspected from a new remote run.
+- Combined Phase 1 gate, Phase 7 reconciliation, immutable source copy, and exact Git-tree integrity verification remain pending.
+
+### Gate
+- Completion 037: supplemental closure PASS; closure-mapper diagnosis OPEN.
+- No blocker has been suppressed or reclassified without evidence.
+
+### Next-work prompt
+- Observe the Actions run triggered by 1d53a04c953ae7d0f2fa5b625ca9a774a6cbd06c and inspect the exact three blocker_details records.
+- Repair only proven mapper defects or add explicit evidence where the source truly requires a closure classification.
+- Once closure mapper passes, immediately execute Phase 7 second pass, combined Phase 1 gate, and Phase 7 reconciliation; only then create the complete immutable pinned-tree copy and run exact Git blob/tree integrity verification.
