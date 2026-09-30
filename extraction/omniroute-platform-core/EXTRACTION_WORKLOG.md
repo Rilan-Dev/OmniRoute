@@ -402,3 +402,27 @@ Observe the Actions run from bcadfe1a2f572e034da3a3da351c0599c6e8428a. Inspect t
 - Inspect the Actions run triggered by `d9c904dd01a89bdf77927dfc216b0e43cbc7308c`.
 - If the mapper exposes real blockers, inspect concrete samples and repair only proven verifier gaps or document genuine closure requirements.
 - If the mapper passes, immediately verify Phase 7 second pass, combined Phase 1 gate, and reconciliation before creating the complete immutable pinned-tree snapshot.
+
+## Completion 040 — Repair mapper build-path and SQL-string false positives
+
+### Planned
+Inspect the remote mapper blockers from run `36758409300` and correct only demonstrated verifier defects without weakening fail-closed closure evidence.
+
+### Completed
+- Confirmed the exact pinned OmniRoute source remained `453918ab64f147604576e72d33e2bbfc12b2d1af` / tree `76f3546d48a7293b199b7571d13808bebadb6d1f`.
+- Remote primary scanner and supplemental analyzer passed; the mapper exposed 232 unresolved first-party imports and 597 unknown DB tables.
+- The import samples proved a mapper traversal defect: the recursive walker excluded every directory named `build`, which incorrectly removed first-party `scripts/build/*` modules from the closure set. The mapper now keeps repository `build` directories in evidence while continuing to exclude generated `dist` trees.
+- The DB samples proved another mapper false-positive mechanism: SQL detection ran over JavaScript/TypeScript text after comment stripping, so ordinary prose/string literals were interpreted as SQL. DB evidence now extracts string/template contents first and applies SQL table-reference matching only to those SQL-bearing string values.
+- No pinned OmniRoute source was modified.
+- Tooling update committed in the mapper fix immediately before this worklog update.
+
+### Not done
+- Remote execution of the two mapper repairs is pending.
+- Phase 7 second pass, combined Phase 1 gate, Phase 7 reconciliation, immutable source copy, and exact Git blob/tree integrity verification remain pending.
+
+### Gate
+Completion 040: PASS for the two demonstrated mapper false-positive mechanisms. Phase 1 overall remains OPEN until remote mapper execution proves the repair.
+
+### Next-work prompt
+Observe the Actions run triggered by this mapper repair. Inspect the mapper output and every remaining blocker. Repair only evidence-proven verifier defects or document genuine closure requirements. If the mapper passes, immediately execute Phase 7 second pass, combined Phase 1 gate, and Phase 7 reconciliation. Only after those gates genuinely PASS create the complete immutable pinned-tree snapshot and run exact Git blob/tree integrity verification.
+
