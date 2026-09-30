@@ -270,3 +270,27 @@ Observe the Actions run from bcadfe1a2f572e034da3a3da351c0599c6e8428a. Inspect t
 - Observe the Actions run for `6e54247fc0e26ee01824c931182f0830c131c889` and inspect actual supplemental blocker output.
 - Do not classify the extraction clean until supplemental, closure mapper, Phase 7, combined gate, and reconciliation all execute successfully.
 - After gates pass, create the complete immutable pinned-tree snapshot and verify exact Git tree/blob identity.
+
+
+## Completion 035 — Initialize runtime dynamic evidence collection
+
+### Planned
+- Inspect the next remote Phase 1 failure after Completion 034 and repair only the verifier defect exposed by execution.
+
+### Completed
+- Run `36694604649` reached the exact pinned source `453918ab64f147604576e72d33e2bbfc12b2d1af` and again proved the primary closure scan clean: **5,902 source files / 22,320 edges / 0 unresolved imports**.
+- Supplemental analyzer advanced past the locale classification and failed at the runtime evidence collection branch because `runtimeDynamic` was referenced but never initialized.
+- Added `runtimeDynamic=[]` to the existing supplemental evidence collections. No OmniRoute pinned source was modified.
+- Verifier commit: `79d440b6f78892b65cd73152472804e21f75a33c`.
+
+### Not done
+- The repaired supplemental analyzer has not yet produced its blocker report remotely.
+- Closure mapper, Phase 7, combined gate, reconciliation, and immutable source copy remain pending.
+
+### Gate
+- **Completion 035: PASS for the narrowly-scoped verifier repair. Phase 1 overall remains OPEN.**
+
+### Next-work prompt
+- Observe the Actions run for `79d440b6f78892b65cd73152472804e21f75a33c` and inspect the actual supplemental blocker summary/sample.
+- If blockers remain, inspect and prove each category; do not suppress unresolved first-party/runtime edges broadly.
+- If supplemental is clean, proceed immediately through closure mapper, Phase 7 second pass, combined Phase 1 gate, and Phase 7 reconciliation before creating the immutable full pinned-tree snapshot.
