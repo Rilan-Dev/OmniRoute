@@ -171,3 +171,28 @@ Observe the Actions run from bcadfe1a2f572e034da3a3da351c0599c6e8428a. Inspect t
 - Inspect the complete blocker summary/sample after the corrected resolver executes.
 - Classify every remaining non-literal loader as deterministic repository-bounded, generated/native runtime, external/user/config supplied, or unresolved; do not broadly suppress runtime module IDs.
 - If supplemental closure reaches zero blockers, immediately run/verify closure mapper + Phase 7 + combined gate + Phase 7 reconciliation, then proceed to the immutable pinned source copy and exact Git-tree integrity verifier.
+
+
+## Completion 031 — Classify proven runtime dynamic loaders
+
+### Planned
+- Inspect the corrected remote run and classify the remaining dynamic-loader blockers without weakening closure proof.
+
+### Completed
+- Remote run `36693223467` on `9ad4606630c4fc205459351196dd0357559d54cb` reduced the supplemental blocker count from 34 to **18**; repository-bounded deterministic loaders are now recognized (16 bounded loaders).
+- The remaining 18 were all dynamic-import findings. Source inspection proved several are not missing first-party closure: TypeScript-only `import("node:sqlite" as never)`, repository locale JSON loaders, declared `sql.js` / `@huggingface/transformers` dependencies, optional cloakbrowser/LLMLingua runtime modules, repository runtime modules selected by fixed candidates, user-installed OmniRoute plugins, and validated runtime-installed SQLite/tray dependencies.
+- Added explicit evidence-backed classification into `runtime_resolved_dynamic_imports`; unresolved dynamic loaders remain blockers.
+- Commit: `1031c7b72f8f0c2bf1da60ecffcb37a12913440d`.
+
+### Not done
+- New classifier has not yet completed remote verification.
+- Phase 1 closure gates remain open; immutable copy/integrity work has not started.
+
+### Gate
+- **Completion 031: PASS for evidence-backed classification; Phase 1 overall remains OPEN pending remote execution.**
+- No generic suppression rule was introduced; each classification is tied to source/package evidence and, where first-party, target existence.
+
+### Next-work prompt
+- Observe the Actions run for `1031c7b72f8f0c2bf1da60ecffcb37a12913440d`.
+- If blockers remain, inspect every remaining expression individually and prove its repository/runtime provenance or leave it fail-closed.
+- If supplemental blockers reach zero, immediately execute closure mapper, Phase 7 second pass, combined Phase 1 gate, Phase 7 reconciliation, then immutable source copy and exact Git-tree integrity verification.
