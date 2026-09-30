@@ -10,7 +10,7 @@ import { createHash } from "node:crypto";
 
 const ROOT = path.resolve(process.argv[2]||".");
 const SOURCE_ROOTS = ["src","open-sse","@omniroute","packages","bin","scripts","config"];
-const EXTS = [".ts",".tsx",".js",".jsx",".mjs",".cjs",".json"];
+const EXTS = [".ts",".tsx",".js",".jsx",".mjs",".cjs",".json",".d.ts"];
 const IGNORE = new Set(["node_modules",".git",".next","dist","build","coverage"]);
 
 function walk(dir, out=[]) {
@@ -26,10 +26,30 @@ function walk(dir, out=[]) {
 const files=walk(ROOT).filter(p=>EXTS.includes(path.extname(p)));
 const rel=p=>path.relative(ROOT,p).replaceAll(path.sep,"/");
 const fileSet=new Set(files.map(rel));
+const packageNameToRoot=new Map();
+for (const p of files) {
+  if (path.basename(p)!=="package.json") continue;
+  try {
+    const pkg=JSON.parse(fs.readFileSync(p,"utf8"));
+    if (typeof pkg.name==="string" && pkg.name.startsWith("@")) packageNameToRoot.set(pkg.name,path.dirname(p));
+  } catch {}
+}
 const sourceFiles=files.filter(p=>SOURCE_ROOTS.some(r=>rel(p)===r||rel(p).startsWith(r+"/")));
 
 function resolveImport(from,spec) {
-  if (!spec.startsWith(".") && !spec.startsWith("@/")) return {kind:"external",spec};
+  if (!spec.startsWith(".") && !spec.startsWith("@/")) {
+    const pkgRoot=packageNameToRoot.get(spec) ?? [...packageNameToRoot.keys()].find(name=>spec.startsWith(name+"/"));
+    if (pkgRoot) {
+      const suffix=pkgRoot===spec ? "" : spec.slice(pkgRoot.length+1);
+      const basePath=path.join(ROOT,pkgRoot,suffix);
+      const candidates=[basePath];
+      for (const e of EXTS) candidates.push(basePath.endsWith(e)?basePath:basePath+e);
+      for (const e of EXTS) candidates.push(path.join(basePath,"index"+e));
+      for (const c of candidates) if (fs.existsSync(c) && fs.statSync(c).isFile()) return {kind:"first-party",path:rel(c)};
+      return {kind:"unresolved",spec};
+    }
+    return {kind:"external",spec};
+  }
   const basePath=spec.startsWith("@/") ? path.join(ROOT,"src",spec.slice(2)) : path.resolve(path.dirname(from),spec);
   const candidates=[basePath];
   for (const e of EXTS) candidates.push(basePath.endsWith(e)?basePath:basePath+e);
