@@ -5,125 +5,52 @@ import { spawnSync } from "node:child_process";
 
 const root=path.resolve(process.argv[2]||".");
 const out=path.resolve(process.argv[3]||"extraction/omniroute-platform-core/verification/phase1-closure-map.json");
-const PIN="453918ab64f147604576e72d33e2bbfc12b2d1af";
+const PIN="453918ab64f147604576e72d33e2bbfc12b2d1af", TREE="76f3546d48a7293b199b7571d13808bebadb6d1f";
 const blockers=[], warnings=[];
 const git=(args)=>{const x=spawnSync("git",args,{cwd:root,encoding:"utf8"});return x.status===0?x.stdout.trim():null};
-const actualCommit=git(["rev-parse","HEAD"]); const actualTree=git(["rev-parse","HEAD^{tree}"]);
+const actualCommit=git(["rev-parse","HEAD"]), actualTree=git(["rev-parse","HEAD^{tree}"]);
 if(actualCommit!==PIN) blockers.push({kind:"wrong-checkout-commit",actual:actualCommit,expected:PIN});
-if(actualTree && actualTree!=="76f3546d48a7293b199b7571d13808bebadb6d1f") blockers.push({kind:"wrong-checkout-tree",actual:actualTree,expected:"76f3546d48a7293b199b7571d13808bebadb6d1f"});
-const abs=p=>path.join(root,p);
-const exists=p=>fs.existsSync(abs(p));
-if(!exists("src")||!exists("open-sse")||!exists("package.json"))
-  blockers.push({kind:"incomplete-checkout",detail:"src/open-sse/package.json must exist"});
-
-function walk(rel){
-  const dir=abs(rel); if(!fs.existsSync(dir)) return [];
-  const out=[];
-  for(const ent of fs.readdirSync(dir,{withFileTypes:true})){
-    if(["node_modules",".git",".next","dist","build","coverage"].includes(ent.name)) continue;
-    const p=path.join(rel,ent.name);
-    if(ent.isDirectory()) out.push(...walk(p)); else out.push(p);
-  }
-  return out;
-}
-const all=walk(".");
-const textFiles=all.filter(p=>/\.(ts|tsx|js|jsx|mjs|cjs|json|sql|md)$/i.test(p));
-const rels=new Set(all.map(p=>p.replaceAll(path.sep,"/")));
-const read=p=>{try{return fs.readFileSync(abs(p),"utf8")}catch{return ""}};
-const norm=p=>p.replaceAll(path.sep,"/");
-function resolveInternal(from,spec){
-  if(!spec.startsWith(".")&&!spec.startsWith("@/")) return null;
-  let base=spec.startsWith("@/")?path.join("src",spec.slice(2)):path.join(path.dirname(from),spec);
-  base=norm(path.normalize(base));
-  const candidates=[base,base+".ts",base+".tsx",base+".js",base+".jsx",base+".mjs",base+".cjs",base+".json",
-    path.join(base,"index.ts"),path.join(base,"index.tsx"),path.join(base,"index.js"),path.join(base,"index.jsx")];
-  return candidates.map(norm).find(x=>rels.has(x))||null;
-}
+if(actualTree!==TREE) blockers.push({kind:"wrong-checkout-tree",actual:actualTree,expected:TREE});
+const abs=p=>path.join(root,p), exists=p=>fs.existsSync(abs(p));
+if(!exists("src")||!exists("open-sse")||!exists("package.json")) blockers.push({kind:"incomplete-checkout"});
+function walk(rel){const dir=abs(rel);if(!fs.existsSync(dir))return[];const out=[];for(const e of fs.readdirSync(dir,{withFileTypes:true})){if(["node_modules",".git",".next","dist","build","coverage"].includes(e.name))continue;const p=path.join(rel,e.name);e.isDirectory()?out.push(...walk(p)):out.push(p)}return out}
+const all=walk("."), rels=new Set(all.map(p=>p.replaceAll(path.sep,"/")));
+const textFiles=all.filter(p=>/\.(ts|tsx|js|jsx|mjs|cjs|json|sql|md|yaml|yml)$/i.test(p)), codeFiles=textFiles.filter(p=>/\.(ts|tsx|js|jsx|mjs|cjs)$/.test(p));
+const read=p=>{try{return fs.readFileSync(abs(p),"utf8")}catch{return""}}, norm=p=>p.replaceAll(path.sep,"/");
+function resolveInternal(from,spec){if(!spec.startsWith(".")&&!spec.startsWith("@/"))return null;let base=spec.startsWith("@/")?path.join("src",spec.slice(2)):path.join(path.dirname(from),spec);base=norm(path.normalize(base));const c=[base,base+".ts",base+".tsx",base+".js",base+".jsx",base+".mjs",base+".cjs",base+".json",path.join(base,"index.ts"),path.join(base,"index.tsx"),path.join(base,"index.js"),path.join(base,"index.jsx")];return c.map(norm).find(x=>rels.has(x))||null}
 const imports=[], unresolved=[];
-for(const f of textFiles.filter(x=>/\.(ts|tsx|js|jsx|mjs|cjs)$/.test(x))){
-  const s=read(f), re=/(?:import\s+(?:[^'"]+?\s+from\s+)?|export\s+(?:[^'"]+?\s+from\s+)?|require\s*\(|import\s*\()(['"])(.*?)\1/g;
-  let m; while((m=re.exec(s))){
-    const spec=m[2], target=resolveInternal(f,spec);
-    if(target) imports.push({from:f,spec,target,dynamic:/import\s*\(/.test(m[0])});
-    else if(spec.startsWith(".")||spec.startsWith("@/")) unresolved.push({from:f,spec});
-  }
-}
-const dynamic=[], runtimeFilesystem=[];
-for(const f of textFiles.filter(x=>/\.(ts|tsx|js|jsx|mjs|cjs)$/.test(x))){
-  const s=read(f);
-  if(/\b(?:import|require)\s*\(\s*[^'"]/.test(s)) dynamic.push({file:f,kind:"non-literal-import-or-require"});
-  const hits=s.match(/(?:readdir(?:Sync)?|readFile(?:Sync)?|glob(?:Sync)?|fast-glob|opendir(?:Sync)?|createRequire\s*\()/g);
-  if(hits) runtimeFilesystem.push({file:f,signals:[...new Set(hits)]});
-}
-if(dynamic.length) blockers.push({kind:"non-literal-dynamic-loaders",count:dynamic.length});
-if(unresolved.length) blockers.push({kind:"unresolved-first-party-imports",count:unresolved.length});
+for(const f of codeFiles){const s=read(f),re=/(?:import\s+(?:[^'"]+?\s+from\s+)?|export\s+(?:[^'"]+?\s+from\s+)?|require\s*\(|import\s*\()(['"])(.*?)\1/g;let m;while((m=re.exec(s))){const spec=m[2],target=resolveInternal(f,spec);target?imports.push({from:f,spec,target,dynamic:/import\s*\(/.test(m[0])}):((spec.startsWith(".")||spec.startsWith("@/"))&&unresolved.push({from:f,spec}))}}
+const dynamic=[],runtimeFilesystem=[];
+for(const f of codeFiles){const s=read(f);if(/\b(?:import|require)\s*\(\s*[^'"]/.test(s))dynamic.push({file:f,kind:"non-literal-import-or-require"});const h=s.match(/(?:readdir(?:Sync)?|readFile(?:Sync)?|glob(?:Sync)?|fast-glob|opendir(?:Sync)?|createRequire\s*\()/g);if(h)runtimeFilesystem.push({file:f,signals:[...new Set(h)]})}
+if(dynamic.length)blockers.push({kind:"non-literal-dynamic-loaders",count:dynamic.length});if(unresolved.length)blockers.push({kind:"unresolved-first-party-imports",count:unresolved.length});
+const env=[];for(const f of textFiles){const s=read(f),re=/process\.env\.([A-Z0-9_]+)/g;let m;while((m=re.exec(s)))env.push({file:f,name:m[1]})}
 
-const env=[];
-for(const f of textFiles){const s=read(f),re=/process\.env\.([A-Z0-9_]+)/g;let m;while((m=re.exec(s)))env.push({file:f,name:m[1]});}
+/* DB schema evidence: modules, columns, indexes, foreign keys and create/alter/drop history. */
+const dbModules=[],migrations=[],migrationOps=[],schema=new Map(),migrationFiles=all.filter(f=>/(^|\/)migrations?(\/|$)/i.test(f)&&/\.(sql|ts|tsx|js|mjs|cjs)$/.test(f));
+const add=(table,op,file,detail)=>{if(!schema.has(table))schema.set(table,[]);schema.get(table).push({op,file,...detail});migrationOps.push({table,op,file,...detail})};
+for(const f of migrationFiles){const s=read(f);migrations.push(f);
+ for(const m of s.matchAll(/\bCREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?["']?([A-Za-z0-9_.$-]+)["']?\s*\(([^;]*?)\)\s*;?/gis)){const body=m[2];add(m[1],"create-table",f,{columns:[...body.matchAll(/(?:^|,)\s*["']?([A-Za-z_][A-Za-z0-9_]*)["']?\s+([A-Za-z][A-Za-z0-9_() ,.-]*)/g)].map(x=>x[1]).filter(x=>!["PRIMARY","UNIQUE","CONSTRAINT","FOREIGN","CHECK"].includes(x.toUpperCase())),indexes:[...body.matchAll(/(?:UNIQUE\s+)?(?:INDEX|KEY)\s+["']?([A-Za-z0-9_-]+)/gi)].map(x=>x[1]),foreign_keys:[...body.matchAll(/FOREIGN\s+KEY\s*\(([^)]+)\)\s+REFERENCES\s+["']?([A-Za-z0-9_.$-]+)["']?\s*\(([^)]+)\)/gi)].map(x=>({columns:x[1].split(",").map(v=>v.trim()),references_table:x[2],references_columns:x[3].split(",").map(v=>v.trim())}))})}
+ for(const m of s.matchAll(/\bALTER\s+TABLE\s+["']?([A-Za-z0-9_.$-]+)["']?\s+([\s\S]*?);/gi)){const body=m[2],columns=[...body.matchAll(/\b(?:ADD|ALTER)\s+(?:COLUMN\s+)?["']?([A-Za-z_][A-Za-z0-9_]*)["']?/gi)].map(x=>x[1]),drops=[...body.matchAll(/\bDROP\s+(?:COLUMN|CONSTRAINT|INDEX)\s+["']?([A-Za-z0-9_-]+)/gi)].map(x=>x[1]),fk=[...body.matchAll(/FOREIGN\s+KEY\s*\(([^)]+)\)\s+REFERENCES\s+["']?([A-Za-z0-9_.$-]+)["']?\s*\(([^)]+)\)/gi)].map(x=>({columns:x[1].split(",").map(v=>v.trim()),references_table:x[2],references_columns:x[3].split(",").map(v=>v.trim())}));add(m[1],"alter-table",f,{columns,drop:drops,foreign_keys:fk})}
+ for(const m of s.matchAll(/\b(?:CREATE\s+UNIQUE\s+)?INDEX\s+["']?([A-Za-z0-9_-]+)["']?\s+ON\s+["']?([A-Za-z0-9_.$-]+)["']?\s*\(([^)]+)\)/gi))add(m[2],"create-index",f,{index:m[1],columns:m[3].split(",").map(v=>v.trim())});
+ for(const m of s.matchAll(/\bDROP\s+(?:TABLE|INDEX)\s+["']?([A-Za-z0-9_.$-]+)["']?/gi))add(m[1],"drop-object",f,{})}
+for(const f of textFiles.filter(f=>f.startsWith("src/lib/db/"))){const s=read(f),tables=new Set(),columns=new Map();for(const m of s.matchAll(/\b(?:FROM|JOIN|UPDATE|INTO|DELETE\s+FROM|CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|ALTER\s+TABLE)\s+["']?([A-Za-z0-9_.$-]+)/gi))tables.add(m[1]);for(const m of s.matchAll(/\b([A-Za-z_][A-Za-z0-9_]*)\s*\.\s*([A-Za-z_][A-Za-z0-9_]*)\b/g)){if(!columns.has(m[1]))columns.set(m[1],new Set());columns.get(m[1]).add(m[2])}if(tables.size)dbModules.push({module:f,tables:[...tables],qualified_column_usage:Object.fromEntries([...columns].map(([k,v])=>[k,[...v]]))})}
+const unknownDb=dbModules.flatMap(x=>x.tables.filter(t=>!schema.has(t)).map(t=>({module:x.module,table:t})));if(unknownDb.length)blockers.push({kind:"db-table-not-found-in-migrations",count:unknownDb.length});
 
-const dbModules=[], migrations=[], schemaTables=new Map();
-for(const f of textFiles){
-  const s=read(f);
-  if(f.startsWith("src/lib/db/")){
-    const tables=new Set();
-    for(const m of s.matchAll(/\b(?:FROM|JOIN|UPDATE|INTO|DELETE\s+FROM|CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|ALTER\s+TABLE)\s+["']?([A-Za-z0-9_.$-]+)/gi)) tables.add(m[1]);
-    if(tables.size) dbModules.push({module:f,tables:[...tables]});
-  }
-  if(/(^|\/)migrations?(\/|$)/i.test(f)) migrations.push(f);
-}
-for(const f of migrations) for(const m of read(f).matchAll(/\b(?:CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|ALTER\s+TABLE)\s+["']?([A-Za-z0-9_.$-]+)/gi)){
-  const t=m[1];
-  if(!schemaTables.has(t)) schemaTables.set(t,[]);
-  schemaTables.get(t).push(f);
-}
-const unknownDb=dbModules.flatMap(x=>x.tables.filter(t=>!schemaTables.has(t)).map(t=>({module:x.module,table:t})));
-if(unknownDb.length) blockers.push({kind:"db-table-not-found-in-migrations",count:unknownDb.length});
-if(!migrations.length) warnings.push({kind:"no-migration-directory-detected"});
+/* Recursive dashboard dependency/state evidence. */
+const dashboard=all.filter(f=>f.startsWith("src/app/(dashboard)/dashboard/")&&/\.(tsx|ts|jsx|js)$/.test(f)),importMap=new Map();for(const i of imports){if(!importMap.has(i.from))importMap.set(i.from,[]);importMap.get(i.from).push(i.target)}
+const stateRules={loading:/\b(?:loading|isLoading|pending|skeleton|spinner)\b/i,empty:/\b(?:empty|no\s+(?:data|results|items)|nothing\s+found)\b/i,error:/\b(?:error|failed|failure|retry)\b/i,disabled:/\bdisabled\b/i,success:/\b(?:success|succeeded|completed|saved|created|updated)\b/i,permission:/\b(?:permission|forbidden|unauthorized|can[A-Z]|allowed|role|access)\b/i,destructive:/\b(?:delete|remove|destroy|revoke|reset|discard|danger|destructive|confirm)\b/i};
+function kind(p){const b=path.basename(p);return /\.(tsx|jsx)$/.test(p)?"component":/(?:^|\/)(?:use[A-Z]|hooks?)/.test(p)?"hook":/(?:store|stores|zustand|redux|state)/i.test(p)?"store":/(?:dialog|modal|drawer|sheet)/i.test(p)?"dialog":/(?:layout|page)/i.test(b)?"route-support":"module"}
+const dashboardMap=dashboard.map(route=>{const seen=new Set(),q=[route],c=[];while(q.length){const f=q.shift();if(!f||seen.has(f))continue;seen.add(f);const s=read(f);c.push({file:f,kind:kind(f),states:Object.keys(stateRules).filter(k=>stateRules[k].test(s))});for(const t of importMap.get(f)||[])q.push(t)}return{routeFile:route,dependency_closure:c.map(x=>x.file),dependency_kinds:{components:c.filter(x=>x.kind==="component").map(x=>x.file),hooks:c.filter(x=>x.kind==="hook").map(x=>x.file),stores:c.filter(x=>x.kind==="store").map(x=>x.file),dialogs:c.filter(x=>x.kind==="dialog").map(x=>x.file),route_support:c.filter(x=>x.kind==="route-support").map(x=>x.file)},states:[...new Set(c.flatMap(x=>x.states))]}});
 
-const dashboard=all.filter(f=>f.startsWith("src/app/(dashboard)/dashboard/")&&/\.(tsx|ts|jsx|js)$/.test(f));
-const dashboardMap=dashboard.map(f=>{
-  const s=read(f);
-  const direct=imports.filter(x=>x.from===f).map(x=>x.target).filter(Boolean);
-  const components=direct.filter(x=>/\.(?:tsx|jsx)$/.test(x));
-  const hooks=direct.filter(x=>/(?:^|\/)(?:use[A-Z]|hooks?)(?:[^/]*)(?:\.ts|\.tsx|\.js|\.jsx)$/.test(x));
-  const stores=direct.filter(x=>/(?:store|stores|state|zustand|redux)/i.test(x));
-  const dialogs=direct.filter(x=>/(?:dialog|modal|drawer|sheet)/i.test(x));
-  const stateRules={
-    loading:/\b(?:loading|isLoading|pending|skeleton)\b/i,
-    empty:/\b(?:empty|no\s+(?:data|results|items)|nothing\s+found)\b/i,
-    error:/\b(?:error|failed|failure)\b/i,
-    disabled:/\bdisabled\b/i,
-    success:/\b(?:success|succeeded|completed)\b/i,
-    permission:/\b(?:permission|forbidden|unauthorized|can[A-Z]|allowed)\b/i
-  };
-  return {routeFile:f,imports:direct,components,hooks,stores,dialogs,states:Object.keys(stateRules).filter(k=>stateRules[k].test(s))};
-});
+/* Tests and package/workspace/lockfile evidence. */
+const tests=all.filter(f=>/(^|\/)(tests?|__tests__)(\/|$)|\.(test|spec)\.(ts|tsx|js|jsx|mjs|cjs)$/.test(f)).map(f=>({file:f,imports:imports.filter(x=>x.from===f).map(x=>x.target).filter(Boolean)}));
+const packageFiles=all.filter(f=>path.basename(f)==="package.json"),packages=packageFiles.map(f=>{let j={};try{j=JSON.parse(read(f))}catch{blockers.push({kind:"invalid-package-json",file:f})}return{file:f,name:j.name||null,private:!!j.private,workspaces:j.workspaces||null,dependencies:j.dependencies||{},devDependencies:j.devDependencies||{},peerDependencies:j.peerDependencies||{},optionalDependencies:j.optionalDependencies||{}}}),packageNames=new Map(packages.filter(x=>x.name).map(x=>[x.name,x.file])),workspaceRefs=[];
+for(const p of packages)for(const sec of["dependencies","devDependencies","peerDependencies","optionalDependencies"])for(const[name,version]of Object.entries(p[sec]||{}))if(String(version).startsWith("workspace:"))workspaceRefs.push({package:p.file,name,version,owned_workspace:packageNames.get(name)||null,ownership_resolved:packageNames.has(name)});
+if(workspaceRefs.some(x=>!x.ownership_resolved))blockers.push({kind:"unresolved-workspace-package",count:workspaceRefs.filter(x=>!x.ownership_resolved).length});
+const lockfiles=all.filter(f=>/^(package-lock\.json|pnpm-lock\.yaml|yarn\.lock|bun\.lockb)$/.test(path.basename(f))),lockfileEvidence=lockfiles.map(f=>{const s=read(f),kind=path.basename(f),entries=[];if(kind==="package-lock.json"){try{const j=JSON.parse(s);for(const[k,v]of Object.entries(j.packages||{}))entries.push({path:k,name:v.name||null,version:v.version||null,dependencies:Object.keys(v.dependencies||{})})}catch{blockers.push({kind:"invalid-lockfile",file:f})}}else for(const line of s.split(/\r?\n/)){const m=line.match(/^\s{0,8}([^:#@\s][^:]*)@[^:]+:/);if(m)entries.push({specifier:m[1].trim()})}return{file:f,kind,entries:entries.length,sample:entries.slice(0,20)}});if(!lockfiles.length)blockers.push({kind:"missing-lockfile",detail:"No supported package lockfile found"});
 
-const tests=all.filter(f=>/(^|\/)(tests?|__tests__)(\/|$)|\.(test|spec)\.(ts|tsx|js|jsx|mjs|cjs)$/.test(f))
-  .map(f=>({file:f,imports:imports.filter(x=>x.from===f).map(x=>x.target).filter(Boolean)}));
+/* Host-owned boundary signals. */
+const patterns=[["network",/\b(?:https?|wss?):\/\//i],["subprocess",/(child_process|execFile|spawnSync|execSync|fork\s*\()/i],["native",/(node-gyp|better-sqlite3|\.node\b|TPROXY)/i],["filesystem",/(?:readFile|writeFile|readdir|mkdir|rm|cp|rename)(?:Sync)?\s*\(/i],["secrets",/(API_KEY|SECRET|TOKEN|PASSWORD|PRIVATE_KEY|CLIENT_SECRET|ENCRYPTION_KEY)/i]],hostBoundaries=[];for(const f of textFiles){const s=read(f),kinds=patterns.filter(x=>x[1].test(s)).map(x=>x[0]);if(kinds.length)hostBoundaries.push({file:f,kinds:[...new Set(kinds)]})}
 
-const packageFiles=all.filter(f=>path.basename(f)==="package.json");
-const packages=packageFiles.map(f=>{
-  let j={};try{j=JSON.parse(read(f))}catch{blockers.push({kind:"invalid-package-json",file:f})}
-  return {file:f,name:j.name||null,workspaces:j.workspaces||null,dependencies:j.dependencies||{},devDependencies:j.devDependencies||{},peerDependencies:j.peerDependencies||{},optionalDependencies:j.optionalDependencies||{}};
-});
-const workspaceRefs=[];
-for(const p of packages) for(const sec of ["dependencies","devDependencies","peerDependencies","optionalDependencies"])
-  for(const [name,version] of Object.entries(p[sec]||{}))
-    if(String(version).startsWith("workspace:")) workspaceRefs.push({package:p.file,name,version});
-const lockfiles=all.filter(f=>/^(package-lock\.json|pnpm-lock\.yaml|yarn\.lock|bun\.lockb)$/.test(path.basename(f)));
-
-const boundaryPatterns=[
-  ["network",/https?:\/\//i],["subprocess",/(child_process|execFile|spawnSync|execSync)/i],
-  ["native",/(node-gyp|better-sqlite3|\.node\b|TPROXY)/i],["secrets",/(API_KEY|SECRET|TOKEN|PASSWORD|PRIVATE_KEY|CLIENT_SECRET)/i]
-];
-const hostBoundaries=[];
-for(const f of textFiles){const s=read(f),kinds=boundaryPatterns.filter(x=>x[1].test(s)).map(x=>x[0]);if(kinds.length)hostBoundaries.push({file:f,kinds:[...new Set(kinds)]});}
-
-const report={schema_version:2,pinned_source_commit:PIN,actual_checkout:{commit:actualCommit,tree:actualTree},generated_at:"deterministic-run-required",
-blockers,warnings,first_party_imports:{count:imports.length,unresolved},dynamic_loaders:dynamic,runtime_filesystem:runtimeFilesystem,
-environment_references:env,database:{modules:dbModules,migrations,table_migration_history:Object.fromEntries(schemaTables),unknown_tables:unknownDb},dashboard:dashboardMap,tests,
-packages:{manifests:packages,workspace_references:workspaceRefs,lockfiles},host_boundaries:hostBoundaries};
-fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify(report,null,2)+"\n");
-console.log(JSON.stringify({pass:blockers.length===0,blockers:blockers.length,output:out},null,2));
-if(blockers.length)process.exitCode=2;
+const report={schema_version:3,pinned_source_commit:PIN,pinned_source_tree:TREE,actual_checkout:{commit:actualCommit,tree:actualTree},generated_at:"deterministic-run-required",blockers,warnings,first_party_imports:{count:imports.length,unresolved},dynamic_loaders:dynamic,runtime_filesystem:runtimeFilesystem,environment_references:env,database:{modules:dbModules,migrations,table_migration_history:Object.fromEntries(schema),migration_operations:migrationOps,unknown_tables:unknownDb},dashboard:dashboardMap,tests,packages:{manifests:packages,workspace_references:workspaceRefs,lockfiles:lockfileEvidence},host_boundaries:hostBoundaries};
+fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify(report,null,2)+"\n");console.log(JSON.stringify({pass:blockers.length===0,blockers:blockers.length,output:out},null,2));if(blockers.length)process.exitCode=2;
