@@ -106,3 +106,37 @@
 
 ## Next-work prompt
 > Continue OmniRoute extraction from current branch. First obtain a complete local checkout pinned exactly to `453918ab64f147604576e72d33e2bbfc12b2d1af`. Run the primary closure scanner, supplemental analyzer, and `phase1-closure-mapper.mjs`, preserving all raw JSON reports. Extend the gate to require the closure-map report and zero mapper blockers. Resolve every blocker deterministically: complete first-party import/re-export/alias/workspace closure; resolve every non-literal dynamic loader and runtime filesystem discovery or record an explicit immutable allowlist; map every DB module to exact tables, columns, indexes/foreign keys and migration create/alter history; map every dashboard route to page/layout/component/hook/store/dialog and loading/empty/error/disabled/success/permission/destructive states; map tests to capabilities; recompute package and lockfile dependency closure; classify network, subprocess, native, filesystem and secret boundaries. Any unresolved item is a blocker. Do not begin Phase 2 exact source copying until the combined gate is genuinely PASS. Update `CAPABILITY_CLOSURE.md`, `capability-closure.json`, `EXTRACTION_WORKLOG.md`, gate documentation and raw reports with actual evidence, then commit atomically.
+
+## Completion 007 — hardened closure evidence
+
+### Exact prompt used
+> Continue OmniRoute extraction from the current extraction branch. Keep immutable source copying BLOCKED. Harden the deterministic closure mapper so it verifies the checkout itself is exactly the pinned source commit/tree, records DB migration history, exposes dashboard component/hook/store/dialog evidence, and remains fail-closed. Fix any implementation defect discovered during review, commit the correction atomically, and preserve the extraction worklog with the next prompt.
+
+### Planned
+- Prevent a scanner from accidentally analyzing the wrong checkout.
+- Strengthen DB and dashboard evidence before the combined Phase 1 gate can pass.
+
+### Completed
+- Closure mapper now verifies `HEAD` and `HEAD^{tree}` against the pinned OmniRoute source.
+- DB migration evidence now records table-to-migration history rather than only table existence.
+- Dashboard evidence now separates directly imported components, hooks, stores/state modules, dialogs/modals/drawers/sheets, and detected UI states.
+- Corrected the migration-history implementation defect immediately after review.
+- No immutable OmniRoute source was copied or modified.
+
+### Not done
+- The mapper has still not been executed against a complete local checkout in this environment.
+- Exact DB column/index/foreign-key history remains to be mechanically expanded.
+- Dashboard state detection remains evidence-level and requires stronger exact route/component/state verification.
+- Package lockfile transitive dependency recomputation remains pending.
+- Phase 2 exact source copying remains BLOCKED.
+
+### Evidence
+- Hardened mapper commit: `197dc3f26947bb7da4757c3a5e49035c2026c00d`.
+- Migration-history correction commit: `16e959556fca4343bb8e0804004187b033dd1201`.
+- Current pinned source remains `453918ab64f147604576e72d33e2bbfc12b2d1af` with tree `76f3546d48a7293b199b7571d13808bebadb6d1f`.
+
+### Gate
+**Completion 007: tooling correction PASS. Machine-complete closure OPEN. Source extraction BLOCKED.**
+
+## Next-work prompt
+> Continue OmniRoute extraction from current branch HEAD `16e959556fca4343bb8e0804004187b033dd1201`. First obtain a complete local checkout at source commit `453918ab64f147604576e72d33e2bbfc12b2d1af` and execute the primary scanner, supplemental analyzer, closure mapper, and combined gate. Preserve raw JSON reports. If execution is available, resolve every blocker without guessing. Extend the deterministic DB mapper to exact column usage, indexes, foreign keys and migration create/alter/drop history; extend dashboard mapping to route/page/layout/component/hook/store/dialog dependency closure and explicit loading/empty/error/disabled/success/permission/destructive states; recompute package and lockfile dependency closure and workspace ownership; resolve every runtime filesystem/dynamic loader; map tests to capabilities; and classify all host-owned network, subprocess, native, filesystem and secret boundaries. Any unresolved item remains a blocker. If execution is unavailable, do not claim PASS; continue strengthening deterministic tooling only. Do not begin Phase 2 byte-for-byte source copying until the combined gate is genuinely PASS. Update CAPABILITY_CLOSURE.md, capability-closure.json and EXTRACTION_WORKLOG.md with actual evidence and commit atomically.
