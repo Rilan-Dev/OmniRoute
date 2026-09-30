@@ -246,3 +246,27 @@ Observe the Actions run from bcadfe1a2f572e034da3a3da351c0599c6e8428a. Inspect t
 - Observe the Actions run for `cd2875a0d9995e3da153eb937f5e7ce9473f1d8f`.
 - Require actual supplemental execution and inspect its blocker summary/sample. Continue repairing only execution defects or individually proven closure edges; never infer PASS from the primary scanner alone.
 - Once all gates execute and pass, proceed directly to the immutable full pinned-tree copy and exact Git-tree integrity verification.
+
+
+## Completion 034 — Replace invalid locale regex classification with literal guards
+
+### Planned
+- Inspect run `36694346004` and remove the remaining execution-time regex escaping defect without modifying pinned OmniRoute source.
+
+### Completed
+- Run `36694346004` again reached the exact pinned commit/tree and produced the clean primary scan: **5,902 source files / 22,320 edges / 0 unresolved imports**.
+- Supplemental execution still failed on the locale dynamic-loader regex. Inspection showed the previous patch did not alter the malformed escaped backtick representation actually stored in the verifier.
+- Replaced those three locale classification regexes with direct string-prefix/suffix and literal equality guards. This is narrower and avoids regex parser ambiguity while preserving the intended evidence classification.
+- Verifier commit: `6e54247fc0e26ee01824c931182f0830c131c889`.
+
+### Not done
+- Repaired supplemental execution has not yet completed remotely.
+- All downstream gates and immutable copy remain pending.
+
+### Gate
+- **Completion 034: PASS for verifier repair. Phase 1 overall remains OPEN.**
+
+### Next-work prompt
+- Observe the Actions run for `6e54247fc0e26ee01824c931182f0830c131c889` and inspect actual supplemental blocker output.
+- Do not classify the extraction clean until supplemental, closure mapper, Phase 7, combined gate, and reconciliation all execute successfully.
+- After gates pass, create the complete immutable pinned-tree snapshot and verify exact Git tree/blob identity.
