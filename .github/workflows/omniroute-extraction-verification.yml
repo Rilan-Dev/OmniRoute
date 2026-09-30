@@ -2,6 +2,9 @@ name: OmniRoute Extraction Verification
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - extraction/omniroute-platform-core
 
 jobs:
   verify-extraction-source:
