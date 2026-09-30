@@ -158,3 +158,29 @@ Completion 017: verified resolver correction prepared and committed; machine exe
 
 ### Next-work prompt
 Continue from Completion 017. Observe the Actions run produced by this commit. If unresolved imports remain, inspect the new sample and classify each distinct pattern before changing the resolver. If the primary scanner reaches zero unresolved imports, allow the remaining collectors to execute and inspect their first concrete failures. Then run the combined Phase 1 gate; do not claim PASS until all required evidence is present and pinned.
+
+
+## Completion 018 — replace regex import scanning with code-aware lexical scanning
+
+### Planned
+Continue from Completion 017 using the actual residual sample. Remove only the verified overmatching source of false unresolved edges while preserving literal static/dynamic/require import discovery and fail-closed behavior.
+
+### Completed
+- Observed workflow run 36679603756, job 109771955021, for commit 4c8784680fdf1214f5948e51169983930d0c7ceb.
+- The runtime-extension correction reduced unresolved first-party imports from 195 to 38.
+- The concrete 38-case sample was inspected. It includes imports inside comments/documentation examples, test fixture/template strings, and generated dist references; examples include open-sse/services/sessionPool/index.ts documentation snippets and scripts/check/check-docs-counts-sync.mjs fixture strings.
+- Confirmed the existing regex scans raw file text and therefore cannot distinguish executable import syntax from comments/strings.
+- Replaced the regex collector with a code-aware lexical scanner that skips comments and ordinary/template strings while recognizing literal import, export ... from, require(...), and dynamic import(...) targets. The existing resolver and fail-closed unresolved handling remain unchanged.
+- No pinned OmniRoute source files were modified.
+
+### Not done
+- The code-aware collector has not yet executed remotely.
+- The remaining generated dist references and any true unresolved imports will be classified only from the next machine run.
+- Supplemental analyzer, closure mapper, Phase 7 scanner, combined gate, and Phase 7 reconciliation remain blocked by primary collector failure.
+- Immutable source copying remains BLOCKED.
+
+### Gate
+Completion 018: verified overmatching defect corrected; machine execution OPEN. Phase 1 PASS OPEN. Phase 2 BLOCKED.
+
+### Next-work prompt
+Continue from Completion 018. Observe the Actions run produced by this commit. Inspect the unresolved count and sample. If residuals are only generated-output references such as dist/*, classify them as generated runtime artifacts in the report rather than silently treating them as resolved source. If true first-party source imports remain, fix their exact resolution semantics. Once primary scanning is clean or its residuals are explicitly and machine-justifiably classified, allow all remaining collectors to run and inspect their blockers.

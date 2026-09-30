@@ -43,12 +43,76 @@ function resolveImport(from,spec) {
   return {kind:"unresolved",spec};
 }
 
+function collectLiteralImports(text) {
+  const out=[];
+  const n=text.length;
+  const isIdStart=c=>/[A-Za-z_$]/.test(c||"");
+  const isIdChar=c=>/[A-Za-z0-9_$]/.test(c||"");
+  const skipSpaceAndComments=i=>{
+    while(i<n){
+      while(i<n && /\s/.test(text[i])) i++;
+      if(text.startsWith("//",i)){const e=text.indexOf("\n",i+2);i=e<0?n:e+1;continue}
+      if(text.startsWith("/*",i)){const e=text.indexOf("*/",i+2);i=e<0?n:e+2;continue}
+      break;
+    }
+    return i;
+  };
+  const readQuoted=i=>{
+    const q=text[i]; if(q!=="'"&&q!=="\"") return null;
+    let s="",j=i+1;
+    while(j<n){
+      const c=text[j];
+      if(c==="\\"){if(j+1<n){s+=text[j+1];j+=2;continue}j++;continue}
+      if(c===q)return {value:s,next:j+1};
+      s+=c;j++;
+    }
+    return null;
+  };
+  const readImportTarget=i=>{
+    i=skipSpaceAndComments(i);
+    if(text[i]==="("){i=skipSpaceAndComments(i+1);const q=readQuoted(i);return q?{value:q.value,next:q.next}:null}
+    const q=readQuoted(i); if(q)return q;
+    let j=i,depth=0;
+    while(j<n){
+      if(text.startsWith("//",j)){const e=text.indexOf("\n",j+2);j=e<0?n:e+1;continue}
+      if(text.startsWith("/*",j)){const e=text.indexOf("*/",j+2);j=e<0?n:e+2;continue}
+      const ch=text[j];
+      if(ch==="'"||ch==="\""){const qv=readQuoted(j);if(!qv)return null;j=qv.next;continue}
+      if(ch==="("||ch==="["||ch==="{")depth++;
+      else if(ch===")"||ch==="]"||ch==="}")depth=Math.max(0,depth-1);
+      if(depth===0 && text.slice(j,j+4)==="from" && !isIdChar(text[j-1])&&!isIdChar(text[j+4])){
+        const qv=readQuoted(skipSpaceAndComments(j+4));return qv||null;
+      }
+      if(depth===0 && ch===";")break;
+      j++;
+    }
+    return null;
+  };
+  let i=0;
+  while(i<n){
+    const c=text[i];
+    if(c==="'"||c==="\""){const q=readQuoted(i);i=q?q.next:i+1;continue}
+    if(c==="\x60"){let j=i+1;while(j<n){if(text[j]==="\\"){j+=2;continue}if(text[j]==="\x60"){j++;break}j++}i=j;continue}
+    if(text.startsWith("//",i)){const e=text.indexOf("\n",i+2);i=e<0?n:e+1;continue}
+    if(text.startsWith("/*",i)){const e=text.indexOf("*/",i+2);i=e<0?n:e+2;continue}
+    if(isIdStart(c)){
+      let j=i+1;while(j<n&&isIdChar(text[j]))j++;
+      const word=text.slice(i,j);
+      if(word==="import"||word==="export"||word==="require"){
+        const target=readImportTarget(j);
+        if(target)out.push(target.value);
+      }
+      i=j;continue;
+    }
+    i++;
+  }
+  return out;
+}
 const edges=[], unresolved=[];
-const importRE=/(?:import\s+(?:[^'"]+?\s+from\s+)?|export\s+[^'"]*?\s+from\s+|require\s*\(\s*|import\s*\(\s*)(['"])([^'"]+)\1/g;
 for (const file of sourceFiles) {
   const text=fs.readFileSync(file,"utf8");
-  for (const m of text.matchAll(importRE)) {
-    const spec=m[2], r=resolveImport(file,spec);
+  for (const spec of collectLiteralImports(text)) {
+    const r=resolveImport(file,spec);
     edges.push({from:rel(file),to:r.path??r.spec,kind:r.kind});
     if (r.kind==="unresolved") unresolved.push({from:rel(file),spec});
   }
