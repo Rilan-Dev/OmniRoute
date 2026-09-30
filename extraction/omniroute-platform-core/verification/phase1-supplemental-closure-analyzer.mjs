@@ -49,6 +49,58 @@ function repositoryBoundedTarget(expression) {
   return fs.existsSync(target) ? target : null;
 }
 
+function knownRuntimeDynamicEvidence(file, expression) {
+  const e=expression.replace(/^\\s*\\/\\*[^]*?\\*\\/\\s*/,"").trim();
+  if (/^["'](?:node:sqlite|bun:sqlite)["']\\s+as\\s+never$/.test(e)) {
+    return {kind:"type-only-import-expression",evidence:"TypeScript import type query; no runtime module edge."};
+  }
+  if ((file==="src/app/global-error.tsx" && /^\`\.\\.\\/i18n\\/messages\\/\\$\\{[^}]+\\}\\.json\`$/.test(e)) ||
+      (file==="src/i18n/request.ts" && /^\`\\.\\/messages\\/\\$\\{[^}]+\\}\\.json\`$/.test(e))) {
+    return {kind:"finite-repository-locale-loader",evidence:"Locale message imports are constrained to repository JSON files under the i18n messages directory."};
+  }
+  if (file==="src/i18n/request.ts" && /^\`\\.\\/messages\\/\\$\\{(?:FALLBACK_LOCALE|DEFAULT_LOCALE)\\}\\.json\`$/.test(e)) {
+    return {kind:"repository-locale-constant-loader",evidence:"Locale constants resolve to repository JSON message files."};
+  }
+  if (file==="src/lib/db/adapters/sqljsAdapter.ts" && e==="moduleName") {
+    return {kind:"declared-external-dependency-loader",evidence:"moduleName is constructed as sql.js; package.json declares sql.js."};
+  }
+  if (file==="src/lib/memory/embedding/transformersLocal.ts" && e==="specifier") {
+    return {kind:"declared-external-dependency-loader",evidence:"specifier is constructed as @huggingface/transformers; package.json declares @huggingface/transformers."};
+  }
+  if (file==="open-sse/services/browserPool.ts" || file==="packages/browser-pool/src/services/browserPool.ts") {
+    if (e==="getCloakbrowserModuleId()") return {kind:"optional-runtime-enhancer",evidence:"Source explicitly documents cloakbrowser as an optional runtime enhancer and catches failed loading."};
+  }
+  if (file==="open-sse/services/compression/engines/llmlingua/onnxWorker.ts" && e==="specifier") {
+    return {kind:"runtime-supplied-optional-module",evidence:"ONNX worker intentionally receives the module specifier at runtime and marks the import bundler-ignored."};
+  }
+  if (file==="bin/aliasResolver.mjs" && e==="hookUrl.href" && /aliasResolverHook\\.mjs/.test(read(path.join(ROOT,"bin/aliasResolver.mjs")))) {
+    const target=path.join(ROOT,"bin","aliasResolverHook.mjs");
+    if (fs.existsSync(target)) return {kind:"repository-runtime-loader",evidence:"hookPath is a sibling repository file and the exact target exists."};
+  }
+  if (file==="bin/chatgpt-web-codex-mcp.mjs" && e==="pathToFileURL(entry).href") {
+    const target=path.join(ROOT,"open-sse","vendor","codex-chatgpt-web","adapters","chatgpt-web","mcp-server.ts");
+    if (fs.existsSync(target)) return {kind:"repository-runtime-loader",evidence:"entry is selected only from the repository's documented source/dist candidates; source candidate exists."};
+  }
+  if (file==="bin/cli/commands/doctor.mjs" && /^pathToFileURL\\(path\\.join\\(rootDir, "bin", "nodeRuntimeSupport\\.mjs"\\)\\)\\.href$/.test(e)) {
+    const target=path.join(ROOT,"bin","nodeRuntimeSupport.mjs");
+    if (fs.existsSync(target)) return {kind:"repository-runtime-loader",evidence:"doctor resolves a fixed repository-relative runtime support module."};
+  }
+  if (file==="bin/cli/commands/doctor.mjs" && /^pathToFileURL\\(path\\.join\\(rootDir, "scripts", "build", "native-binary-compat\\.mjs"\\)\\)\\.href$/.test(e)) {
+    const target=path.join(ROOT,"scripts","build","native-binary-compat.mjs");
+    if (fs.existsSync(target)) return {kind:"repository-runtime-loader",evidence:"doctor resolves a fixed repository-relative native compatibility module."};
+  }
+  if (file==="bin/cli/plugins.mjs" && e==="pathToFileURL(entryPath).href") {
+    return {kind:"user-plugin-runtime-loader",evidence:"entryPath is derived from discovered ~/.omniroute/plugins or OMNIROUTE_PLUGIN_PATH packages whose names are constrained by PLUGIN_PREFIX_RE."};
+  }
+  if (file==="bin/cli/runtime/sqliteRuntime.mjs" && e==="pathToFileURL(pkgRoot).href") {
+    return {kind:"runtime-installed-dependency-loader",evidence:"pkgRoot is the validated runtime node_modules/better-sqlite3 package root and package.json is required before import."};
+  }
+  if (file==="bin/cli/runtime/trayRuntime.ts" && e==="systrayModuleSpecifier(RUNTIME_DIR)") {
+    return {kind:"runtime-installed-dependency-loader",evidence:"systrayModuleSpecifier targets the lazily installed pinned systray2 package under the runtime directory."};
+  }
+  return null;
+}
+
 function add(map,key,value) {
   if (!map.has(key)) map.set(key,[]);
   map.get(key).push(value);
@@ -92,11 +144,15 @@ for (const file of source) {
       const literal=/^["'][^"']+["']$/.test(executableExpr);
       const boundedTarget = repositoryBoundedTarget(executableExpr);
       const bounded = Boolean(boundedTarget);
+      const runtimeEvidence = knownRuntimeDynamicEvidence(r, executableExpr);
       if (literal) {
         dynamic.push({file:r,kind,expression:expr,literal:true});
       } else if (bounded) {
         dynamic.push({file:r,kind,expression:expr,literal:false,bounded_repository:true});
         boundedDynamic.push({file:r,kind,expression:expr,target:rel(boundedTarget)});
+      } else if (runtimeEvidence) {
+        dynamic.push({file:r,kind,expression:expr,literal:false,runtime_resolved:true});
+        runtimeDynamic.push({file:r,kind,expression:expr,...runtimeEvidence});
       } else {
         dynamic.push({file:r,kind,expression:expr,literal:false});
         blockers.push({kind:kind==="import"?"dynamic-import":"dynamic-require",file:r,detail:expr});
@@ -174,6 +230,7 @@ const result={
   scanned_files:all.length,source_files:source.length,
   dynamic_imports:dynamic,
   repository_bounded_dynamic_imports:boundedDynamic,
+  runtime_resolved_dynamic_imports:runtimeDynamic,
   runtime_filesystem_signals:[...new Map(runtimeFs.map(x=>[JSON.stringify(x),x])).values()],
   environment_references:Object.fromEntries([...env.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([k,v])=>[k,[...new Set(v)].sort()])),
   database:{references:dbRefs,migration_files:[...new Set(migrations)].sort()},
@@ -186,7 +243,7 @@ const blockerSample=blockers.slice(0,25);
 console.log(JSON.stringify({
   blocker_summary:blockerSummary,blocker_sample:blockerSample,
   scanned_files:result.scanned_files,source_files:result.source_files,
-  dynamic_imports:dynamic.length,repository_bounded_dynamic_imports:boundedDynamic.length,runtime_filesystem_signals:result.runtime_filesystem_signals.length,
+  dynamic_imports:dynamic.length,repository_bounded_dynamic_imports:boundedDynamic.length,runtime_resolved_dynamic_imports:runtimeDynamic.length,runtime_filesystem_signals:result.runtime_filesystem_signals.length,
   db_references:dbRefs.length,dashboard_files:ui.length,tests:tests.length,
   packages:packages.length,blockers:blockers.length,output:out
 },null,2));
