@@ -698,3 +698,28 @@ Completion 051: **PASS for verification triggering preparation. Overall Phase 1 
 
 ### Next-work prompt
 Inspect the fresh Actions run triggered by this commit. Read the first failing step and its raw artifact output. If a verifier defect is demonstrated, repair only that mechanism and preserve fail-closed behavior. If all collectors and reconciliation pass, inspect the combined Phase 1 gate result; only after a genuine PASS begin Phase 2 exact pinned-tree copying and Git blob/tree identity verification.
+
+
+## Completion 052 — Repair supplemental pin-field validation in combined gate
+
+### Planned
+Continue from Completion 051 by inspecting the verifier contracts themselves before accepting a machine gate result. The supplemental analyzer emits `pinned_source_commit` and `pinned_source_tree`; the combined gate must validate those exact fields rather than a nonexistent legacy field.
+
+### Completed
+- Inspected the current supplemental analyzer output schema at the extraction branch head.
+- Found a concrete fail-closed gate defect: `phase1-gate.mjs` checked `supplemental.pinned_source_required`, but the supplemental analyzer emits `pinned_source_commit` and `pinned_source_tree`.
+- Updated only `phase1-gate.mjs` to validate both exact supplemental source pin fields against the pinned source commit/tree.
+- The gate remains fail-closed: missing or incorrect supplemental identity now produces an explicit blocker; no blocker was removed.
+- Verifier commit: `e6906561ef82381a43ce11732d011c4aaccbd973`.
+- No pinned OmniRoute source files were modified.
+
+### Not done
+- A real GitHub Actions execution of the corrected gate is still required.
+- Phase 1 overall PASS remains unclaimed until primary, supplemental, mapper, Phase 7, reconciliation, and combined gate all execute successfully against the exact pinned source.
+- Phase 2 immutable source copying, dependency/UI closure packaging, contracts/adapters, and host integration remain blocked.
+
+### Gate
+Completion 052: **PASS for the demonstrated combined-gate schema defect repair. Overall Phase 1 remains OPEN pending machine execution.**
+
+### Next-work prompt
+Inspect the Actions run triggered by the current extraction branch head. Read the first failing step and its raw report. If the workflow still does not expose a run, do not fabricate one or weaken the gate; verify branch/workflow state through available GitHub evidence and keep Phase 2 blocked. If a run is available, inspect primary → supplemental → mapper → Phase 7 → reconciliation → combined gate in order and repair only concrete verifier defects. Once the complete machine gate genuinely PASSes, freeze the pinned source and begin Phase 2 exact full-tree copying with Git blob/tree identity verification.
