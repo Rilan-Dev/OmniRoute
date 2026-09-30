@@ -96,3 +96,26 @@ Completion 027: verifier-only false-positive correction committed. Phase 1 PASS 
 
 ### Next-work prompt
 Observe the Actions run from `71a2df0476654996c863497129b7958925ddc928`. Inspect the complete blocker summary/sample. For every remaining blocker, inspect the pinned source call site and classify only with explicit evidence: static repository-bounded path, finite registry/plugin discovery, optional external dependency, or externally supplied runtime module. Do not broadly suppress non-literal loaders. Once supplemental closure is genuinely complete, continue immediately through closure mapping, Phase 7, gate, reconciliation, immutable copy, and exact Git-tree verification.
+
+## Completion 028 — exclude JSON data from executable dynamic-loader scanning
+
+### Planned
+Continue from Completion 027 by observing the remote verifier result and correcting only proven scanner false positives. The latest blocker sample contained a dynamic-import-looking match in `config/quality/file-size-baseline.json`; verify whether it is executable code before changing classification.
+
+### Completed
+- Inspected the pinned `config/quality/file-size-baseline.json` at source commit `453918ab64f147604576e72d33e2bbfc12b2d1af` and confirmed the reported `import(` text is embedded in JSON string data, not executable JavaScript.
+- Inspected the supplemental analyzer and confirmed it included `.json` files in its executable dynamic-loader scan even though JSON cannot contain executable `import()`/`require()` calls.
+- Updated only the verifier to skip the dynamic-loader executable-code scan for JSON files while retaining JSON in the broader filesystem/package/data closure inventory.
+- Tooling commit: `cec5cb98b9c6aa0f69a1cdcfc4c24012d9c4758e`.
+- No pinned OmniRoute source files were modified.
+
+### Not done
+- The new verifier has not yet executed remotely.
+- The remaining non-JSON dynamic-loader records are not yet classified or suppressed.
+- Combined Phase 1 gate, Phase 7 reconciliation, immutable source copy, and Git-tree integrity verification remain blocked.
+
+### Gate
+Completion 028: proven JSON false-positive correction committed. Phase 1 PASS OPEN.
+
+### Next-work prompt
+Observe the Actions run from `cec5cb98b9c6aa0f69a1cdcfc4c24012d9c4758e`. Inspect the complete supplemental blocker summary/sample. For every remaining blocker, inspect the exact pinned source expression and prove whether it is a repository-bounded static path, finite registry/plugin discovery, optional external dependency, or genuinely externally supplied runtime module. Preserve fail-closed behavior for anything not proven closed. If supplemental closure becomes clean, continue immediately through closure mapper, Phase 7 second pass, combined Phase 1 gate, Phase 7 reconciliation, immutable source copying, and exact Git-tree integrity verification.
