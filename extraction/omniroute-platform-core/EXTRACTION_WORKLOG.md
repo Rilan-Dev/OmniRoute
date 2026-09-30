@@ -576,3 +576,27 @@ Completion 046: PASS for the demonstrated verifier hardening. Phase 1 overall re
 
 ### Next-work prompt
 Observe the Actions run triggered by `30703b0c1566f5c5b17955f35ad803fea6835df6`. Inspect the primary scanner result first. If unresolved imports remain, inspect every concrete sample against the pinned source and distinguish generated artifacts, repository package entrypoints, and genuine first-party gaps. Do not broadly suppress unresolved edges. If the primary scanner passes, inspect supplemental and mapper outputs, then proceed through Phase 7 and the combined gates. Only after genuine machine-complete PASS begin the complete immutable pinned-tree copy and exact Git blob/tree integrity verification.
+
+
+## Completion 047 — Tighten mapper SQL evidence after remote closure failure
+
+### Planned
+Continue from Completion 046 and repair only the concrete closure-mapper defects evidenced by the remote run: false unresolved import/DB records must be corrected in verifier logic without modifying the pinned OmniRoute source.
+
+### Completed
+- Reviewed the remote execution for the exact pinned source commit `453918ab64f147604576e72d33e2bbfc12b2d1af` and tree `76f3546d48a7293b199b7571d13808bebadb6d1f`.
+- The supplied run demonstrated that the primary scanner can reach a clean result (5,902 source files, 22,320 edges, 0 unresolved imports) and the supplemental analyzer can reach 0 blockers, while the closure mapper still produced false-positive database references such as `SET`, `source`, `a`, `uuid`, `it`, and `so`.
+- Removed a duplicate verifier declaration in the mapper that would otherwise make the current verifier syntactically invalid.
+- Tightened mapper SQL extraction so only string values beginning with a recognized SQL statement form (SELECT/WITH/INSERT/UPDATE/DELETE/CREATE/ALTER/DROP/TRUNCATE) are considered for table-reference extraction. Structured SQL references that still fail migration resolution remain blockers.
+- No pinned OmniRoute source files were modified.
+- Verifier commits: `819e7b9b6dba3dec5186c40448299341ebc21a89`, followed by `e203d7a4e64e2d5dc7c89bc1971f906ead678b34`.
+
+### Not done
+- The repaired mapper has not yet completed remotely.
+- Primary/supplemental/mapper combined Phase 1 gate, Phase 7 reconciliation, immutable source copy, and exact Git-tree integrity verification remain pending.
+
+### Gate
+Completion 047: PASS for the demonstrated mapper verifier defect repairs. Phase 1 overall remains OPEN pending remote execution and genuine gate PASS.
+
+### Next-work prompt
+Observe the Actions run triggered by `e203d7a4e64e2d5dc7c89bc1971f906ead678b34`. Inspect the primary scanner first, then supplemental analyzer and closure mapper. For every remaining mapper blocker, inspect the exact pinned-source evidence; repair only demonstrated verifier defects and preserve fail-closed behavior for genuine unresolved imports/database references. If Phase 1 evidence becomes clean, immediately run Phase 7 second pass, combined Phase 1 gate, and Phase 7 reconciliation before creating the complete immutable pinned-tree snapshot and running exact Git blob/tree integrity verification.
