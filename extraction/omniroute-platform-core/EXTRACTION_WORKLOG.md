@@ -259,3 +259,27 @@ Completion 021: generated-runtime classification correction prepared; machine ex
 
 ### Next-work prompt
 Continue from Completion 021. Observe the next Actions run. Verify zero genuine unresolved imports while retaining generated-runtime evidence. Then inspect the supplemental analyzer exact execution and fix only concrete tooling defects, including its source/output argument contract if exposed. Continue through closure mapping, Phase 7 second-pass, combined Phase 1 gate, and Phase 7 reconciliation. Only after genuine machine-complete gates PASS begin immutable source copying and immediately run the Git-tree integrity verifier.
+
+
+## Completion 022 — align supplemental analyzer with source/output execution contract
+
+### Planned
+Continue from Completion 021. Fix the next concrete verification-tool contract defect exposed by the known workflow invocation, without weakening evidence collection or changing pinned OmniRoute source.
+
+### Completed
+- Reviewed the supplemental analyzer before its first successful invocation path.
+- Confirmed it still used process.cwd() as its source root and argv[2] as its output, while the workflow passes the pinned source checkout as argv[2] and report output as argv[3].
+- Updated the analyzer to consume argv[2] as the source checkout and argv[3] as the report output, matching the primary scanner, closure mapper, Phase 7 scanner, and workflow contract.
+- Preserved all supplemental detection logic and fail-closed blocker behavior.
+- No pinned OmniRoute source files were modified.
+
+### Not done
+- The aligned analyzer has not yet completed remotely.
+- Phase 1 combined gate and Phase 7 reconciliation remain blocked.
+- Immutable source copying and integrity verification remain blocked.
+
+### Gate
+Completion 022: supplemental execution contract corrected; machine execution OPEN. Phase 1 PASS OPEN. Phase 2 BLOCKED.
+
+### Next-work prompt
+Continue from Completion 022. Observe the new Actions run. Inspect primary and supplemental evidence first. If primary is clean, classify every supplemental blocker from the actual report and correct only verified tooling defects or document real closure requirements. Then allow closure mapping and Phase 7 second-pass to complete, run the combined Phase 1 gate, reconcile every Phase 7 candidate, and only after genuine PASS begin immutable source copying and Git-tree integrity verification.
