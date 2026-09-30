@@ -71,7 +71,11 @@ for(const f of textFiles){
   }
   if(/(^|\/)migrations?(\/|$)/i.test(f)) migrations.push(f);
 }
-for(const f of migrations) for(const m of read(f).matchAll(/\b(?:CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|ALTER\s+TABLE)\s+["']?([A-Za-z0-9_.$-]+)/gi)) schemaTables.add(m[1]);
+for(const f of migrations) for(const m of read(f).matchAll(/\b(?:CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|ALTER\s+TABLE)\s+["']?([A-Za-z0-9_.$-]+)/gi)){
+  const t=m[1];
+  if(!schemaTables.has(t)) schemaTables.set(t,[]);
+  schemaTables.get(t).push(f);
+}
 const unknownDb=dbModules.flatMap(x=>x.tables.filter(t=>!schemaTables.has(t)).map(t=>({module:x.module,table:t})));
 if(unknownDb.length) blockers.push({kind:"db-table-not-found-in-migrations",count:unknownDb.length});
 if(!migrations.length) warnings.push({kind:"no-migration-directory-detected"});
