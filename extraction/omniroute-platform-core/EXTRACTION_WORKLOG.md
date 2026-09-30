@@ -345,3 +345,32 @@ Observe the Actions run from bcadfe1a2f572e034da3a3da351c0599c6e8428a. Inspect t
 - Observe the Actions run triggered by 1d53a04c953ae7d0f2fa5b625ca9a774a6cbd06c and inspect the exact three blocker_details records.
 - Repair only proven mapper defects or add explicit evidence where the source truly requires a closure classification.
 - Once closure mapper passes, immediately execute Phase 7 second pass, combined Phase 1 gate, and Phase 7 reconciliation; only then create the complete immutable pinned-tree copy and run exact Git blob/tree integrity verification.
+
+
+## Completion 038 — Repair verified closure-mapper false positives
+
+### Planned
+- Inspect the concrete mapper samples from run `36708420959` and correct only proven verifier defects.
+
+### Completed
+- Confirmed the exact pinned source remained `453918ab64f147604576e72d33e2bbfc12b2d1af` / tree `76f3546d48a7293b199b7571d13808bebadb6d1f`.
+- Primary scanner remained clean: 5,902 source files / 22,320 edges / 0 unresolved imports.
+- Supplemental analyzer remained clean: 0 blockers.
+- Mapper samples proved that first-party imports such as `./logger.js`, `./naming.js`, and `../src/index.js` are emitted-JavaScript specifiers whose source implementation is TypeScript. Extended mapper resolution to map emitted `.js/.jsx/.mjs/.cjs` specifiers onto corresponding first-party TypeScript/JavaScript source variants before declaring them unresolved.
+- DB samples proved the scanner was reading Markdown/JSDoc and interpreting prose as SQL table references (for example `src/lib/db/AGENTS.md` and tokens such as `here.`, `the`) and also scanning comments inside DB modules. Restricted DB-module evidence to executable code and added a lexical comment stripper that preserves string/template SQL while removing JS/TS comments.
+- No pinned OmniRoute source was changed.
+- Verifier commit: `411f683d95483a4d8c9546dde0d967b68793c26f`.
+
+### Not done
+- The non-literal dynamic-loader blocker remains intentionally open; the current samples include genuine runtime-computed imports/loaders and have not yet been proven fully resolvable.
+- Remote rerun of the repaired mapper is pending.
+- Combined Phase 1 gate, Phase 7 reconciliation, immutable source copy, and exact Git-tree integrity verification remain pending.
+
+### Gate
+- Completion 038: PASS for the two evidence-proven mapper false-positive/resolution defects.
+- Phase 1 overall remains OPEN; no dynamic-loader evidence has been suppressed.
+
+### Next-work prompt
+- Observe the Actions run for `411f683d95483a4d8c9546dde0d967b68793c26f`.
+- Inspect the new dynamic-loader and any remaining unresolved/DB samples and correct only demonstrated gaps.
+- Once the closure mapper genuinely passes, immediately run Phase 7, combined Phase 1 gate, and reconciliation before immutable copying.
