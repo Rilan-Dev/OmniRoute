@@ -46,3 +46,63 @@
 
 ## Next-work prompt
 > Continue OmniRoute extraction from the current extraction branch. First verify the branch HEAD and pinned upstream source commit. Obtain or create a complete local checkout at 453918ab64f147604576e72d33e2bbfc12b2d1af, run the primary and supplemental closure tools, and preserve their raw JSON reports as verification evidence. Then build the deterministic closure-mapping pass: resolve every first-party edge; enumerate all literal and non-literal dynamic imports and runtime filesystem loaders; recompute workspace/package dependency closure; map every src/lib/db consumer to tables, columns and exact migration create/alter history; map every dashboard route to page/layout/component/hook/store/dialog plus loading/empty/error/disabled/success/permission states; map tests to capabilities; and classify external packages, services, secrets, network endpoints and host-owned boundaries. Any unresolved item is a blocker. Do not copy immutable source. Only after the closure report is PASS may Phase 2 exact source copying begin. Update CAPABILITY_CLOSURE.md, capability-closure.json and EXTRACTION_WORKLOG.md with actual evidence, blockers, exact commit and the next-work prompt, then commit atomically.
+
+
+## Completion 005 — fail-closed Phase 1 report gate
+
+### Exact prompt used
+> Continue OmniRoute extraction from the current extraction branch. Verify the branch HEAD and pinned upstream source. Keep immutable source copying BLOCKED. Add a fail-closed Phase 1 report gate that requires the exact pinned source commit/tree, primary and supplemental closure reports, required evidence sections, and zero unresolved blockers. Produce a machine-readable gate report. Do not claim machine-complete closure or begin Phase 2 without actual generated reports. Update the persistent worklog with planned, completed, not-done, evidence, gate status and the next-work prompt, then commit atomically.
+
+### Planned
+- Add the machine gate that prevents an absent or incomplete closure report from being treated as PASS.
+- Keep Phase 2 exact copying blocked.
+
+### Completed
+- Added `verification/phase1-gate.mjs`.
+- Gate requires the pinned source commit/tree and primary/supplemental report sections.
+- Gate exits non-zero when blockers or required evidence are missing.
+
+### Not done
+- The environment cannot perform a complete local checkout from GitHub, so no generated closure reports exist here.
+- Machine-complete closure remains OPEN.
+- Exact source copying remains BLOCKED.
+
+### Evidence
+- Prior branch HEAD: `86104338c3c1663ffb9376f67b1dccc4dcdab348`.
+- Gate commit: `4d1f804e1748fe5b22ce45ce9f9db9e7e9e0e64e`.
+
+### Gate
+**Completion 005: tooling PASS. Machine-complete closure OPEN. Source extraction BLOCKED.**
+
+## Completion 006 — deterministic Phase 1 closure mapper
+
+### Exact prompt used
+> Continue OmniRoute extraction from current branch HEAD `4d1f804e1748fe5b22ce45ce9f9db9e7e9e0e64e`. Keep immutable source copying BLOCKED. Add a read-only deterministic closure mapper that runs only against a complete checkout pinned to `453918ab64f147604576e72d33e2bbfc12b2d1af`. Map first-party imports, non-literal dynamic loaders, runtime filesystem discovery, environment references, DB modules/tables/migrations, dashboard route dependencies and state evidence, tests, package/workspace/lockfile closure, and host boundaries. Any unresolved first-party import, non-literal loader, or DB table without migration evidence must be a blocker. Commit the mapper and documentation atomically. Do not claim PASS without actually executing it.
+
+### Planned
+- Add the next machine-executable closure evidence layer.
+- Make DB/UI/package/runtime gaps explicit instead of relying on the Phase 0 narrative inventory.
+
+### Completed
+- Added `verification/phase1-closure-mapper.mjs`.
+- Added `verification/PHASE1-CLOSURE-MAPPER.md`.
+- Mapper is read-only, pinned-source aware, and fail-closed for key unresolved evidence.
+- No immutable OmniRoute source was copied or modified.
+
+### Not done
+- Mapper has not been executed against a complete local checkout because direct GitHub network access is unavailable in this environment.
+- Exact DB column/history mapping and exact dashboard semantic state mapping remain open.
+- Phase 1 gate still needs the mapper report from a real checkout before closure can pass.
+- Phase 2 exact source copying remains BLOCKED.
+
+### Evidence
+- Starting HEAD: `4d1f804e1748fe5b22ce45ce9f9db9e7e9e0e64e`.
+- Mapper commit: `edc03a2a3e56641babe8f1dd86f3e90cce3ee760`.
+- Mapper source blob: `5508b5e465b366ecfd3523d5bf4947e6cc4b6131`.
+- Pinned source commit/tree remain `453918ab64f147604576e72d33e2bbfc12b2d1af` / `76f3546d48a7293b199b7571d13808bebadb6d1f`.
+
+### Gate
+**Completion 006: mapper tooling committed. Machine-complete closure OPEN. Source extraction BLOCKED.**
+
+## Next-work prompt
+> Continue OmniRoute extraction from current branch. First obtain a complete local checkout pinned exactly to `453918ab64f147604576e72d33e2bbfc12b2d1af`. Run the primary closure scanner, supplemental analyzer, and `phase1-closure-mapper.mjs`, preserving all raw JSON reports. Extend the gate to require the closure-map report and zero mapper blockers. Resolve every blocker deterministically: complete first-party import/re-export/alias/workspace closure; resolve every non-literal dynamic loader and runtime filesystem discovery or record an explicit immutable allowlist; map every DB module to exact tables, columns, indexes/foreign keys and migration create/alter history; map every dashboard route to page/layout/component/hook/store/dialog and loading/empty/error/disabled/success/permission/destructive states; map tests to capabilities; recompute package and lockfile dependency closure; classify network, subprocess, native, filesystem and secret boundaries. Any unresolved item is a blocker. Do not begin Phase 2 exact source copying until the combined gate is genuinely PASS. Update `CAPABILITY_CLOSURE.md`, `capability-closure.json`, `EXTRACTION_WORKLOG.md`, gate documentation and raw reports with actual evidence, then commit atomically.

@@ -6,7 +6,7 @@
     "commit": "453918ab64f147604576e72d33e2bbfc12b2d1af",
     "tree": "76f3546d48a7293b199b7571d13808bebadb6d1f"
   },
-  "status": "baseline-not-final",
+  "status": "machine-complete-closure-open",
   "immutable_copy_started": false,
   "capabilities": [
     {
@@ -374,10 +374,20 @@
     "182-196"
   ],
   "unresolved": [
-    "full recursive import graph",
-    "exact db module-to-table graph",
-    "exact dashboard component/hook/store/dialog graph",
-    "transitive npm dependency recomputation",
-    "complete Tier-2 cross-cutting second pass"
-  ]
+    "machine execution of primary and supplemental closure scanners against complete pinned checkout",
+    "exact first-party recursive import/re-export/alias/workspace closure from machine report",
+    "non-literal dynamic loader resolution or explicit deterministic allowlists",
+    "runtime filesystem discovery resolution",
+    "exact db module-to-table/column-to-migration create/alter history",
+    "exact dashboard route-to-page/layout/component/hook/store/dialog graph and all UI states",
+    "test-to-capability attribution",
+    "transitive npm dependency recomputation from lockfile/package manifests",
+    "host-boundary classification verification",
+    "complete Tier-2 and cross-cutting second audit"
+  ],
+  "verification": {
+    "phase1_closure_mapper": "verification/phase1-closure-mapper.mjs",
+    "machine_execution_required": true,
+    "immutable_source_copy_authorized": false
+  }
 }

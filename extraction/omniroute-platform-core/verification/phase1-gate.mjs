@@ -11,7 +11,8 @@ const EXPECTED_TREE = "76f3546d48a7293b199b7571d13808bebadb6d1f";
 
 const primaryPath = process.argv[2] ?? "extraction/omniroute-platform-core/verification/phase1-closure-report.json";
 const supplementalPath = process.argv[3] ?? "extraction/omniroute-platform-core/verification/phase1-supplemental-closure.json";
-const outPath = process.argv[4] ?? "extraction/omniroute-platform-core/verification/phase1-gate.json";
+const mapPath = process.argv[4] ?? "extraction/omniroute-platform-core/verification/phase1-closure-map.json";
+const outPath = process.argv[5] ?? "extraction/omniroute-platform-core/verification/phase1-gate.json";
 
 const blockers = [];
 const readJson = p => {
@@ -21,6 +22,7 @@ const readJson = p => {
 };
 const primary = readJson(primaryPath);
 const supplemental = readJson(supplementalPath);
+const mapped = readJson(mapPath);
 
 if (primary) {
   if (primary.source_commit && primary.source_commit !== EXPECTED_COMMIT)
@@ -31,6 +33,12 @@ if (primary) {
     blockers.push({kind:"missing-primary-unresolved-list"});
   else if (primary.unresolved.length)
     blockers.push({kind:"primary-unresolved-imports",count:primary.unresolved.length});
+}
+if (mapped) {
+  if (mapped.pinned_source_commit !== EXPECTED_COMMIT) blockers.push({kind:"wrong-map-pin",actual:mapped.pinned_source_commit,expected:EXPECTED_COMMIT});
+  if (!Array.isArray(mapped.blockers)) blockers.push({kind:"missing-map-blockers-list"});
+  else if (mapped.blockers.length) blockers.push({kind:"closure-map-blockers",count:mapped.blockers.length});
+  for (const key of ["database","dashboard","tests","packages","host_boundaries"]) if (mapped[key] === undefined) blockers.push({kind:"missing-map-section",section:key});
 }
 if (supplemental) {
   if (supplemental.pinned_source_required !== EXPECTED_COMMIT)
@@ -44,10 +52,10 @@ if (supplemental) {
 const required = [
   ["primary","edges"],["primary","environment_references"],["primary","source_file_sha256"],
   ["supplemental","dynamic_imports"],["supplemental","runtime_filesystem_signals"],
-  ["supplemental","database"],["supplemental","dashboard"],["supplemental","tests"],["supplemental","packages"]
+  ["supplemental","database"],["supplemental","dashboard"],["supplemental","tests"],["supplemental","packages"],["mapped","database"],["mapped","dashboard"],["mapped","tests"],["mapped","packages"],["mapped","host_boundaries"]
 ];
 for (const [which,key] of required) {
-  const obj=which==="primary"?primary:supplemental;
+  const obj=which==="primary"?primary:which==="supplemental"?supplemental:mapped;
   if (!obj || obj[key] === undefined) blockers.push({kind:"missing-report-section",report:which,section:key});
 }
 
@@ -57,6 +65,7 @@ const result = {
   expected_source_tree:EXPECTED_TREE,
   primary_report:primaryPath,
   supplemental_report:supplementalPath,
+  closure_map_report:mapPath,
   blockers,
   pass:blockers.length===0
 };
