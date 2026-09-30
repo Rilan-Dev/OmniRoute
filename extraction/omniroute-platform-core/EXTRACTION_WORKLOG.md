@@ -222,3 +222,27 @@ Observe the Actions run from bcadfe1a2f572e034da3a3da351c0599c6e8428a. Inspect t
 - Inspect supplemental blocker summary/sample and do not infer cleanliness from the primary scanner.
 - If supplemental blockers are zero, immediately run/verify closure mapper + Phase 7 second pass + combined Phase 1 gate + Phase 7 reconciliation.
 - If those gates pass, begin the immutable full pinned-tree copy and exact Git-tree integrity verification. Do not omit product-specific source from the immutable snapshot.
+
+
+## Completion 033 — Repair supplemental locale/type regex literals
+
+### Planned
+- Inspect run `36694056933` after Completion 032 and repair the next verifier-only syntax defect revealed by execution.
+
+### Completed
+- Remote execution reached the exact pinned source successfully and again confirmed the primary closure scanner: **12,562 scanned files, 5,902 source files, 22,320 edges, 0 unresolved imports**.
+- The supplemental analyzer then failed at its locale dynamic-loader evidence regex because several generated regex literals retained source-code escaping that was invalid when executed by Node.
+- Repaired the affected locale-loader and TypeScript type-only regex literals only. No pinned OmniRoute source was changed.
+- Verifier commit: `cd2875a0d9995e3da153eb937f5e7ce9473f1d8f`.
+
+### Not done
+- The repaired supplemental analyzer has not yet completed remotely.
+- Closure mapper, Phase 7, combined Phase 1 gate, Phase 7 reconciliation, immutable copy, and exact Git-tree integrity verification remain pending.
+
+### Gate
+- **Completion 033: PASS for verifier repair. Phase 1 overall remains OPEN.**
+
+### Next-work prompt
+- Observe the Actions run for `cd2875a0d9995e3da153eb937f5e7ce9473f1d8f`.
+- Require actual supplemental execution and inspect its blocker summary/sample. Continue repairing only execution defects or individually proven closure edges; never infer PASS from the primary scanner alone.
+- Once all gates execute and pass, proceed directly to the immutable full pinned-tree copy and exact Git-tree integrity verification.
