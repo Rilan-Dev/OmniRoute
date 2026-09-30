@@ -33,6 +33,7 @@ jobs:
           node extraction/omniroute-platform-core/verification/phase1-gate.mjs             extraction/omniroute-platform-core/verification/phase1-closure-report.json             extraction/omniroute-platform-core/verification/phase1-supplemental-report.json             extraction/omniroute-platform-core/verification/phase1-closure-map.json             extraction/omniroute-platform-core/verification/phase7-second-pass.json             extraction/omniroute-platform-core/verification/phase7-reconciliation.json             extraction/omniroute-platform-core/verification/phase1-gate.json
 
       - name: Upload raw verification reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: omniroute-extraction-verification-reports
