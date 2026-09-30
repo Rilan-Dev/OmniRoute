@@ -528,3 +528,27 @@ Completion 044: PASS for the demonstrated primary-scanner workspace-package reso
 
 ### Next-work prompt
 Observe the Actions run triggered by `6b07c8b9774f49780770091911329dbb7706bd00`. Inspect the primary scanner first. If it passes, inspect the supplemental analyzer and mapper in the same run. Repair only concrete verifier defects supported by pinned-source evidence; do not suppress genuine unresolved closure edges. Continue to Phase 7 and the combined gates only after Phase 1 evidence is machine-clean. Do not copy the immutable source tree until the gates genuinely PASS.
+
+## Completion 045 — Repair primary scanner package entrypoint resolution
+
+### Planned
+Continue from Completion 044. Inspect the actual remote failure, repair only the demonstrated primary-scanner resolution defect, and preserve fail-closed behavior.
+
+### Completed
+- Remote run 36678493477 created the exact pinned source worktree at commit 453918ab64f147604576e72d33e2bbfc12b2d1af / tree 76f3546d48a7293b199b7571d13808bebadb6d1f.
+- The primary scanner executed against the correct pinned source but reported 196 unresolved imports.
+- Inspection confirmed the scanner recognized repository package names but, for package-root imports, only tested the package directory itself and conventional index.* files. It did not honor package exports, types/typings, module, or main entrypoints.
+- Added package metadata tracking and deterministic package-root entrypoint candidates (exports, nested types/import/require/default, types, typings, module, main) while retaining normal extension/index resolution.
+- Unknown external packages remain external; genuinely unresolved repository packages remain blockers.
+- Verifier commit: acfae0e7646ccfb318a114693eb9cc4cff15ee3e.
+- No pinned OmniRoute source files were modified.
+
+### Not done
+- Remote execution of this scanner repair is pending.
+- Mapper, Phase 7, combined Phase 1 gate, reconciliation, immutable source copy, and exact Git-tree integrity verification remain pending.
+
+### Gate
+Completion 045: PASS for the demonstrated package-entrypoint resolver defect. Phase 1 overall remains OPEN until remote evidence proves the scanner and downstream gates.
+
+### Next-work prompt
+Observe the Actions run triggered by acfae0e7646ccfb318a114693eb9cc4cff15ee3e. Inspect the primary scanner result first. If it passes, inspect supplemental and mapper results in the same run. For every remaining blocker, inspect concrete samples against the pinned source and repair only evidence-proven verifier defects. Do not suppress genuine unresolved closure edges. Once Phase 1 evidence is genuinely clean, execute Phase 7 second pass, combined Phase 1 gate, and Phase 7 reconciliation before immutable copying.
