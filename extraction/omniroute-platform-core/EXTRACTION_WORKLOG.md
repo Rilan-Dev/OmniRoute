@@ -132,3 +132,29 @@ Completion 016: residual-evidence instrumentation prepared; machine execution OP
 
 ### Next-work prompt
 Continue from Completion 016. Observe the Actions run from this commit and inspect the emitted unresolved sample. Classify residuals into real first-party closure gaps versus legitimate asset/package/runtime forms. Fix only verified resolver/tooling defects; do not suppress genuine missing first-party dependencies. Then rerun the complete collector sequence, inspect all evidence, and only after a genuine combined Phase 1 PASS proceed to Phase 7 reconciliation and immutable source copying.
+
+
+## Completion 017 — support TypeScript implementation resolution for runtime .js imports
+
+### Planned
+Continue from Completion 016 using the actual unresolved sample. Resolve only the verified module-resolution pattern shown by remote evidence and preserve fail-closed behavior for all other unresolved imports.
+
+### Completed
+- Observed workflow run `36679446923`, job `109771482551`, and its primary scanner output.
+- The emitted unresolved sample shows repeated imports such as `../src/index.js` and `../src/naming.js` from `@omniroute/opencode-plugin/tests/*`.
+- This is a concrete TypeScript/ESM resolution gap: the import specifier carries a runtime `.js` extension while the repository implementation can be `.ts`/ `.tsx`.
+- Updated the verifier to, for runtime `.js`/ `.jsx`/ `.mjs`/ `.cjs` specifiers, also test the corresponding `.ts` and `.tsx` implementation paths after the normal candidates.
+- The unresolved list remains fail-closed; no unresolved import is suppressed or reclassified as external.
+- No pinned OmniRoute source files were modified.
+
+### Not done
+- The new runtime-extension resolver has not yet executed remotely.
+- Remaining unresolved cases, if any, are not yet classified.
+- Supplemental analyzer, closure mapper, Phase 7 scanner, combined gate, and Phase 7 reconciliation remain blocked by primary scanner failure.
+- Immutable source copying remains BLOCKED.
+
+### Gate
+Completion 017: verified resolver correction prepared and committed; machine execution OPEN. Phase 1 PASS OPEN. Phase 2 BLOCKED.
+
+### Next-work prompt
+Continue from Completion 017. Observe the Actions run produced by this commit. If unresolved imports remain, inspect the new sample and classify each distinct pattern before changing the resolver. If the primary scanner reaches zero unresolved imports, allow the remaining collectors to execute and inspect their first concrete failures. Then run the combined Phase 1 gate; do not claim PASS until all required evidence is present and pinned.

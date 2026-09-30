@@ -33,6 +33,11 @@ function resolveImport(from,spec) {
   const basePath=spec.startsWith("@/") ? path.join(ROOT,"src",spec.slice(2)) : path.resolve(path.dirname(from),spec);
   const candidates=[basePath];
   for (const e of EXTS) candidates.push(basePath.endsWith(e)?basePath:basePath+e);
+  const runtimeExt=path.extname(basePath);
+  if ([".js",".jsx",".mjs",".cjs"].includes(runtimeExt)) {
+    const stem=basePath.slice(0,-runtimeExt.length);
+    for (const e of [".ts",".tsx",".js",".jsx",".mjs",".cjs"]) candidates.push(stem+e);
+  }
   for (const e of EXTS) candidates.push(path.join(basePath,"index"+e));
   for (const c of candidates) if (fs.existsSync(c) && fs.statSync(c).isFile()) return {kind:"first-party",path:rel(c)};
   return {kind:"unresolved",spec};
