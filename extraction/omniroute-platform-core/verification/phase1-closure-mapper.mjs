@@ -17,9 +17,36 @@ function walk(rel){const dir=abs(rel);if(!fs.existsSync(dir))return[];const out=
 const all=walk("."), rels=new Set(all.map(p=>p.replaceAll(path.sep,"/")));
 const textFiles=all.filter(p=>/\.(ts|tsx|js|jsx|mjs|cjs|json|sql|md|yaml|yml)$/i.test(p)), codeFiles=textFiles.filter(p=>/\.(ts|tsx|js|jsx|mjs|cjs)$/.test(p));
 const read=p=>{try{return fs.readFileSync(abs(p),"utf8")}catch{return""}}, norm=p=>p.replaceAll(path.sep,"/");
-function resolveInternal(from,spec){if(!spec.startsWith(".")&&!spec.startsWith("@/"))return null;let base=spec.startsWith("@/")?path.join("src",spec.slice(2)):path.join(path.dirname(from),spec);base=norm(path.normalize(base));const extMap={".js":[".js",".ts",".tsx",".jsx",".mjs",".cjs"],".jsx":[".jsx",".tsx",".js"],".mjs":[".mjs",".ts",".js"],".cjs":[".cjs",".ts",".js"],".ts":[".ts",".tsx",".js"],".tsx":[".tsx",".ts",".js"]};const ext=path.extname(base),stem=ext?base.slice(0,-ext.length):base;const variants=ext&&extMap[ext]?extMap[ext].map(e=>stem+e):[];const c=[base,...variants,base+".ts",base+".tsx",base+".js",base+".jsx",base+".mjs",base+".cjs",base+".json",path.join(base,"index.ts"),path.join(base,"index.tsx"),path.join(base,"index.js"),path.join(base,"index.jsx")];return [...new Set(c.map(norm))].find(x=>rels.has(x))||null}
+function resolveInternal(from,spec){
+  if(!spec.startsWith(".")&&!spec.startsWith("@/")&&!spec.startsWith("@omniroute/"))return null;
+  let base;
+  if(spec.startsWith("@/")) base=path.join("src",spec.slice(2));
+  else if(spec==="@omniroute/open-sse"||spec.startsWith("@omniroute/open-sse/")) base=path.join("open-sse",spec.slice("@omniroute/open-sse".length).replace(/^\//,""));
+  else if(spec==="@omniroute/browser-pool"||spec.startsWith("@omniroute/browser-pool/")) base=path.join("packages/browser-pool/src",spec.slice("@omniroute/browser-pool".length).replace(/^\//,""));
+  else base=path.join(path.dirname(from),spec);
+  base=norm(path.normalize(base));
+  const extMap={".js":[".js",".ts",".tsx",".jsx",".mjs",".cjs"],".jsx":[".jsx",".tsx",".js"],".mjs":[".mjs",".ts",".js"],".cjs":[".cjs",".ts",".js"],".ts":[".ts",".tsx",".js"],".tsx":[".tsx",".ts",".js"]};
+  const ext=path.extname(base),stem=ext?base.slice(0,-ext.length):base;
+  const variants=ext&&extMap[ext]?extMap[ext].map(e=>stem+e):[];
+  const c=[base,...variants,base+".ts",base+".tsx",base+".js",base+".jsx",base+".mjs",base+".cjs",base+".json",path.join(base,"index.ts"),path.join(base,"index.tsx"),path.join(base,"index.js"),path.join(base,"index.jsx")];
+  return [...new Set(c.map(norm))].find(x=>rels.has(x))||null;
+}
 const imports=[], unresolved=[], generatedRuntimeReferences=[];
-for(const f of codeFiles){const s=read(f),re=/(?:import|export)[^'"]+from[ \t]*['"]([^'"]+)['"]|(?:require|import)[ \t]*[(][ \t]*['"]([^'"]+)['"]/g;let m;while((m=re.exec(s))){const spec=m[1]||m[2],target=resolveInternal(f,spec);if(target){imports.push({from:f,spec,target,dynamic:/import[ \t]*[(]/.test(m[0])})}else if(spec.startsWith(".")||spec.startsWith("@/")){const candidate=norm(path.normalize(path.join(path.dirname(f),spec)));if(candidate==="dist"||candidate.startsWith("dist/"))generatedRuntimeReferences.push({from:f,spec,candidate});else unresolved.push({from:f,spec})}}}
+for(const f of codeFiles){
+  const s=stripJsComments(read(f));
+  const re=/(?:import|export)[^'"]+from[ \t]*['"]([^'"]+)['"]|(?:require|import)[ \t]*[(][ \t]*['"]([^'"]+)['"]/g;
+  let m;
+  while((m=re.exec(s))){
+    const spec=m[1]||m[2],target=resolveInternal(f,spec);
+    if(target) imports.push({from:f,spec,target,dynamic:/import[ \t]*[(]/.test(m[0])});
+    else if(spec.startsWith(".")||spec.startsWith("@/")||spec.startsWith("@omniroute/")){
+      const candidate=norm(path.normalize(path.join(path.dirname(f),spec)));
+      if(candidate==="dist"||candidate.startsWith("dist/")||candidate===".next"||candidate.startsWith(".next/")||candidate===".build"||candidate.startsWith(".build/"))
+        generatedRuntimeReferences.push({from:f,spec,candidate});
+      else unresolved.push({from:f,spec});
+    }
+  }
+}
 const dynamic=[],runtimeFilesystem=[];
 for(const f of codeFiles){const s=read(f);if(/\b(?:import|require)\s*\(\s*[^'"]/.test(s))dynamic.push({file:f,kind:"non-literal-import-or-require"});const h=s.match(/(?:readdir(?:Sync)?|readFile(?:Sync)?|glob(?:Sync)?|fast-glob|opendir(?:Sync)?|createRequire\s*\()/g);if(h)runtimeFilesystem.push({file:f,signals:[...new Set(h)]})}
 if(dynamic.length)warnings.push({kind:"non-literal-dynamic-loaders",count:dynamic.length,sample:dynamic.slice(0,12)});if(generatedRuntimeReferences.length)warnings.push({kind:"generated-runtime-references",count:generatedRuntimeReferences.length,sample:generatedRuntimeReferences.slice(0,12)});if(unresolved.length)blockers.push({kind:"unresolved-first-party-imports",count:unresolved.length,sample:unresolved.slice(0,12)});
