@@ -283,3 +283,26 @@ Completion 022: supplemental execution contract corrected; machine execution OPE
 
 ### Next-work prompt
 Continue from Completion 022. Observe the new Actions run. Inspect primary and supplemental evidence first. If primary is clean, classify every supplemental blocker from the actual report and correct only verified tooling defects or document real closure requirements. Then allow closure mapping and Phase 7 second-pass to complete, run the combined Phase 1 gate, reconcile every Phase 7 candidate, and only after genuine PASS begin immutable source copying and Git-tree integrity verification.
+
+
+## Completion 023 — expose supplemental blocker categories before classification
+
+### Planned
+Use the first successful supplemental execution to distinguish evidence signals from genuine closure blockers. Do not weaken the gate based on an aggregate blocker count without identifying each blocker class.
+
+### Completed
+- Actions run 36683613382 executed the primary scanner successfully: 12,562 files walked, 5,902 source files, 22,320 edges, **0 genuine unresolved imports**, and 4 generated-runtime references.
+- The supplemental analyzer also executed successfully and produced its report, but correctly returned exit code 2 because it found 91 blocker records.
+- Added deterministic blocker-kind aggregation to the supplemental analyzer's console output so the next remote run exposes the exact composition of those 91 records before any classification change is made.
+- No pinned OmniRoute source files were modified.
+
+### Not done
+- Supplemental blocker classes have not yet been observed individually.
+- No blocker has been reclassified or suppressed.
+- Closure mapper, Phase 7, combined gate, reconciliation, immutable copy, and integrity verification remain blocked.
+
+### Gate
+Completion 023: primary import closure is machine-clean; supplemental evidence is now diagnosable. Phase 1 PASS OPEN. Phase 2 BLOCKED.
+
+### Next-work prompt
+Continue from Completion 023. Observe the next Actions run and record the supplemental blocker summary. Inspect each blocker class against its evidence. Only classify a blocker as non-blocking when the evidence proves it is an observation/metadata signal rather than a missing reusable source dependency. Preserve real database/migration, workspace-package, dynamic-loader, runtime-discovery, or other closure requirements. Then proceed to closure mapping and Phase 7 only after the supplemental gate is genuinely clean.
