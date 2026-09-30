@@ -50,7 +50,7 @@ function repositoryBoundedTarget(expression) {
 }
 
 function knownRuntimeDynamicEvidence(file, expression) {
-  const e=expression.replace(/^\\s*\\/\\*[^]*?\\*\\/\\s*/,"").trim();
+  const e=expression.replace(/^\s*\/\*[^]*?\*\/\s*/,"").trim();
   if (/^["'](?:node:sqlite|bun:sqlite)["']\\s+as\\s+never$/.test(e)) {
     return {kind:"type-only-import-expression",evidence:"TypeScript import type query; no runtime module edge."};
   }
