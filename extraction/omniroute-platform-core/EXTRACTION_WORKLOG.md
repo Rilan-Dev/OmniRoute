@@ -374,3 +374,31 @@ Observe the Actions run from bcadfe1a2f572e034da3a3da351c0599c6e8428a. Inspect t
 - Observe the Actions run for `411f683d95483a4d8c9546dde0d967b68793c26f`.
 - Inspect the new dynamic-loader and any remaining unresolved/DB samples and correct only demonstrated gaps.
 - Once the closure mapper genuinely passes, immediately run Phase 7, combined Phase 1 gate, and reconciliation before immutable copying.
+
+
+## Completion 039 — Fix mapper generated-runtime evidence initialization
+
+### Planned
+- Inspect the failed run after Completion 038/previous mapper hardening and repair only the verifier defect demonstrated by the remote execution.
+
+### Completed
+- Run `36756397987` reached the exact pinned OmniRoute checkout successfully.
+- Primary closure scanner passed: 5,902 source files, 22,320 edges, 0 unresolved first-party imports, 4 generated-runtime references.
+- Supplemental closure analyzer passed: 0 blockers across 5,599 source files, 1,085 dynamic imports, 1,836 DB references, 642 dashboard files, 162 tests, and 8 package manifests.
+- Closure mapper then failed before producing its report because `generatedRuntimeReferences` was referenced without being initialized. This is a verifier implementation defect, not source evidence.
+- Added explicit `generatedRuntimeReferences=[]` collection and classify relative references resolving under `dist/` as generated-runtime evidence/warnings while retaining genuine first-party unresolved imports as blockers.
+- Verifier commit: `d9c904dd01a89bdf77927dfc216b0e43cbc7308c`.
+- No pinned OmniRoute source was modified.
+
+### Not done
+- The repaired closure mapper has not yet completed remotely.
+- Phase 7 second pass, combined Phase 1 gate, Phase 7 reconciliation, immutable source copy, and exact Git blob/tree integrity verification remain pending.
+
+### Gate
+- Completion 039: PASS for the demonstrated mapper initialization defect repair.
+- Phase 1 overall remains OPEN until the repaired mapper completes with its actual blocker report.
+
+### Next-work prompt
+- Inspect the Actions run triggered by `d9c904dd01a89bdf77927dfc216b0e43cbc7308c`.
+- If the mapper exposes real blockers, inspect concrete samples and repair only proven verifier gaps or document genuine closure requirements.
+- If the mapper passes, immediately verify Phase 7 second pass, combined Phase 1 gate, and reconciliation before creating the complete immutable pinned-tree snapshot.
