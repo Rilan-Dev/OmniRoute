@@ -627,3 +627,28 @@ Completion 048: PASS for the demonstrated Phase 7 verifier repair. Overall extra
 
 ### Next-work prompt
 Run the extraction verification workflow from the current branch head. Inspect primary scanner, supplemental analyzer, closure mapper, and corrected Phase 7 output in order. For every remaining blocker, inspect exact pinned-source evidence and repair only verifier defects; preserve fail-closed behavior for genuine closure gaps. Once the four collectors are clean, add/execute the combined Phase 1 gate and explicit Phase 7 reconciliation so every discovered candidate has a documented disposition. Only after those gates genuinely PASS may Phase 2 exact immutable source copying begin.
+
+
+## Completion 049 — Enforce machine gate and Phase 7 reconciliation
+
+### Planned
+Continue from Completion 048 by making the verification workflow itself enforce the extraction gate instead of merely collecting reports. The primary report must carry the pinned commit/tree, Phase 7 candidates must be reconciled, and raw reports must remain available even when a gate fails.
+
+### Completed
+- Added deterministic `phase7-reconciliation.mjs` to join every Phase 7 discovered candidate to an explicit reusable/product/host-boundary disposition and fail closed on unreviewed candidates.
+- Hardened `phase1-gate.mjs` to require Phase 7 reconciliation, source pinning, required report sections, and zero reported blockers.
+- Hardened the primary closure scanner to record `source_commit` and `source_tree` directly from the scanned checkout.
+- Updated the extraction workflow to execute Phase 7 reconciliation and the combined Phase 1 gate.
+- Updated artifact upload to run with `always()` so failed verification still leaves raw evidence available.
+- No pinned OmniRoute source files were modified; Phase 2 exact copying remains blocked.
+
+### Not done
+- The new combined workflow has not yet been inspected through a completed run at the latest tooling head.
+- No immutable source or dependency/UI closure has been copied.
+- Capability manifests, host-neutral contracts, adapters, and copy-to-any-project package remain intentionally unstarted.
+
+### Gate
+Completion 049: verification architecture is now fail-closed at the workflow level. Overall Phase 1 PASS remains OPEN until a real run proves primary + supplemental + mapper + Phase 7 + reconciliation + gate all PASS.
+
+### Next-work prompt
+Inspect the Actions run triggered by the latest extraction-branch commit. Use the raw verification artifacts/logs to resolve the first concrete failure only. Do not weaken closure requirements. Once all collectors and reconciliation pass, confirm the combined Phase 1 gate PASS; only then begin Phase 2 exact full-tree copying from commit 453918ab64f147604576e72d33e2bbfc12b2d1af with Git blob/tree verification.
