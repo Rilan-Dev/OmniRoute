@@ -30,20 +30,21 @@ const read=p=>fs.readFileSync(p,"utf8");
 const blockers=[], dynamic=[], boundedDynamic=[], runtimeFs=[], dbRefs=[], migrations=[], ui=[], tests=[], packages=[];
 const env=new Map();
 function repositoryBoundedTarget(expression) {
-  const e=expression.replace(/\\s+/g,"");
-  let m=e.match(/^projectFileUrl\\(["']([^"']+)["']\\)$/);
+  const e=expression.replace(/\s+/g,"");
+  let m=e.match(/^projectFileUrl\(["']([^"']+)["']\)$/);
   if (m) {
     const target=path.resolve(ROOT,m[1]);
     return fs.existsSync(target) ? target : null;
   }
-  m=e.match(/^pathToFileURL\\((?:path\\.)?(?:join|resolve)\\((ROOT|PROJECT_ROOT|REPO),(.+)\\)\\)\\.href$/);
-  if (!m) m=e.match(/^(?:path\\.)?join\\(REPO,(.+)\\)$/);
+  m=e.match(/^pathToFileURL\((?:path\.)?(?:join|resolve)\((ROOT|PROJECT_ROOT|REPO),(.+)\)\)\.href$/);
+  if (!m) m=e.match(/^(?:path\.)?join\(REPO,(.+)\)$/);
   if (!m) return null;
   const tail=m[2] ?? m[1];
-  const segments=[...tail.matchAll(/"((?:\\\\.|[^"\\\\])*)"|'((?:\\\\.|[^'\\\\])*')/g)].map(x=>x[1]??x[2]);
+  const segments=[...tail.matchAll(/"((?:\\.|[^"\\])*)"|'((?:\\.|[^'\\])*)'/g)].map(x=>x[1]??x[2]);
   if (!segments.length) return null;
-  const normalized=tail.replace(/["']((?:\\\\.|[^"'])*?)["']/g,'"$1"').replace(/,/g,",");
-  if (normalized.replace(/"/g,"") !== segments.join(",")) return null;
+  const normalized=tail.replace(/"((?:\\.|[^"\\])*)"|'((?:\\.|[^'\\])*)'/g,(_,a,b)=>JSON.stringify(a??b)).replace(/,/g,",");
+  const reconstructed=segments.map(s=>JSON.stringify(s)).join(",");
+  if (normalized !== reconstructed) return null;
   const target=path.resolve(ROOT,...segments);
   return fs.existsSync(target) ? target : null;
 }
