@@ -12,7 +12,8 @@ const EXPECTED_TREE = "76f3546d48a7293b199b7571d13808bebadb6d1f";
 const primaryPath = process.argv[2] ?? "extraction/omniroute-platform-core/verification/phase1-closure-report.json";
 const supplementalPath = process.argv[3] ?? "extraction/omniroute-platform-core/verification/phase1-supplemental-closure.json";
 const mapPath = process.argv[4] ?? "extraction/omniroute-platform-core/verification/phase1-closure-map.json";
-const outPath = process.argv[5] ?? "extraction/omniroute-platform-core/verification/phase1-gate.json";
+const phase7Path = process.argv[5] ?? "extraction/omniroute-platform-core/verification/phase7-second-pass.json";
+const outPath = process.argv[6] ?? "extraction/omniroute-platform-core/verification/phase1-gate.json";
 
 const blockers = [];
 const readJson = p => {
@@ -23,6 +24,7 @@ const readJson = p => {
 const primary = readJson(primaryPath);
 const supplemental = readJson(supplementalPath);
 const mapped = readJson(mapPath);
+const phase7 = readJson(phase7Path);
 
 if (primary) {
   if (primary.source_commit && primary.source_commit !== EXPECTED_COMMIT)
@@ -40,6 +42,13 @@ if (mapped) {
   else if (mapped.blockers.length) blockers.push({kind:"closure-map-blockers",count:mapped.blockers.length});
   for (const key of ["database","dashboard","tests","packages","host_boundaries"]) if (mapped[key] === undefined) blockers.push({kind:"missing-map-section",section:key});
 }
+if (phase7) {
+  if (phase7.pinned_source_commit !== EXPECTED_COMMIT) blockers.push({kind:"wrong-phase7-pin",actual:phase7.pinned_source_commit,expected:EXPECTED_COMMIT});
+  if (phase7.pinned_source_tree !== EXPECTED_TREE) blockers.push({kind:"wrong-phase7-tree",actual:phase7.pinned_source_tree,expected:EXPECTED_TREE});
+  if (!Array.isArray(phase7.blockers)) blockers.push({kind:"missing-phase7-blockers-list"});
+  else if (phase7.blockers.length) blockers.push({kind:"phase7-blockers",count:phase7.blockers.length});
+  if (!phase7.categories || typeof phase7.categories !== "object") blockers.push({kind:"missing-phase7-categories"});
+}
 if (supplemental) {
   if (supplemental.pinned_source_required !== EXPECTED_COMMIT)
     blockers.push({kind:"wrong-supplemental-pin",actual:supplemental.pinned_source_required,expected:EXPECTED_COMMIT});
@@ -52,10 +61,10 @@ if (supplemental) {
 const required = [
   ["primary","edges"],["primary","environment_references"],["primary","source_file_sha256"],
   ["supplemental","dynamic_imports"],["supplemental","runtime_filesystem_signals"],
-  ["supplemental","database"],["supplemental","dashboard"],["supplemental","tests"],["supplemental","packages"],["mapped","database"],["mapped","dashboard"],["mapped","tests"],["mapped","packages"],["mapped","host_boundaries"]
+  ["supplemental","database"],["supplemental","dashboard"],["supplemental","tests"],["supplemental","packages"],["mapped","database"],["mapped","dashboard"],["mapped","tests"],["mapped","packages"],["mapped","host_boundaries"],["phase7","categories"],["phase7","api_route_families"]
 ];
 for (const [which,key] of required) {
-  const obj=which==="primary"?primary:which==="supplemental"?supplemental:mapped;
+  const obj=which==="primary"?primary:which==="supplemental"?supplemental:which==="mapped"?mapped:phase7;
   if (!obj || obj[key] === undefined) blockers.push({kind:"missing-report-section",report:which,section:key});
 }
 
@@ -66,6 +75,7 @@ const result = {
   primary_report:primaryPath,
   supplemental_report:supplementalPath,
   closure_map_report:mapPath,
+  phase7_report:phase7Path,
   blockers,
   pass:blockers.length===0
 };

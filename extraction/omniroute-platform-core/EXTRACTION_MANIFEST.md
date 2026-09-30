@@ -14,7 +14,7 @@
 - Phase 2 exact source extraction: NOT STARTED.
 - Phase 3 manifests: NOT STARTED.
 - Phase 4 contracts/adapters: NOT STARTED.
-- Phase 5 verification: NOT STARTED.
+- Phase 5 verification: TOOLING PREPARED; EXECUTION NOT STARTED.
 - Phase 7 independent reusable-capability second pass: TOOLING ADDED; EXECUTION PENDING.
 - Host integration: BLOCKED until Phase 5 PASS.
 
@@ -27,3 +27,11 @@ No immutable upstream source has been copied or changed. Phase 2 is blocked unti
 
 ## Integrity requirement
 The eventual extraction verifier must compare copied source blobs and trees against source commit 453918ab64f147604576e72d33e2bbfc12b2d1af and root tree 76f3546d48a7293b199b7571d13808bebadb6d1f.
+
+## Final integrity artifact
+- verification/extraction-integrity-verifier.mjs
+- verification/EXTRACTION-INTEGRITY-VERIFIER.md
+- Must PASS after Phase 2 exact copying.
+
+## Immutable source status
+No immutable upstream source has been copied or changed. Phase 2 remains blocked until machine-complete closure passes.
