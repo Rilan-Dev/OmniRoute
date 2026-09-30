@@ -10,12 +10,12 @@
 
 ## Status
 - Phase 0 architecture/source audit: substantially documented.
-- Phase 1 closure baseline: PASS; machine-complete closure remains OPEN.
+- Phase 1 closure tooling: prepared; machine-complete closure remains OPEN until the current combined workflow produces a real PASS.
 - Phase 2 exact source extraction: NOT STARTED.
 - Phase 3 manifests: NOT STARTED.
 - Phase 4 contracts/adapters: NOT STARTED.
-- Phase 5 verification: TOOLING PREPARED; EXECUTION NOT STARTED.
-- Phase 7 independent reusable-capability second pass: TOOLING ADDED; EXECUTION PENDING.
+- Phase 5 verification: integrity tooling prepared; execution remains blocked until Phase 2 exact copying.
+- Phase 7 independent reusable-capability second pass: tooling + reconciliation added; execution evidence pending.
 - Host integration: BLOCKED until Phase 5 PASS.
 
 ## Phase 7 artifact
