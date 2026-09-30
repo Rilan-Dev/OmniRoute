@@ -426,3 +426,29 @@ Completion 040: PASS for the two demonstrated mapper false-positive mechanisms. 
 ### Next-work prompt
 Observe the Actions run triggered by this mapper repair. Inspect the mapper output and every remaining blocker. Repair only evidence-proven verifier defects or document genuine closure requirements. If the mapper passes, immediately execute Phase 7 second pass, combined Phase 1 gate, and Phase 7 reconciliation. Only after those gates genuinely PASS create the complete immutable pinned-tree snapshot and run exact Git blob/tree integrity verification.
 
+
+
+## Completion 041 — Align mapper import evidence with executable source
+
+### Planned
+Inspect the mapper blockers from run 36758927922 and repair only demonstrated verifier defects.
+
+### Completed
+- Remote primary scanner passed with 5,902 source files, 22,320 edges, and 0 unresolved imports.
+- Remote supplemental analyzer passed with 0 blockers.
+- The mapper still reported 168 unresolved first-party imports.
+- Samples demonstrated mapper-only false positives: import syntax inside comments was parsed as executable imports, and repository @omniroute/open-sse and @omniroute/browser-pool TypeScript path aliases were not resolved.
+- The mapper now strips JS/TS comments before literal import extraction, resolves both repository aliases, and classifies missing .next/ and .build/ artifact references as generated-runtime evidence alongside dist/.
+- No pinned OmniRoute source was changed.
+- Verifier commit: fae07ff98f635cb8f14871821aa21e072a7798f1.
+
+### Not done
+- The mapper repair has not yet completed remotely.
+- DB-table evidence still needs re-evaluation after the import repair.
+- Phase 7 second pass, combined Phase 1 gate, Phase 7 reconciliation, immutable source copy, and exact Git blob/tree integrity verification remain pending.
+
+### Gate
+Completion 041: PASS for the demonstrated mapper import false-positive mechanisms. Phase 1 overall remains OPEN until remote mapper execution proves the repair.
+
+### Next-work prompt
+Observe the Actions run triggered by fae07ff98f635cb8f14871821aa21e072a7798f1. Inspect the mapper remaining import and DB blockers. Repair only evidence-proven verifier defects or document genuine closure requirements. If the mapper passes, immediately execute Phase 7 second pass, combined Phase 1 gate, and reconciliation before immutable copying.
