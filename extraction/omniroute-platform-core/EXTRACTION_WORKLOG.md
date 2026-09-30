@@ -144,3 +144,30 @@ Completion 029: deterministic repository-path classification is now evidence-bac
 
 ### Next-work prompt
 Observe the Actions run from bcadfe1a2f572e034da3a3da351c0599c6e8428a. Inspect the new blocker count/sample and every remaining expression. Do not broadly suppress runtime-supplied module IDs. For bounded candidates, require exact target existence and preserve the target in the report. For external/optional/plugin/native loaders, add explicit dependency-closure evidence and host-boundary classification. Once all blockers are genuinely resolved, run closure mapper, Phase 7, combined gate, reconciliation, immutable copy, and exact Git-tree verification.
+
+## Completion 030 — Repair repository-bounded dynamic-loader resolver regex
+
+### Planned
+- Inspect the first remote execution after Completion 029 and determine why deterministic repository-bounded loaders were still reported as generic blockers.
+
+### Completed
+- Remote run `36692809618` executed the pinned source successfully and failed only in the supplemental closure analyzer with **34 dynamic-import blockers**.
+- The analyzer source was inspected at the exact workflow head and the new `repositoryBoundedTarget()` resolver was found to contain over-escaped regular-expression literals, so deterministic expressions could not match.
+- Corrected only the verifier implementation; no pinned OmniRoute source was changed.
+- The resolver now recognizes the intended deterministic repository forms while requiring exact target existence before suppressing a blocker.
+- Commit: `9ad4606630c4fc205459351196dd0357559d54cb`.
+
+### Not done
+- The corrected verifier has not yet completed a remote Actions run.
+- Runtime-supplied loaders remain fail-closed until individually classified.
+- Phase 1/Phase 7 gates, immutable copy, and exact integrity verification remain blocked.
+
+### Gate
+- **Completion 030: PASS for verifier repair; Phase 1 overall remains OPEN.**
+- No blocker was suppressed based only on naming or assumptions.
+
+### Next-work prompt
+- Observe the Actions run triggered by `9ad4606630c4fc205459351196dd0357559d54cb`.
+- Inspect the complete blocker summary/sample after the corrected resolver executes.
+- Classify every remaining non-literal loader as deterministic repository-bounded, generated/native runtime, external/user/config supplied, or unresolved; do not broadly suppress runtime module IDs.
+- If supplemental closure reaches zero blockers, immediately run/verify closure mapper + Phase 7 + combined gate + Phase 7 reconciliation, then proceed to the immutable pinned source copy and exact Git-tree integrity verifier.
