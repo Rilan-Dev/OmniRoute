@@ -74,5 +74,5 @@ const result={
 };
 const out=path.resolve(process.argv[3]??"phase1-closure-report.json");
 fs.writeFileSync(out,JSON.stringify(result,null,2)+"\n");
-console.log(JSON.stringify({scanned_files:files.length,source_files:sourceFiles.length,edges:edges.length,unresolved:unresolved.length,output:out},null,2));
+console.log(JSON.stringify({scanned_files:files.length,source_files:sourceFiles.length,edges:edges.length,unresolved:unresolved.length,unresolved_sample:unresolved.slice(0,30),output:out},null,2));
 if (unresolved.length) process.exitCode=2;

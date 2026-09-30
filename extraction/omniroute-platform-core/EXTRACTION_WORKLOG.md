@@ -107,3 +107,28 @@ Completion 015: verification-tool correction prepared; machine execution OPEN. P
 
 ### Next-work prompt
 Continue from Completion 015. Observe the GitHub Actions run produced by this commit. If the primary scanner still reports unresolved first-party imports, inspect the emitted unresolved sample and classify the actual causes before changing the resolver again. If the primary scanner passes, inspect the next collector failure and fix only that concrete tooling defect. Do not suppress unresolved imports or convert first-party files into externals merely to obtain a pass. Once all four collectors execute, inspect their raw evidence and run the combined Phase 1 gate. Then reconcile every Phase 7 candidate against closure evidence and capability inventory. Keep Phase 2 immutable copying BLOCKED until genuine machine-complete PASS.
+
+
+## Completion 016 — expose concrete residual import failures
+
+### Planned
+Continue from Completion 015 by observing the corrected resolver on the exact pinned source. Classify the remaining unresolved imports from real remote evidence before making another resolver change.
+
+### Completed
+- Observed workflow run `36679237378`, job `109770844963`, produced by commit `1c4dd15326e1e34187da7bc97e35d86fce6e8c3a`.
+- Exact pinned source worktree creation again passed for commit `453918ab64f147604576e72d33e2bbfc12b2d1af` and tree `76f3546d48a7293b199b7571d13808bebadb6d1f`.
+- The corrected primary scanner executed successfully as a process but failed closed on `195` unresolved first-party imports, down from `196` in the prior run. This confirms the exact-path resolver correction removed one false unresolved edge but does not justify further assumptions.
+- The attempted console sample addition was not present in the committed scanner output, so the residual cases were not yet exposed in the job log.
+- The scanner is therefore updated again only to emit the first 30 unresolved entries in its compact console summary. This does not weaken the report or fail-closed behavior; it only makes the already-recorded unresolved evidence inspectable in Actions.
+- No pinned source files were modified.
+
+### Not done
+- The 195 residual imports have not yet been classified.
+- Supplemental analyzer, closure mapper, Phase 7 scanner, combined gate, and Phase 7 reconciliation remain blocked by the primary collector's fail-closed exit.
+- Immutable source copying remains BLOCKED.
+
+### Gate
+Completion 016: residual-evidence instrumentation prepared; machine execution OPEN. Phase 1 PASS OPEN. Phase 2 BLOCKED.
+
+### Next-work prompt
+Continue from Completion 016. Observe the Actions run from this commit and inspect the emitted unresolved sample. Classify residuals into real first-party closure gaps versus legitimate asset/package/runtime forms. Fix only verified resolver/tooling defects; do not suppress genuine missing first-party dependencies. Then rerun the complete collector sequence, inspect all evidence, and only after a genuine combined Phase 1 PASS proceed to Phase 7 reconciliation and immutable source copying.
