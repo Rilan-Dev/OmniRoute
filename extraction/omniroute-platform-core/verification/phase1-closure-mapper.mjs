@@ -1,11 +1,16 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 
 const root=path.resolve(process.argv[2]||".");
 const out=path.resolve(process.argv[3]||"extraction/omniroute-platform-core/verification/phase1-closure-map.json");
 const PIN="453918ab64f147604576e72d33e2bbfc12b2d1af";
 const blockers=[], warnings=[];
+const git=(args)=>{const x=spawnSync("git",args,{cwd:root,encoding:"utf8"});return x.status===0?x.stdout.trim():null};
+const actualCommit=git(["rev-parse","HEAD"]); const actualTree=git(["rev-parse","HEAD^{tree}"]);
+if(actualCommit!==PIN) blockers.push({kind:"wrong-checkout-commit",actual:actualCommit,expected:PIN});
+if(actualTree && actualTree!=="76f3546d48a7293b199b7571d13808bebadb6d1f") blockers.push({kind:"wrong-checkout-tree",actual:actualTree,expected:"76f3546d48a7293b199b7571d13808bebadb6d1f"});
 const abs=p=>path.join(root,p);
 const exists=p=>fs.existsSync(abs(p));
 if(!exists("src")||!exists("open-sse")||!exists("package.json"))
@@ -56,7 +61,7 @@ if(unresolved.length) blockers.push({kind:"unresolved-first-party-imports",count
 const env=[];
 for(const f of textFiles){const s=read(f),re=/process\.env\.([A-Z0-9_]+)/g;let m;while((m=re.exec(s)))env.push({file:f,name:m[1]});}
 
-const dbModules=[], migrations=[], schemaTables=new Set();
+const dbModules=[], migrations=[], schemaTables=new Map();
 for(const f of textFiles){
   const s=read(f);
   if(f.startsWith("src/lib/db/")){
@@ -67,7 +72,7 @@ for(const f of textFiles){
   if(/(^|\/)migrations?(\/|$)/i.test(f)) migrations.push(f);
 }
 for(const f of migrations) for(const m of read(f).matchAll(/\b(?:CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|ALTER\s+TABLE)\s+["']?([A-Za-z0-9_.$-]+)/gi)) schemaTables.add(m[1]);
-const unknownDb=dbModules.flatMap(x=>x.tables.filter(t=>schemaTables.size&&!schemaTables.has(t)).map(t=>({module:x.module,table:t})));
+const unknownDb=dbModules.flatMap(x=>x.tables.filter(t=>!schemaTables.has(t)).map(t=>({module:x.module,table:t})));
 if(unknownDb.length) blockers.push({kind:"db-table-not-found-in-migrations",count:unknownDb.length});
 if(!migrations.length) warnings.push({kind:"no-migration-directory-detected"});
 
@@ -75,6 +80,10 @@ const dashboard=all.filter(f=>f.startsWith("src/app/(dashboard)/dashboard/")&&/\
 const dashboardMap=dashboard.map(f=>{
   const s=read(f);
   const direct=imports.filter(x=>x.from===f).map(x=>x.target).filter(Boolean);
+  const components=direct.filter(x=>/\.(?:tsx|jsx)$/.test(x));
+  const hooks=direct.filter(x=>/(?:^|\/)(?:use[A-Z]|hooks?)(?:[^/]*)(?:\.ts|\.tsx|\.js|\.jsx)$/.test(x));
+  const stores=direct.filter(x=>/(?:store|stores|state|zustand|redux)/i.test(x));
+  const dialogs=direct.filter(x=>/(?:dialog|modal|drawer|sheet)/i.test(x));
   const stateRules={
     loading:/\b(?:loading|isLoading|pending|skeleton)\b/i,
     empty:/\b(?:empty|no\s+(?:data|results|items)|nothing\s+found)\b/i,
@@ -83,7 +92,7 @@ const dashboardMap=dashboard.map(f=>{
     success:/\b(?:success|succeeded|completed)\b/i,
     permission:/\b(?:permission|forbidden|unauthorized|can[A-Z]|allowed)\b/i
   };
-  return {routeFile:f,imports:direct,states:Object.keys(stateRules).filter(k=>stateRules[k].test(s))};
+  return {routeFile:f,imports:direct,components,hooks,stores,dialogs,states:Object.keys(stateRules).filter(k=>stateRules[k].test(s))};
 });
 
 const tests=all.filter(f=>/(^|\/)(tests?|__tests__)(\/|$)|\.(test|spec)\.(ts|tsx|js|jsx|mjs|cjs)$/.test(f))
@@ -107,9 +116,9 @@ const boundaryPatterns=[
 const hostBoundaries=[];
 for(const f of textFiles){const s=read(f),kinds=boundaryPatterns.filter(x=>x[1].test(s)).map(x=>x[0]);if(kinds.length)hostBoundaries.push({file:f,kinds:[...new Set(kinds)]});}
 
-const report={schema_version:1,pinned_source_commit:PIN,generated_at:"deterministic-run-required",
+const report={schema_version:2,pinned_source_commit:PIN,actual_checkout:{commit:actualCommit,tree:actualTree},generated_at:"deterministic-run-required",
 blockers,warnings,first_party_imports:{count:imports.length,unresolved},dynamic_loaders:dynamic,runtime_filesystem:runtimeFilesystem,
-environment_references:env,database:{modules:dbModules,migrations,unknown_tables:unknownDb},dashboard:dashboardMap,tests,
+environment_references:env,database:{modules:dbModules,migrations,table_migration_history:Object.fromEntries(schemaTables),unknown_tables:unknownDb},dashboard:dashboardMap,tests,
 packages:{manifests:packages,workspace_references:workspaceRefs,lockfiles},host_boundaries:hostBoundaries};
 fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify(report,null,2)+"\n");
 console.log(JSON.stringify({pass:blockers.length===0,blockers:blockers.length,output:out},null,2));
