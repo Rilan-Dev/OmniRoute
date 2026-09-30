@@ -452,3 +452,29 @@ Completion 041: PASS for the demonstrated mapper import false-positive mechanism
 
 ### Next-work prompt
 Observe the Actions run triggered by fae07ff98f635cb8f14871821aa21e072a7798f1. Inspect the mapper remaining import and DB blockers. Repair only evidence-proven verifier defects or document genuine closure requirements. If the mapper passes, immediately execute Phase 7 second pass, combined Phase 1 gate, and reconciliation before immutable copying.
+
+
+## Completion 042 — Repair mapper closure false positives from remote evidence
+
+### Planned
+Inspect the remote mapper failure after Completion 041 and repair only demonstrated verifier defects; preserve fail-closed behavior and the pinned OmniRoute source.
+
+### Completed
+- Remote run `36678493477` created the exact pinned source worktree at commit `453918ab64f147604576e72d33e2bbfc12b2d1af` / tree `76f3546d48a7293b199b7571d13808bebadb6d1f`.
+- Primary closure scanner passed with 5,902 source files and 0 unresolved first-party imports.
+- Supplemental analyzer passed with 0 blockers.
+- The closure mapper remained the failing verifier: 171 unresolved first-party imports and 164 unknown DB tables.
+- Import samples demonstrated that the mapper was stricter/different from the already-passing primary resolver: generated `dist` references, package self/workspace aliases, and repository package resolution were being treated as unresolved. The mapper was updated to resolve `@omniroute/*` workspace packages from repository `package.json` metadata while retaining genuine unresolved imports as blockers.
+- DB samples such as `SET`, `source`, `a`, `uuid`, `it`, and `so` demonstrated SQL-text false positives from ordinary code strings/prose. The mapper was tightened to inspect SQL-bearing string values only when they have SQL statement structure before extracting table references. Unknown-table reporting remains fail-closed for structured SQL references that do not map to migration evidence.
+- Verifier commit: `22ae5b62f934dac77bcb4045f8305e4b63f1a1ee`.
+- No pinned OmniRoute source was modified.
+
+### Not done
+- Remote execution of the repaired mapper is pending.
+- Combined Phase 1 gate, Phase 7 reconciliation, immutable source copy, and exact Git blob/tree integrity verification remain pending.
+
+### Gate
+Completion 042: PASS for the demonstrated mapper defects. Phase 1 overall remains OPEN until remote execution proves the mapper repair and all required gates pass.
+
+### Next-work prompt
+Observe the Actions run triggered by `22ae5b62f934dac77bcb4045f8305e4b63f1a1ee`. Inspect every mapper result. If new blockers are genuine, document them; if they are verifier defects, repair only the proven mechanism. Once mapper passes, run/inspect Phase 7 and the combined Phase 1 gate, then perform Phase 7 reconciliation. Do not copy the immutable source tree until the evidence gates genuinely PASS.
