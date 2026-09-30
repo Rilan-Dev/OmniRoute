@@ -17,13 +17,28 @@ function walk(rel){const dir=abs(rel);if(!fs.existsSync(dir))return[];const out=
 const all=walk("."), rels=new Set(all.map(p=>p.replaceAll(path.sep,"/")));
 const textFiles=all.filter(p=>/\.(ts|tsx|js|jsx|mjs|cjs|json|sql|md|yaml|yml)$/i.test(p)), codeFiles=textFiles.filter(p=>/\.(ts|tsx|js|jsx|mjs|cjs)$/.test(p));
 const read=p=>{try{return fs.readFileSync(abs(p),"utf8")}catch{return""}}, norm=p=>p.replaceAll(path.sep,"/");
+const workspacePackages=new Map();
+for(const pf of all.filter(f=>path.basename(f)==="package.json")){
+  try { const pkg=JSON.parse(read(pf)); if(pkg?.name) workspacePackages.set(pkg.name,{root:norm(path.dirname(pf)),pkg}); } catch {}
+}
+const workspacePackages=new Map();
+for(const pf of all.filter(f=>path.basename(f)==="package.json")){
+  try { const pkg=JSON.parse(read(pf)); if(pkg?.name) workspacePackages.set(pkg.name,{root:norm(path.dirname(pf)),pkg}); } catch {}
+}
 function resolveInternal(from,spec){
   if(!spec.startsWith(".")&&!spec.startsWith("@/")&&!spec.startsWith("@omniroute/"))return null;
   let base;
   if(spec.startsWith("@/")) base=path.join("src",spec.slice(2));
   else if(spec==="@omniroute/open-sse"||spec.startsWith("@omniroute/open-sse/")) base=path.join("open-sse",spec.slice("@omniroute/open-sse".length).replace(/^\//,""));
   else if(spec==="@omniroute/browser-pool"||spec.startsWith("@omniroute/browser-pool/")) base=path.join("packages/browser-pool/src",spec.slice("@omniroute/browser-pool".length).replace(/^\//,""));
-  else base=path.join(path.dirname(from),spec);
+  else {
+    const name=[...workspacePackages.keys()].find(name=>spec===name||spec.startsWith(`${name}/`));
+    const workspace=name ? workspacePackages.get(name) : null;
+    if(workspace){
+      const subpath=name && spec.length>name.length ? spec.slice(name.length).replace(/^\//,"") : "";
+      base=path.join(workspace.root,subpath || "src/index");
+    } else base=path.join(path.dirname(from),spec);
+  }
   base=norm(path.normalize(base));
   const extMap={".js":[".js",".ts",".tsx",".jsx",".mjs",".cjs"],".jsx":[".jsx",".tsx",".js"],".mjs":[".mjs",".ts",".js"],".cjs":[".cjs",".ts",".js"],".ts":[".ts",".tsx",".js"],".tsx":[".tsx",".ts",".js"]};
   const ext=path.extname(base),stem=ext?base.slice(0,-ext.length):base;
@@ -62,7 +77,8 @@ for(const f of migrationFiles){const s=read(f);migrations.push(f);
  for(const m of s.matchAll(/\bDROP\s+(?:TABLE|INDEX)\s+["']?([A-Za-z0-9_.$-]+)["']?/gi))add(m[1],"drop-object",f,{})}
 function stripJsComments(s){let o="",i=0,state="code",quote="";while(i<s.length){const ch=s[i],nx=s[i+1];if(state==="code"&&(ch==='"'||ch==="'"||ch==="`")){state="string";quote=ch;o+=ch;i++;continue}if(state==="string"){o+=ch;if(ch==="\\"){o+=s[i+1]||"";i+=2;continue}if(ch===quote)state="code";i++;continue}if(state==="code"&&ch==="/"&&nx==="/"){state="line";o+="  ";i+=2;continue}if(state==="code"&&ch==="/"&&nx==="*"){state="block";o+="  ";i+=2;continue}if(state==="line"&&ch==="\n"){state="code";o+="\n";i++;continue}if(state==="block"&&ch==="*"&&nx==="/"){state="code";o+="  ";i+=2;continue}o+=ch;i++}return o} 
 function extractSqlStrings(s){const out=[];let i=0;while(i<s.length){const q=s[i];if(q==="\""||q==="'"||q==="\`"){let j=i+1,b="";while(j<s.length){if(s[j]==="\\"){b+=s[j]+(s[j+1]||"");j+=2;continue}if(s[j]===q){out.push(b);i=j+1;break}b+=s[j];j++}if(j>=s.length)i=j;continue}i++}return out}
-for(const f of codeFiles.filter(f=>f.startsWith("src/lib/db/"))){const s=stripJsComments(read(f)),sqlParts=extractSqlStrings(s),tables=new Set(),columns=new Map();for(const sql of sqlParts)for(const m of sql.matchAll(/\b(?:FROM|JOIN|UPDATE|INTO|DELETE\s+FROM|CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|ALTER\s+TABLE)\s+["']?([A-Za-z0-9_.$-]+)/gi))tables.add(m[1]);for(const m of s.matchAll(/\b([A-Za-z_][A-Za-z0-9_]*)\s*\.\s*([A-Za-z_][A-Za-z0-9_]*)\b/g)){if(!columns.has(m[1]))columns.set(m[1],new Set());columns.get(m[1]).add(m[2])}if(tables.size)dbModules.push({module:f,tables:[...tables],qualified_column_usage:Object.fromEntries([...columns].map(([k,v])=>[k,[...v]]))})}
+const SQL_CLAUSE_WORDS=new Set(["SET","WHERE","VALUES","SELECT","RETURNING","FROM","JOIN","ON","GROUP","ORDER","LIMIT","OFFSET","UNION","EXCEPT","INTERSECT"]);
+for(const f of codeFiles.filter(f=>f.startsWith("src/lib/db/"))){const s=stripJsComments(read(f)),sqlParts=extractSqlStrings(s),tables=new Set(),columns=new Map();for(const sql of sqlParts){for(const m of sql.matchAll(/\b(?:FROM|JOIN|UPDATE|INTO|DELETE\s+FROM|CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|ALTER\s+TABLE)\s+["']?([A-Za-z0-9_.$-]+)/gi)){const table=m[1];if(!SQL_CLAUSE_WORDS.has(table.toUpperCase()))tables.add(table)}}for(const m of s.matchAll(/\b([A-Za-z_][A-Za-z0-9_]*)\s*\.\s*([A-Za-z_][A-Za-z0-9_]*)\b/g)){if(!columns.has(m[1]))columns.set(m[1],new Set());columns.get(m[1]).add(m[2])}if(tables.size)dbModules.push({module:f,tables:[...tables],qualified_column_usage:Object.fromEntries([...columns].map(([k,v])=>[k,[...v]]))})}
 const unknownDb=dbModules.flatMap(x=>x.tables.filter(t=>!schema.has(t)).map(t=>({module:x.module,table:t})));if(unknownDb.length)blockers.push({kind:"db-table-not-found-in-migrations",count:unknownDb.length,sample:unknownDb.slice(0,12)});
 
 /* Recursive dashboard dependency/state evidence. */
