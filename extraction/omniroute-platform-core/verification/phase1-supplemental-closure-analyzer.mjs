@@ -27,7 +27,7 @@ const code=all.filter(p=>CODE_EXTS.has(path.extname(p)));
 const source=code.filter(p=>SOURCE_ROOTS.some(r=>rel(p)===r||rel(p).startsWith(r+"/")));
 const read=p=>fs.readFileSync(p,"utf8");
 
-const blockers=[], dynamic=[], boundedDynamic=[], runtimeFs=[], dbRefs=[], migrations=[], ui=[], tests=[], packages=[];
+const blockers=[], dynamic=[], boundedDynamic=[], runtimeDynamic=[], runtimeFs=[], dbRefs=[], migrations=[], ui=[], tests=[], packages=[];
 const env=new Map();
 function repositoryBoundedTarget(expression) {
   const e=expression.replace(/\s+/g,"");
