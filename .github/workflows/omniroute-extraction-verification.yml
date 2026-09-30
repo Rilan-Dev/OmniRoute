@@ -29,6 +29,8 @@ jobs:
           node extraction/omniroute-platform-core/verification/phase1-supplemental-closure-analyzer.mjs ../omniroute-source extraction/omniroute-platform-core/verification/phase1-supplemental-report.json
           node extraction/omniroute-platform-core/verification/phase1-closure-mapper.mjs ../omniroute-source extraction/omniroute-platform-core/verification/phase1-closure-map.json
           node extraction/omniroute-platform-core/verification/phase7-second-pass.mjs ../omniroute-source extraction/omniroute-platform-core/verification/phase7-second-pass.json
+          node extraction/omniroute-platform-core/verification/phase7-reconciliation.mjs extraction/omniroute-platform-core/verification/phase7-second-pass.json extraction/omniroute-platform-core/verification/phase7-reconciliation.json
+          node extraction/omniroute-platform-core/verification/phase1-gate.mjs             extraction/omniroute-platform-core/verification/phase1-closure-report.json             extraction/omniroute-platform-core/verification/phase1-supplemental-report.json             extraction/omniroute-platform-core/verification/phase1-closure-map.json             extraction/omniroute-platform-core/verification/phase7-second-pass.json             extraction/omniroute-platform-core/verification/phase7-reconciliation.json             extraction/omniroute-platform-core/verification/phase1-gate.json
 
       - name: Upload raw verification reports
         uses: actions/upload-artifact@v4
