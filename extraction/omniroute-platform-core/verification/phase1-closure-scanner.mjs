@@ -60,7 +60,7 @@ function resolveImport(from,spec) {
     if (pkgName) {
       const pkgRoot=packageNameToRoot.get(pkgName);
       const suffix=spec===pkgName ? "" : spec.slice(pkgName.length+1);
-      const candidates=fileCandidates(path.join(ROOT,pkgRoot,suffix));
+      const candidates=fileCandidates(path.join(pkgRoot,suffix));
       const meta=packageMetadata.get(pkgName);
       if (suffix==="") {
         const entries=[];
