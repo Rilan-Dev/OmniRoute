@@ -552,3 +552,27 @@ Completion 045: PASS for the demonstrated package-entrypoint resolver defect. Ph
 
 ### Next-work prompt
 Observe the Actions run triggered by acfae0e7646ccfb318a114693eb9cc4cff15ee3e. Inspect the primary scanner result first. If it passes, inspect supplemental and mapper results in the same run. For every remaining blocker, inspect concrete samples against the pinned source and repair only evidence-proven verifier defects. Do not suppress genuine unresolved closure edges. Once Phase 1 evidence is genuinely clean, execute Phase 7 second pass, combined Phase 1 gate, and Phase 7 reconciliation before immutable copying.
+
+
+## Completion 046 — Harden primary scanner generated-runtime and package resolution
+
+### Planned
+Continue from Completion 045 by inspecting the actual remote execution. Repair only demonstrated primary-scanner resolution defects, preserve fail-closed behavior, and keep the pinned OmniRoute source immutable.
+
+### Completed
+- Remote run `36678493477` executed the primary scanner against the exact pinned source worktree `453918ab64f147604576e72d33e2bbfc12b2d1af` / tree `76f3546d48a7293b199b7571d13808bebadb6d1f`.
+- The scanner still reported 196 unresolved imports and stopped the workflow before supplemental/mapper execution.
+- Re-inspected the scanner and strengthened repository package resolution to honor package metadata entrypoints (`exports`, `types`, `typings`, `module`, `main`) plus conventional source indexes, while retaining fail-closed behavior for undeclared/unresolvable packages.
+- Preserved explicit generated-runtime classification for known `dist/`, `.next`, `.build`, and standalone generated server references; no blanket unresolved suppression was introduced.
+- Verifier commit: `30703b0c1566f5c5b17955f35ad803fea6835df6`.
+- No pinned OmniRoute source files were modified.
+
+### Not done
+- The repaired scanner has not yet executed remotely.
+- Supplemental analyzer, closure mapper, Phase 7 second pass, combined Phase 1 gate, Phase 7 reconciliation, immutable source copy, and exact Git-tree integrity verification remain pending.
+
+### Gate
+Completion 046: PASS for the demonstrated verifier hardening. Phase 1 overall remains OPEN until the next remote execution proves the scanner result.
+
+### Next-work prompt
+Observe the Actions run triggered by `30703b0c1566f5c5b17955f35ad803fea6835df6`. Inspect the primary scanner result first. If unresolved imports remain, inspect every concrete sample against the pinned source and distinguish generated artifacts, repository package entrypoints, and genuine first-party gaps. Do not broadly suppress unresolved edges. If the primary scanner passes, inspect supplemental and mapper outputs, then proceed through Phase 7 and the combined gates. Only after genuine machine-complete PASS begin the complete immutable pinned-tree copy and exact Git blob/tree integrity verification.
