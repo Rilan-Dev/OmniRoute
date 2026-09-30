@@ -54,11 +54,11 @@ function knownRuntimeDynamicEvidence(file, expression) {
   if (/^["'](?:node:sqlite|bun:sqlite)["']\s+as\s+never$/.test(e)) {
     return {kind:"type-only-import-expression",evidence:"TypeScript import type query; no runtime module edge."};
   }
-  if ((file==="src/app/global-error.tsx" && /^\`\.\\.\\/i18n\\/messages\\/\\$\\{[^}]+\\}\\.json\`$/.test(e)) ||
-      (file==="src/i18n/request.ts" && /^\`\\.\\/messages\\/\\$\\{[^}]+\\}\\.json\`$/.test(e))) {
+  if ((file==="src/app/global-error.tsx" && e.startsWith("`../i18n/messages/${") && e.endsWith("}.json`")) ||
+      (file==="src/i18n/request.ts" && e.startsWith("`./messages/${") && e.endsWith("}.json`"))) {
     return {kind:"finite-repository-locale-loader",evidence:"Locale message imports are constrained to repository JSON files under the i18n messages directory."};
   }
-  if (file==="src/i18n/request.ts" && /^\`\\.\\/messages\\/\\$\\{(?:FALLBACK_LOCALE|DEFAULT_LOCALE)\\}\\.json\`$/.test(e)) {
+  if (file==="src/i18n/request.ts" && (e==="`./messages/${FALLBACK_LOCALE}.json`" || e==="`./messages/${DEFAULT_LOCALE}.json`")) {
     return {kind:"repository-locale-constant-loader",evidence:"Locale constants resolve to repository JSON message files."};
   }
   if (file==="src/lib/db/adapters/sqljsAdapter.ts" && e==="moduleName") {
