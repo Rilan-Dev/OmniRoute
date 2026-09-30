@@ -50,7 +50,8 @@ for (const file of source) {
     .replace(/\/\*[\s\S]*?\*\//g, blankPreservingOffsets)
     .replace(/\/\/[^\n]*/g, blankPreservingOffsets)
     .replace(/"(?:\\.|[^"\\])*"/g, blankPreservingOffsets)
-    .replace(/'(?:\\.|[^'\\])*'/g, blankPreservingOffsets);
+    .replace(/'(?:\\.|[^'\\])*'/g, blankPreservingOffsets)
+    .replace(/\`(?:\\.|[^\`\\])*\`/g, blankPreservingOffsets);
   for (const re of [/\bimport\s*\(/g,/\brequire\s*\(/g]) {
     const kind=re.source.startsWith("\\bimport")?"import":"require";
     let m;
@@ -62,7 +63,13 @@ for (const file of source) {
         j++;
       }
       const expr=t.slice(m.index+m[0].length,j-1).trim();
-      const literal=/^["'][^"']+["']$/.test(expr);
+      // A webpack/vite directive comment may legally occur between import( and
+      // its argument. Ignore only leading comments for literal classification;
+      // keep the original expression for evidence.
+      const executableExpr=expr
+        .replace(/^(?:\/\*[\s\S]*?\*\/|\/\/[^\n]*(?:\n|$))\s*/g,"")
+        .trim();
+      const literal=/^["'][^"']+["']$/.test(executableExpr);
       dynamic.push({file:r,kind,expression:expr,literal});
       if(!literal) blockers.push({kind:kind==="import"?"dynamic-import":"dynamic-require",file:r,detail:expr});
     }
