@@ -503,3 +503,28 @@ Completion 043: PASS for the two evidence-backed mapper verifier repairs. Phase 
 
 ### Next-work prompt
 Observe the Actions run triggered by 4bd4d7a993a0b57185575426b15c5286e354f503. Inspect the complete mapper blocker output. If blockers remain, inspect every concrete sample against the pinned source and repair only demonstrated verifier defects or document genuine closure requirements. Once the mapper genuinely passes, immediately execute and inspect Phase 7 second pass, combined Phase 1 gate, and Phase 7 reconciliation. Only after all gates genuinely PASS may the complete immutable pinned-tree snapshot be copied and verified with exact Git blob/tree identity.
+
+## Completion 044 — Repair primary scanner workspace-package resolution after remote evidence
+
+### Planned
+Continue from the remote run on the pinned source. Inspect the first failing verifier, repair only the demonstrated tooling defect, preserve fail-closed unresolved-import behavior, and commit the next-work prompt with the fix.
+
+### Completed
+- Inspected Actions run `36678493477` and job `109768599057`.
+- The exact pinned source worktree was created successfully at commit `453918ab64f147604576e72d33e2bbfc12b2d1af` / tree `76f3546d48a7293b199b7571d13808bebadb6d1f`.
+- The primary scanner failed before the downstream analyzers could execute in that run, reporting 196 unresolved imports. The same run's previously captured mapper evidence showed workspace/self package imports and generated/build references as recurring false-positive classes.
+- Inspected the scanner implementation and pinned-source examples. The resolver treated every non-relative, non-`@/` import as external and therefore could not resolve repository package self-imports such as `@omniroute/opencode-provider` from the repository's own `package.json` metadata.
+- Added repository package-name-to-root resolution from first-party `package.json` manifests and added `.d.ts` resolution support. This preserves fail-closed behavior for package names not declared by the repository.
+- Verifier commit: `6b07c8b9774f49780770091911329dbb7706bd00`.
+- No pinned OmniRoute source files were modified.
+
+### Not done
+- The repaired scanner has not yet completed remotely.
+- The mapper's remaining import/DB evidence has not yet been re-evaluated after this repair.
+- Phase 7 second pass, combined Phase 1 gate, Phase 7 reconciliation, immutable source copy, and exact Git blob/tree integrity verification remain pending.
+
+### Gate
+Completion 044: PASS for the demonstrated primary-scanner workspace-package resolution defect. Phase 1 overall remains OPEN until the remote execution proves all required evidence gates.
+
+### Next-work prompt
+Observe the Actions run triggered by `6b07c8b9774f49780770091911329dbb7706bd00`. Inspect the primary scanner first. If it passes, inspect the supplemental analyzer and mapper in the same run. Repair only concrete verifier defects supported by pinned-source evidence; do not suppress genuine unresolved closure edges. Continue to Phase 7 and the combined gates only after Phase 1 evidence is machine-clean. Do not copy the immutable source tree until the gates genuinely PASS.
