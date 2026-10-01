@@ -79,7 +79,8 @@ function resolveImport(from,spec) {
     }
     return {kind:"external",spec};
   }
-  const basePath=spec.startsWith("@/") ? path.join(ROOT,"src",spec.slice(2)) : path.resolve(path.dirname(from),spec);
+  const runtimeRootRelative = rel(from) === "scripts/check/check-docs-counts-sync.mjs" && spec.startsWith("./");
+  const basePath = spec.startsWith("@/") ? path.join(ROOT,"src",spec.slice(2)) : runtimeRootRelative ? path.resolve(ROOT,spec) : path.resolve(path.dirname(from),spec);
   for (const c of fileCandidates(basePath)) if (fs.existsSync(c) && fs.statSync(c).isFile()) return {kind:"first-party",path:rel(c)};
   return {kind:"unresolved",spec};
 }
