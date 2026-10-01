@@ -953,3 +953,25 @@ Completion 064: Phase 1 remains OPEN with one evidence-backed pinned-source clos
 
 ### Next-work prompt
 Do not suppress the remaining import. Determine whether the extraction source pin should remain `453918ab64f147604576e72d33e2bbfc12b2d1af` or whether a newer upstream source commit is explicitly authorized. If the pin remains, preserve the blocker and document the stale test/import as a source-snapshot inconsistency. If a newer pin is authorized, update the pin and expected tree only after recording the exact upstream commit/tree and rerun the entire closure → supplemental → mapper → Phase 7 → reconciliation → combined gate chain.
+
+## Completion 065 — historical provenance confirms the stale import is upstream snapshot drift
+
+### Planned
+Continue the evidence review of the single pinned-source import blocker without changing the source pin or suppressing the finding. Determine whether the missing service is merely a verifier defect, an intentionally generated module, or a genuine stale reference in the pinned snapshot.
+
+### Completed
+- Rechecked the exact pinned tree 76f3546d48a7293b199b7571d13808bebadb6d1f: open-sse/services/responsesToolCallState.ts is absent.
+- Rechecked the pinned test tests/unit/executor-codex.test.ts: it contains a direct static import of ../../open-sse/services/responsesToolCallState.ts.
+- The repository tree for the later d8ae109fdb183e892867ae96ca70e64c3766cbe6 Codex test commit also does not contain that service path, so the reference cannot be treated as a resolver-only false negative.
+- GitHub path history shows the service path existed in substantially older releases (including commits 24ffdde03d1551faf762431a6b40a5831607d488, 1e3c08565c7bfb0d51b8a0a1b929f7b71b9e0c4d, 99c6dc7fd69523e9f2da974826fcd31a8a351163, and c8a20b1107bd270396164077bd741d1f26836fe4), establishing that this is historical source evolution rather than a missing generated artifact.
+- No evidence authorizes changing the pinned extraction source from 453918ab64f147604576e72d33e2bbfc12b2d1af, so the pin remains unchanged and the blocker remains fail-closed.
+
+### Not done
+- Phase 7 second pass, reconciliation, and combined Phase 1 gate remain blocked because the mapper correctly exits nonzero on the unresolved first-party import.
+- No immutable source extraction or host adapters have started.
+
+### Gate
+Completion 065: Phase 1 remains OPEN with one evidence-backed stale-import blocker in the pinned source snapshot.
+
+### Next-work prompt
+Keep the pinned source unchanged unless an explicit newer source snapshot is authorized. If authorization is provided, record the exact replacement commit/tree and rerun the full closure → supplemental → mapper → Phase 7 → reconciliation → combined gate chain. Otherwise preserve the blocker and do not extract the immutable core.
