@@ -771,3 +771,20 @@ Completion 055: **PASS for the demonstrated comment-stripping defect. Overall Ph
 
 ### Next-work prompt
 Inspect the Actions run for `4cb4adbb912ab2b17c9025cfa5575efc06d1a21f`. Verify primary and supplemental remain green, then inspect mapper blockers. Do not suppress DB findings without tracing each class to concrete pinned-source evidence.
+
+## Completion 056 — Mapper lexical import parsing + runtime DB schema evidence
+
+- **Verifier commit:** `fcfe34c6c862fad5c7931dd48f3ef6485d28eb7d`
+- **Evidence:** Actions run #94 / `36853845590` executed the pinned source commit `453918ab64f147604576e72d33e2bbfc12b2d1af` and exact tree `76f3546d48a7293b199b7571d13808bebadb6d1f`.
+- Primary closure scanner: **PASS** — 12,562 scanned files, 5,902 source files, 22,328 edges, 0 unresolved.
+- Supplemental closure analyzer: **PASS** — 24,164 scanned files, 5,599 source files, 0 blockers.
+- Closure mapper: **FAIL** with 144 first-party-import findings and 40 DB-table findings.
+- Traced the 144 import findings to a second parser defect: the mapper regex searched source text after comment stripping and therefore interpreted import syntax embedded inside JavaScript string/template fixtures as real imports. One confirmed example is the SQLite audit test fixture containing a synthetic `import ... from "@/lib/localDb"` string; `src/lib/localDb` is not present in the pinned tree, so treating that fixture text as a real edge was incorrect.
+- Traced the DB findings: several tables are intentionally created at runtime by immutable DB modules (for example `compression_engine_breakdown` and `compression_run_telemetry`), while `sqlite_master`/related SQLite system tables are not migration-owned. The mapper previously compared every runtime table reference only against migration SQL, producing false blockers. The dynamic `$` finding was also parser noise from template SQL.
+- Fixes:
+  1. Replaced the mapper's regex import extraction with a lexical literal-import scanner that skips comments, strings, templates, and extracts static `import`/`export ... from`/`require` targets.
+  2. Added deterministic runtime CREATE TABLE evidence from DB-module SQL strings.
+  3. Excluded SQLite system tables and the parser-only `$` token from migration-ownership blockers.
+  4. Kept generated `dist/.next/.build` references classified as generated/runtime rather than silently resolving them.
+- **No pinned OmniRoute source commit/tree was modified.**
+- **Next:** rerun the verifier workflow, inspect the new mapper counts. Only investigate any remaining first-party imports or DB tables that survive the lexical/runtime-evidence fixes; do not weaken the gate or suppress unknown findings without source evidence.
