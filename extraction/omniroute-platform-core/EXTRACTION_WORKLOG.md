@@ -815,3 +815,19 @@ Inspect the Actions run for `4cb4adbb912ab2b17c9025cfa5575efc06d1a21f`. Verify p
 - New verifier commit: eaa759b072db476a641b14be02854f2612a2c4cb.
 - No pinned OmniRoute source commit/tree content was modified.
 - Next: inspect the push-triggered verification run for eaa759b...; if mapper survivors remain, trace each survivor to actual source/runtime semantics before changing classification. Phase 1 remains closed/fail until the combined gate passes.
+
+
+## Completion 059 — Phase 1 mapper false-positive correction
+
+- Verified Run #101 against pinned source commit `453918ab64f147604576e72d33e2bbfc12b2d1af`.
+- Primary closure scanner PASS: 12,562 files, 5,902 source files, 22,328 edges, 0 unresolved.
+- Supplemental closure analyzer PASS: 24,164 files, 5,599 source files, 0 blockers.
+- Phase 1 closure mapper remained blocked by 11 unresolved first-party import findings and 13 DB-table findings.
+- Traced import findings to parser handling of comments/JSDoc and test-fixture regex/text literals. The mapper was attempting regex parsing before comment skipping, allowing comment content to become candidate imports.
+- Traced DB findings: SQLite table-valued/system objects (`json_each`, `json_tree`, `dbstat`), CTE aliases, and the separate OMP credentials database in `src/lib/db/omp.ts` were being treated as OmniRoute migration-owned tables.
+- Updated only the verifier (pinned OmniRoute source remains untouched): comment skipping now precedes regex-literal handling; migration discovery explicitly covers `src/lib/db/migrations/`; DB reference analysis excludes known SQLite table-valued/system objects, CTE aliases, and the external OMP DB module.
+- Verifier commit: `18123f98de82557415986375b5049207710aaa92`.
+- Phase 1 is NOT yet PASS; a fresh push-triggered verification run is required.
+
+### Next work prompt
+Run the fresh OmniRoute extraction verification for commit `18123f98de82557415986375b5049207710aaa92`. Inspect the mapper and combined gate output. If blockers remain, trace each remaining import/table finding to concrete pinned-source evidence before changing the verifier. Do not copy or modify pinned source files and do not begin immutable extraction until the full Phase 1 gate passes.
