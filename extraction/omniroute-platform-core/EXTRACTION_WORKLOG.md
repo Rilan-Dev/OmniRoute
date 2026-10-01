@@ -1135,3 +1135,40 @@ Completion 070: Phase 1 PASS. Phase 2 PASS. Phase 3 IN PROGRESS. Immutable sourc
 
 ### Next-work prompt
 Inspect the fresh CI run for the Phase 3 generator. Require the exact pinned commit/tree, a 24,267-entry manifest, and a deterministic manifest SHA-256. Then create the Phase 3 capability/root inventory mapping each reusable capability to immutable source roots, dependency closure, persistence/schema roots, API/UI roots, host-boundary signals, and product-only exclusions. Keep all source bytes immutable; only manifests, verifiers, and adapter contracts may change.
+
+
+## Completion 071 — Phase 3 capability inventory verified; host-boundary contracts started
+
+### Planned
+Inspect the first CI execution containing the Phase 3 capability/root inventory verifier. Require the exact pinned source commit/tree and successful validation of every declared capability root. After that evidence passes, define machine-readable host-boundary contracts without modifying immutable OmniRoute source files.
+
+### Completed
+- Actions run 137 / job 110604503504 completed successfully on the extraction branch.
+- The complete Phase 1 chain remained PASS:
+  - primary closure: 12,562 scanned files / 5,902 source files / 22,328 edges / 0 unresolved
+  - supplemental closure: 24,164 files / 5,599 source files / 0 blockers
+  - mapper: 0 blockers
+  - Phase 7 second pass: 0 blockers
+  - reconciliation: 21,731 candidates / 0 blockers
+  - combined Phase 1 gate: PASS / 0 blockers
+- Phase 2 integrity remained PASS: 24,267 source entries and 24,267 extracted files with zero missing, extra, mode, or blob-hash mismatches.
+- Phase 3 exact-source manifest remained deterministic and exact:
+  - source commit: 453918ab64f147604576e72d33e2bbfc12b2d1af
+  - source tree: 76f3546d48a7293b199b7571d13808bebadb6d1f
+  - entries: 24,267
+  - manifest SHA-256: b406d593ecfac0efa02b64081c99815d8fdf33e64f10d57c348fc8e75f7135fb
+- The capability/root inventory contains 31 capability records spanning Tier 1 reusable platform capabilities, Tier 2 reusable infrastructure/integration capabilities, and Tier 3 product-only boundaries. The machine verifier was wired into CI and the successful job confirms the inventory verifier did not fail on the exact pinned source.
+- Added a machine-readable host-boundary contract set covering identity/tenancy, credential secrets, persistence, billing/entitlements, RAG/memory storage, observability, notifications, branding/product UI, and deployment/runtime.
+- Added a verifier that checks exact source pinning, unique contract IDs, host ownership, and that every referenced capability exists in the immutable capability inventory.
+- No immutable OmniRoute source file was changed.
+
+### Not done
+- The new host-boundary contract verifier has not yet received a fresh CI run after commits 522908cd25f52e5acad572d6d86364fa52e2b8a3 through 88ac5cda46822e34dfb4cd2a04c4dab5c8372873.
+- Phase 3 is not yet closed.
+- No runtime adapters, host integration, or source rewrites have started.
+
+### Gate
+Completion 071: Phase 1 PASS. Phase 2 PASS. Phase 3 IN PROGRESS pending the fresh host-boundary contract verification run.
+
+### Next-work prompt
+Inspect the fresh Actions run for 88ac5cda46822e34dfb4cd2a04c4dab5c8372873. Require all prior gates to remain PASS and the host-boundary contract verifier to report zero failures. If it passes, close the Phase 3 inventory/contract gate and begin Phase 4 with adapter interface specifications only; do not implement host adapters or modify immutable source files.
