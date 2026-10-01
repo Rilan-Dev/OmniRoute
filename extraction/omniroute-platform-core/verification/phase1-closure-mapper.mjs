@@ -78,7 +78,6 @@ for(const f of codeFiles){
       const intentionalNegative=f==="tests/unit/issue-13131-chipotle-provider-removed.test.ts"&&spec=="../../open-sse/executors/chipotle.ts";
       const candidate=norm(path.normalize(runtimeRootRelative?resolutionSpec.slice(2):path.join(path.dirname(f),resolutionSpec)))
       if(syntheticFixture||intentionalNegative) warnings.push({kind:syntheticFixture?"synthetic-test-import":"intentional-negative-test-import",from:f,spec});
-      else if(/(?:^|\/)dist\//.test(resolutionSpec)||candidate==="dist";
       if(/(?:^|\/)dist\//.test(resolutionSpec)||candidate==="dist"||candidate.startsWith("dist/")||candidate===".next"||candidate.startsWith(".next/")||candidate===".build"||candidate.startsWith(".build/")||candidate.startsWith(".source/")||candidate.startsWith("obsidian-plugin/")||(f==="scripts/dev/standalone-server-ws.mjs"&&resolutionSpec==="./server.js"))
         generatedRuntimeReferences.push({from:f,spec,candidate});
       else if(f==="scripts/build/prepublish.ts"&&spec==="./http-method-guard.cjs")
