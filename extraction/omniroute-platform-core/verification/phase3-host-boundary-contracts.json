@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "source_commit": "453918ab64f147604576e72d33e2bbfc12b2d1af",
+  "source_tree": "76f3546d48a7293b199b7571d13808bebadb6d1f",
+  "rule": "Host-owned concerns are adapter contracts; immutable OmniRoute source remains unchanged.",
+  "contracts": [
+    {"id":"identity-tenancy","owner":"host","purpose":"Map host user/org/tenant identity into platform request context.","capabilities":["oauth-credential-lifecycle","quota-budget","usage-cost","mcp","a2a","tools","skills","plugins","remote-cloud-agents"]},
+    {"id":"credential-secret-store","owner":"host","purpose":"Provide secret/key storage and retrieval without embedding host secrets in immutable source.","capabilities":["credential-account-pooling","oauth-credential-lifecycle"]},
+    {"id":"persistence-database","owner":"host","purpose":"Bind platform persistence and migration lifecycle to the host database boundary.","capabilities":["quota-budget","usage-cost","context-memory","cache","backup-sync-versioning"]},
+    {"id":"billing-entitlements","owner":"host","purpose":"Translate host plans, subscriptions and entitlements into platform quotas/feature access.","capabilities":["quota-budget","usage-cost","product-billing-branding"]},
+    {"id":"rag-memory-store","owner":"host","purpose":"Bind application-specific retrieval/vector storage and document tenancy to platform context/memory.","capabilities":["context-memory"]},
+    {"id":"observability-sink","owner":"host","purpose":"Route platform telemetry/audit/events to host logging, tracing and retention systems.","capabilities":["observability","audit","usage-cost"]},
+    {"id":"notification-delivery","owner":"host","purpose":"Provide host email/webhook/notification delivery and retry policy.","capabilities":["webhooks-events","audit","plugins"]},
+    {"id":"branding-product-ui","owner":"host","purpose":"Keep commercial branding, navigation, pricing and product presentation outside immutable core.","capabilities":["desktop-pwa","product-billing-branding"]},
+    {"id":"deployment-runtime","owner":"host","purpose":"Bind processes, network policy, domains, storage and deployment-specific infrastructure.","capabilities":["browser-vnc-runtime","mitm-tproxy-tunnels","remote-cloud-agents","desktop-pwa"]}
+  ]
+}
