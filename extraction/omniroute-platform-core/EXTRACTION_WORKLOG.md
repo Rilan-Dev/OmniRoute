@@ -876,3 +876,28 @@ Completion 061: verifier-only evidence hardening committed. Phase 1 remains OPEN
 
 ### Next-work prompt
 Observe the Actions run for `e410486b96333e119d66ea5461bdbf3d04cd6e49`. Inspect every remaining mapper blocker. If unresolved imports remain, classify only from exact pinned-tree evidence (including intentional negative tests); if DB findings remain, trace each table to migrations, runtime-created schema, SQLite virtual/system objects, or external DB boundaries. Do not broadly suppress findings. Continue through Phase 7 and the combined Phase 1 gate only after the mapper is genuinely clean.
+
+
+## Completion 062 — close remaining mapper import/schema evidence gaps
+
+### Planned
+Inspect the fresh remote verification after Completion 061 and correct only verifier defects proven by the pinned source.
+
+### Completed
+- Actions Run #108 (`36862660489`) executed the pinned source commit `453918ab64f147604576e72d33e2bbfc12b2d1af` / tree `76f3546d48a7293b199b7571d13808bebadb6d1f` exactly.
+- Primary closure scanner: PASS — 12,562 files, 5,902 source files, 22,328 edges, 0 unresolved.
+- Supplemental analyzer: PASS — 24,164 files, 5,599 source files, 0 blockers.
+- Mapper reduced to exactly 4 unresolved import findings and 2 DB findings.
+- Pinned source confirmed two unresolved imports are real files: `src/app/api/agent-skills/coverage/route.ts` and `open-sse/services/responsesToolCallState.ts`. The mapper's canonical file resolver was hardened with a direct filesystem-file check after normalization.
+- `tests/unit/client-bundle-no-server-only-10692.test.ts` contains a deliberate synthetic `import("./local")` string fixture, not an executable dependency. `tests/unit/issue-13131-chipotle-provider-removed.test.ts` deliberately asserts that `../../open-sse/executors/chipotle.ts` does not exist. Both are now explicitly classified as evidence-backed test-only warnings rather than closure blockers.
+- `memory_fts` is created as `CREATE VIRTUAL TABLE ... USING fts5(...)` in migrations 022/023, and `provider_plans` is created by migration 079. Migration declaration evidence was strengthened to recognize table declarations independently of full column-body parsing.
+- Verifier-only commit: `8b93707bfe8fc6930c1af0921aae524ecaf0e635`.
+- Pinned OmniRoute source remains untouched.
+
+### Not done
+- The new verifier commit has not yet completed a remote Actions run.
+- Phase 1 gate is not PASS.
+- No immutable extraction or host adapters started.
+
+### Next-work prompt
+Inspect the next Actions run for `8b93707bfe8fc6930c1af0921aae524ecaf0e635`. Require mapper unresolved imports and DB-table blockers to reach zero. Then inspect Phase 7 and the combined gate outputs; only after all gates pass may immutable source extraction begin.
