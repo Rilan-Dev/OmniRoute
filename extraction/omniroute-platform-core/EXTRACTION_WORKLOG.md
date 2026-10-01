@@ -975,3 +975,36 @@ Completion 065: Phase 1 remains OPEN with one evidence-backed stale-import block
 
 ### Next-work prompt
 Keep the pinned source unchanged unless an explicit newer source snapshot is authorized. If authorization is provided, record the exact replacement commit/tree and rerun the full closure → supplemental → mapper → Phase 7 → reconciliation → combined gate chain. Otherwise preserve the blocker and do not extract the immutable core.
+
+
+## Completion 066 — combined gate pin-schema mismatch corrected
+
+### Planned
+Inspect the first full verification run after the mapper control-flow repair. If closure, supplemental, mapper, Phase 7, and reconciliation all pass, trace any combined-gate blockers to the verifier schema rather than weakening the gate.
+
+### Completed
+- Verified the full run 120 / job 110544694331 on the extraction branch.
+- Exact pinned source checkout passed: commit `453918ab64f147604576e72d33e2bbfc12b2d1af`, tree `76f3546d48a7293b199b7571d13808bebadb6d1f`.
+- Primary closure scanner passed: 12,562 files, 5,902 source files, 22,328 edges, 0 unresolved.
+- Supplemental analyzer passed with 0 blockers.
+- Mapper passed with 0 blockers.
+- Phase 7 second pass passed with 0 blockers.
+- Phase 7 reconciliation passed with 21,731 candidates and 0 blockers:
+  - 18,071 reusable-capability candidates
+  - 3,613 reusable-platform sources
+  - 34 reusable-with-host-boundary
+  - 13 product-only candidates
+- The combined Phase 1 gate still failed with exactly 2 blockers.
+- Traced both blockers to a verifier/report schema mismatch: the supplemental analyzer emitted `pinned_source_required` but did not emit the exact `pinned_source_commit` and `pinned_source_tree` fields required by the fail-closed gate.
+- Added those exact immutable pin fields to the supplemental report. The pinned OmniRoute source was not modified.
+- Repair commit: `1c35d8f04058430cb28c0c8f1066a2d3209a53f3`.
+
+### Not done
+- The combined Phase 1 gate has not yet been rerun after this correction.
+- No immutable source extraction or host adapters have started.
+
+### Gate
+Completion 066: Phase 1 is still OPEN pending a fresh run proving the corrected supplemental pin evidence satisfies the combined gate.
+
+### Next-work prompt
+Inspect the fresh Actions run for commit `1c35d8f04058430cb28c0c8f1066a2d3209a53f3`. Confirm the complete chain and inspect the actual combined gate result. If it passes, record the exact PASS evidence and only then prepare the Phase 2 immutable extraction plan. If it fails, trace every remaining gate blocker against the generated reports and pinned source before changing any verifier logic.
