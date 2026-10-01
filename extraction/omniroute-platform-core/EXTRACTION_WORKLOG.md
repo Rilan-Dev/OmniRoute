@@ -1037,3 +1037,34 @@ Completion 067: Phase 1 PASS. Phase 2 IN PROGRESS. No host integration has start
 
 ### Next-work prompt
 Inspect the first CI run containing the committed immutable snapshot and integrity-verifier step. Require extraction-integrity-report.json to PASS with zero missing, extra, mode, and blob-hash mismatches. If it passes, create the Phase 2 exact-source manifest and machine-verifiable inventory from the committed snapshot. Do not alter immutable source files.
+
+
+## Completion 068 — Phase 2 integrity verifier tree enumeration repaired
+
+### Planned
+Inspect the first CI integrity-verifier execution for the immutable snapshot. Preserve the pinned source and extraction snapshot, and correct only verifier defects proven by the CI evidence.
+
+### Completed
+- Inspected Actions run 126 / job 110561650961.
+- Phase 1 chain itself was fully PASS on the pinned source:
+  - primary closure: 12,562 files, 22,328 edges, 0 unresolved
+  - supplemental closure: 0 blockers
+  - closure mapper: 0 blockers
+  - Phase 7 second pass: 0 blockers
+  - Phase 7 reconciliation: 21,731 candidates, 0 blockers
+  - combined Phase 1 gate: PASS, 0 blockers
+- The only failure was the new immutable-snapshot integrity verifier.
+- Integrity report showed `source_entry_count=0` and `extracted_file_count=24267`, with 2 blockers. This traced to the verifier's `git ls-tree -r -z --full-tree HEAD` invocation returning no parsed source entries in the exact pinned worktree.
+- Replaced the enumeration command with the worktree-root-safe `git ls-tree -r -z HEAD --`. Git's documented default ls-tree format remains mode/type/object followed by a tab-separated path and NUL termination.
+- The pinned OmniRoute source commit/tree and immutable snapshot were not modified.
+
+### Not done
+- A fresh CI run after verifier repair has not yet produced the new integrity report.
+- Phase 2 closure remains OPEN until the integrity verifier reports zero missing, extra, mode, and blob-hash mismatches.
+- Phase 3 manifests and Phase 4 adapters/contracts remain not started.
+
+### Gate
+Completion 068: Phase 1 remains PASS. Phase 2 remains IN PROGRESS pending a fresh integrity-verifier PASS.
+
+### Next-work prompt
+Inspect the fresh Actions run for the verifier repair. Require exact source commit/tree match and a nonzero source-entry count with zero missing, extra, mode, and blob-hash mismatches. If integrity passes, close Phase 2 and create the machine-verifiable Phase 3 exact-source manifest/inventory without modifying immutable source files.
