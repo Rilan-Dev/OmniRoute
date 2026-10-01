@@ -1008,3 +1008,32 @@ Completion 066: Phase 1 is still OPEN pending a fresh run proving the corrected 
 
 ### Next-work prompt
 Inspect the fresh Actions run for commit `1c35d8f04058430cb28c0c8f1066a2d3209a53f3`. Confirm the complete chain and inspect the actual combined gate result. If it passes, record the exact PASS evidence and only then prepare the Phase 2 immutable extraction plan. If it fails, trace every remaining gate blocker against the generated reports and pinned source before changing any verifier logic.
+
+## Completion 067 — Phase 1 PASS and immutable source snapshot created
+
+### Planned
+After the corrected supplemental pin evidence, inspect the complete verification run. If the combined Phase 1 gate passes with exact pinned commit/tree evidence, begin Phase 2 by creating the immutable source snapshot without rewriting source files. Preserve Git blob/tree identity and wire the exact integrity verifier into CI.
+
+### Completed
+- Actions run 121 / job 110555021733 completed successfully on commit 1c35d8f04058430cb28c0c8f1066a2d3209a53f3.
+- Exact pinned source checkout verified: commit 453918ab64f147604576e72d33e2bbfc12b2d1af; tree 76f3546d48a7293b199b7571d13808bebadb6d1f.
+- Primary closure PASS: 12,562 scanned files, 5,902 source files, 22,328 edges, 0 unresolved, 4 generated-runtime references.
+- Supplemental closure PASS: 24,164 scanned files, 5,599 source files, 1,085 dynamic imports, 16 repository-bounded dynamic imports, 17 runtime-resolved dynamic imports, 1,141 filesystem signals, 1,836 DB references, 642 dashboard files, 162 tests, 8 packages, 0 blockers.
+- Closure mapper PASS: 0 blockers.
+- Phase 7 second pass PASS: 0 blockers.
+- Phase 7 reconciliation PASS: 21,731 candidates: 18,071 reusable-capability candidates, 3,613 reusable-platform sources, 34 reusable-with-host-boundary, and 13 product-only candidates; 0 blockers.
+- Combined Phase 1 gate PASS: 0 blockers.
+- Created the immutable source snapshot by adding the exact pinned root tree 76f3546d48a7293b199b7571d13808bebadb6d1f at extraction/omniroute-platform-core/omniroute-source/. This reuses the original Git tree/blob objects rather than rewriting or reformatting source content.
+- Added extraction-integrity-verifier.mjs to the CI verification sequence so Phase 2 can prove exact source commit/tree, path set, modes, symlinks, and Git blob hashes.
+- Updated EXTRACTION_MANIFEST.md to mark Phase 2 as started and record the immutable snapshot location.
+
+### Not done
+- The new immutable snapshot has not yet received its first CI integrity-verifier PASS.
+- Phase 2 closure is not yet declared complete.
+- Phase 3 extraction manifests, Phase 4 adapters/contracts, and host integration remain not started.
+
+### Gate
+Completion 067: Phase 1 PASS. Phase 2 IN PROGRESS. No host integration has started.
+
+### Next-work prompt
+Inspect the first CI run containing the committed immutable snapshot and integrity-verifier step. Require extraction-integrity-report.json to PASS with zero missing, extra, mode, and blob-hash mismatches. If it passes, create the Phase 2 exact-source manifest and machine-verifiable inventory from the committed snapshot. Do not alter immutable source files.
