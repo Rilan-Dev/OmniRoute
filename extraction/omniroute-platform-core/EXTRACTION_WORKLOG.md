@@ -926,3 +926,30 @@ Completion 063: verifier syntax repaired. Phase 1 remains OPEN until a fresh run
 
 ### Next-work prompt
 Inspect the fresh Actions run for dec80ffc9e30c9eb1926746b59c0c6b14c893009. Record the mapper blocker count and exact findings. If mapper blockers are zero, inspect Phase 7 second-pass/reconciliation and the combined Phase 1 gate, including exact pinned commit/tree checks. Do not begin immutable extraction until the complete Phase 1 gate passes.
+
+## Completion 064 — pinned-source stale import is a real Phase 1 blocker
+
+### Planned
+Inspect the first successful execution of the repaired mapper and trace every remaining unresolved import against the exact pinned source tree. Do not classify a missing source file as a warning unless the pinned tree provides evidence that the reference is intentionally non-executable.
+
+### Completed
+- Latest extraction verification run 36875451034 / job 110413587304 executed the pinned source commit `453918ab64f147604576e72d33e2bbfc12b2d1af` and tree `76f3546d48a7293b199b7571d13808bebadb6d1f` exactly.
+- Primary closure scanner: PASS — 12,562 files, 5,902 source files, 22,328 edges, 0 unresolved.
+- Supplemental closure analyzer: PASS — 24,164 files, 5,599 source files, 0 blockers.
+- Mapper now executes and reports exactly one unresolved first-party import:
+  `tests/unit/executor-codex.test.ts` imports `../../open-sse/services/responsesToolCallState.ts`.
+- Exact pinned-tree inspection confirms `open-sse/services/responsesToolCallState.ts` is absent from commit `453918ab64f147604576e72d33e2bbfc12b2d1af`. Therefore this is not a resolver false negative and must remain a Phase 1 blocker unless the pinned source itself is intentionally changed to a newer, explicitly approved source snapshot.
+- The later extraction-branch tree contains the referenced service, which explains why the test appears valid on the working branch, but it does not change the pinned-source truth.
+- No suppression was added for this finding and no pinned OmniRoute source was modified.
+- The mapper's generated-reference regex was also corrected on the extraction branch; this is verifier-only.
+
+### Not done
+- Phase 7 second pass/reconciliation and the combined Phase 1 gate did not run because the workflow stops after the mapper's nonzero exit.
+- No immutable source extraction or host adapters have started.
+- The pinned source snapshot remains unchanged.
+
+### Gate
+Completion 064: Phase 1 remains OPEN with one evidence-backed pinned-source closure blocker.
+
+### Next-work prompt
+Do not suppress the remaining import. Determine whether the extraction source pin should remain `453918ab64f147604576e72d33e2bbfc12b2d1af` or whether a newer upstream source commit is explicitly authorized. If the pin remains, preserve the blocker and document the stale test/import as a source-snapshot inconsistency. If a newer pin is authorized, update the pin and expected tree only after recording the exact upstream commit/tree and rerun the entire closure → supplemental → mapper → Phase 7 → reconciliation → combined gate chain.
