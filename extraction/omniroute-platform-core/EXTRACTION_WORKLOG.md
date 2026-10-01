@@ -844,3 +844,35 @@ Run the fresh OmniRoute extraction verification for commit `18123f98de8255741598
 
 ### Next work prompt
 Inspect the fresh verification run for `dda091d5b32b090624bb84997baa562b8958284d`. Confirm whether the 4 false-negative imports disappear. Then trace every remaining DB-table finding against the pinned migration tree and runtime schema evidence. Do not suppress a finding unless the pinned source proves it is non-OmniRoute-owned or intentionally external. Do not begin immutable extraction until the complete Phase 1 gate passes.
+
+
+## Completion 061 — harden mapper relative-import and database schema evidence
+
+### Planned
+Continue from Completion 060 by executing the remote verifier after the mapper path-normalization repair. Inspect the remaining first-party imports and DB findings against the pinned source; correct verifier defects only where the pinned tree proves the target/schema exists.
+
+### Completed
+- Observed Actions Run #105 (`36862051073`) for mapper normalization head `dda091d5b32b090624bb84997baa562b8958284d`.
+- Primary closure scanner remained clean: 12,562 files, 5,902 source files, 22,328 edges, 0 unresolved imports, 4 generated-runtime references.
+- Supplemental closure analyzer remained clean: 24,164 files, 5,599 source files, 1,085 dynamic imports, 16 repository-bounded dynamic imports, 17 runtime-resolved dynamic imports, 1,141 filesystem signals, 1,836 DB references, 0 blockers.
+- Closure mapper still reported 4 unresolved first-party imports and 7 DB-table findings.
+- Pinned-source inspection proved `src/app/api/agent-skills/coverage/route.ts` exists, while `tests/unit/issue-13131-chipotle-provider-removed.test.ts` intentionally imports the removed `chipotle.ts` module specifically to assert that the module no longer exists.
+- Pinned migrations prove `memory_fts` is created by migrations 022/023 as an SQLite FTS5 virtual table, `provider_plans` is created by migration 079, and `call_logs_v1_legacy` is a deliberate migration-025 rename target. The `stable_*`/`legacy_labels`/`selected_labels` names in `usageAnalytics.ts` are SQL CTEs, not persistent tables.
+- Hardened only the verifier:
+  - relative imports now resolve from an absolute importer directory before canonicalizing against the pinned root;
+  - migration schema discovery recognizes virtual tables;
+  - `ALTER TABLE ... RENAME TO ...` records the new table name as schema evidence;
+  - CTE detection recognizes every `name AS (` CTE form in a statement, preventing CTE aliases from being treated as physical tables.
+- Tooling commit: `e410486b96333e119d66ea5461bdbf3d04cd6e49`.
+- No pinned OmniRoute source files were modified.
+
+### Not done
+- The hardened mapper has not yet executed remotely.
+- Phase 1 combined gate has not passed.
+- No immutable source copy or host adapter work has started.
+
+### Gate
+Completion 061: verifier-only evidence hardening committed. Phase 1 remains OPEN pending a fresh remote run.
+
+### Next-work prompt
+Observe the Actions run for `e410486b96333e119d66ea5461bdbf3d04cd6e49`. Inspect every remaining mapper blocker. If unresolved imports remain, classify only from exact pinned-tree evidence (including intentional negative tests); if DB findings remain, trace each table to migrations, runtime-created schema, SQLite virtual/system objects, or external DB boundaries. Do not broadly suppress findings. Continue through Phase 7 and the combined Phase 1 gate only after the mapper is genuinely clean.
