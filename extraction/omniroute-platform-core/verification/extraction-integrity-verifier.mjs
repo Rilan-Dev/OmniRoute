@@ -15,7 +15,7 @@ const commit=run(sourceRoot,["rev-parse","HEAD"])?.trim();
 const tree=run(sourceRoot,["rev-parse","HEAD^{tree}"])?.trim();
 if(commit!==EXPECTED_COMMIT) blockers.push({kind:"wrong-source-checkout",actual:commit,expected:EXPECTED_COMMIT});
 if(tree!==EXPECTED_TREE) blockers.push({kind:"wrong-source-tree",actual:tree,expected:EXPECTED_TREE});
-const raw=run(sourceRoot,["ls-tree","-r","-z","--full-tree","HEAD"]);
+const raw=run(sourceRoot,["ls-tree","-r","-z","HEAD","--"]);
 const source=new Map();
 if(!raw) blockers.push({kind:"source-tree-unreadable"});
 else for(const item of raw.split("\0")){if(!item)continue;const i=item.indexOf("\t");if(i<0){blockers.push({kind:"malformed-tree-entry"});continue}const m=item.slice(0,i).split(/\s+/),p=item.slice(i+1);if(m.length<3){blockers.push({kind:"malformed-tree-metadata",path:p});continue}source.set(p,{mode:m[0],type:m[1],sha:m[2]});}
