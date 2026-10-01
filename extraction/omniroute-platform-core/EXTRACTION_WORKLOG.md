@@ -1172,3 +1172,34 @@ Completion 071: Phase 1 PASS. Phase 2 PASS. Phase 3 IN PROGRESS pending the fres
 
 ### Next-work prompt
 Inspect the fresh Actions run for 88ac5cda46822e34dfb4cd2a04c4dab5c8372873. Require all prior gates to remain PASS and the host-boundary contract verifier to report zero failures. If it passes, close the Phase 3 inventory/contract gate and begin Phase 4 with adapter interface specifications only; do not implement host adapters or modify immutable source files.
+
+## Completion 072 — Phase 3 inventory root correction
+
+### Planned
+Inspect the first host-boundary contract CI run. Preserve the immutable source and correct only evidence-backed inventory/verifier defects. The CI evidence must prove every declared capability root exists in the exact pinned source before Phase 3 can close.
+
+### Completed
+- Inspected Actions run 141 / job 110610377622 on the extraction branch.
+- All prior gates remained PASS on the exact pinned source:
+  - primary closure: 12,562 scanned files / 5,902 source files / 22,328 edges / 0 unresolved
+  - supplemental closure: 24,164 files / 5,599 source files / 0 blockers
+  - mapper: 0 blockers
+  - Phase 7 second pass: 0 blockers
+  - reconciliation: 21,731 candidates / 0 blockers
+  - combined Phase 1 gate: PASS / 0 blockers
+  - immutable integrity: 24,267 source entries / 24,267 extracted files / 0 missing / 0 extra / 0 mode / 0 blob-hash mismatches
+  - exact-source manifest: 24,267 entries; SHA-256 b406d593ecfac0efa02b64081c99815d8fdf33e64f10d57c348fc8e75f7135fb
+- The host-boundary contract stage did not execute because the capability-root verifier correctly failed closed on two nonexistent declared roots: `src/lib/model` and `src/lib/tools`.
+- Verified against the pinned source tree that those directories do not exist. Replaced them with concrete existing capability roots: model registry/capability files and provider-model trees for model capability; MCP tool trees, skill/tool-policy trees, and the API root for tools.
+- Immutable OmniRoute source remains untouched; only the Phase 3 inventory was corrected.
+
+### Not done
+- A fresh CI run after the inventory correction has not yet proved the corrected capability inventory and host-boundary contracts.
+- Phase 3 remains OPEN.
+- Phase 4 adapter interface specifications remain blocked on the Phase 3 gate.
+
+### Gate
+Completion 072: Phase 1 PASS. Phase 2 PASS. Phase 3 IN PROGRESS pending a fresh capability-root and host-boundary contract PASS.
+
+### Next-work prompt
+Inspect the fresh Actions run after commit e1f3ca8da7d22e67c326be9e085a6395dcdca077. Require capability-root verification to report zero failures and the host-boundary contract verifier to PASS with exact source pinning. If both pass, close Phase 3 and begin Phase 4 with adapter interface specifications only; do not modify immutable source files.
