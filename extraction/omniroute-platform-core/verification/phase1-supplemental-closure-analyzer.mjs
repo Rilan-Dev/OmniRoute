@@ -226,6 +226,8 @@ if (dbRefs.length && !migrations.length)
 
 const result={
   schema_version:3,
+  pinned_source_commit:"453918ab64f147604576e72d33e2bbfc12b2d1af",
+  pinned_source_tree:"76f3546d48a7293b199b7571d13808bebadb6d1f",
   pinned_source_required:"453918ab64f147604576e72d33e2bbfc12b2d1af",
   scanned_files:all.length,source_files:source.length,
   dynamic_imports:dynamic,
