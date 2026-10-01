@@ -39,6 +39,8 @@ function resolveInternal(from,spec){
     } else base=path.join(path.dirname(from),spec);
   }
   base=norm(path.relative(root,path.resolve(root,base)));
+  const direct=abs(base);
+  if(fs.existsSync(direct)&&fs.statSync(direct).isFile()) return norm(base);
   const extMap={".js":[".js",".ts",".tsx",".jsx",".mjs",".cjs"],".jsx":[".jsx",".tsx",".js"],".mjs":[".mjs",".ts",".js"],".cjs":[".cjs",".ts",".js"],".ts":[".ts",".tsx",".js"],".tsx":[".tsx",".ts",".js"]};
   const ext=path.extname(base),stem=ext?base.slice(0,-ext.length):base;
   const variants=ext&&extMap[ext]?extMap[ext].map(e=>stem+e):[];
@@ -72,7 +74,11 @@ for(const f of codeFiles){
     const spec=item.spec;const resolutionSpec=/^[.#]?(?:[^?#]*)(?:[?#].*)?$/.test(spec)&&/^(?:\.|@\/|@omniroute\/)/.test(spec)?spec.replace(/[?#].*$/,""):spec;const runtimeRootRelative=f==="scripts/check/check-docs-counts-sync.mjs"&&resolutionSpec.startsWith("./");const target=runtimeRootRelative?resolveInternal("root",resolutionSpec):resolveInternal(f,resolutionSpec);
     if(target) imports.push({from:f,spec,target,dynamic:item.dynamic});
     else if(spec.startsWith(".")||spec.startsWith("@/")||spec.startsWith("@omniroute/")){
-      const candidate=norm(path.normalize(runtimeRootRelative?resolutionSpec.slice(2):path.join(path.dirname(f),resolutionSpec)));
+      const syntheticFixture=f==="tests/unit/client-bundle-no-server-only-10692.test.ts"&&spec==="./local";
+      const intentionalNegative=f==="tests/unit/issue-13131-chipotle-provider-removed.test.ts"&&spec=="../../open-sse/executors/chipotle.ts";
+      const candidate=norm(path.normalize(runtimeRootRelative?resolutionSpec.slice(2):path.join(path.dirname(f),resolutionSpec)))
+      if(syntheticFixture||intentionalNegative) warnings.push({kind:syntheticFixture?"synthetic-test-import":"intentional-negative-test-import",from:f,spec});
+      else if(/(?:^|\/)dist\//.test(resolutionSpec)||candidate==="dist";
       if(/(?:^|\/)dist\//.test(resolutionSpec)||candidate==="dist"||candidate.startsWith("dist/")||candidate===".next"||candidate.startsWith(".next/")||candidate===".build"||candidate.startsWith(".build/")||candidate.startsWith(".source/")||candidate.startsWith("obsidian-plugin/")||(f==="scripts/dev/standalone-server-ws.mjs"&&resolutionSpec==="./server.js"))
         generatedRuntimeReferences.push({from:f,spec,candidate});
       else if(f==="scripts/build/prepublish.ts"&&spec==="./http-method-guard.cjs")
@@ -90,6 +96,7 @@ const env=[];for(const f of textFiles){const s=read(f),re=/process\.env\.([A-Z0-
 const dbModules=[],migrations=[],migrationOps=[],schema=new Map(),migrationFiles=all.filter(f=>((/^src\/lib\/db\/migrations\//i.test(f))|/(^|\/)migrations?(\/|$)/i.test(f))&&/\.(sql|ts|tsx|js|mjs|cjs)$/.test(f));
 const add=(table,op,file,detail)=>{if(!schema.has(table))schema.set(table,[]);schema.get(table).push({op,file,...detail});migrationOps.push({table,op,file,...detail})};
 for(const f of migrationFiles){const s=read(f);migrations.push(f);
+ for(const m of s.matchAll(/\bCREATE\s+(?:VIRTUAL\s+)?TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?["']?([A-Za-z0-9_.$-]+)["']?/gi)){ if(!schema.has(m[1])) add(m[1],"create-table",f,{columns:[],indexes:[],foreign_keys:[]}); }
  for(const m of s.matchAll(/\bCREATE\s+(?:VIRTUAL\s+)?TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?["']?([A-Za-z0-9_.$-]+)["']?\s*\(([^;]*?)\)\s*;?/gis)){const body=m[2];add(m[1],"create-table",f,{columns:[...body.matchAll(/(?:^|,)\s*["']?([A-Za-z_][A-Za-z0-9_]*)["']?\s+([A-Za-z][A-Za-z0-9_() ,.-]*)/g)].map(x=>x[1]).filter(x=>!["PRIMARY","UNIQUE","CONSTRAINT","FOREIGN","CHECK"].includes(x.toUpperCase())),indexes:[...body.matchAll(/(?:UNIQUE\s+)?(?:INDEX|KEY)\s+["']?([A-Za-z0-9_-]+)/gi)].map(x=>x[1]),foreign_keys:[...body.matchAll(/FOREIGN\s+KEY\s*\(([^)]+)\)\s+REFERENCES\s+["']?([A-Za-z0-9_.$-]+)["']?\s*\(([^)]+)\)/gi)].map(x=>({columns:x[1].split(",").map(v=>v.trim()),references_table:x[2],references_columns:x[3].split(",").map(v=>v.trim())}))})}
  for(const m of s.matchAll(/\bALTER\s+TABLE\s+["']?([A-Za-z0-9_.$-]+)["']?\s+([\s\S]*?);/gi)){const body=m[2],columns=[...body.matchAll(/\b(?:ADD|ALTER)\s+(?:COLUMN\s+)?["']?([A-Za-z_][A-Za-z0-9_]*)["']?/gi)].map(x=>x[1]),drops=[...body.matchAll(/\bDROP\s+(?:COLUMN|CONSTRAINT|INDEX)\s+["']?([A-Za-z0-9_-]+)/gi)].map(x=>x[1]),fk=[...body.matchAll(/FOREIGN\s+KEY\s*\(([^)]+)\)\s+REFERENCES\s+["']?([A-Za-z0-9_.$-]+)["']?\s*\(([^)]+)\)/gi)].map(x=>({columns:x[1].split(",").map(v=>v.trim()),references_table:x[2],references_columns:x[3].split(",").map(v=>v.trim())}));add(m[1],"alter-table",f,{columns,drop:drops,foreign_keys:fk});
   const rename=body.match(/\bRENAME\s+TO\s+["']?([A-Za-z0-9_.$-]+)["']?/i);
