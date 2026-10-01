@@ -831,3 +831,16 @@ Inspect the Actions run for `4cb4adbb912ab2b17c9025cfa5575efc06d1a21f`. Verify p
 
 ### Next work prompt
 Run the fresh OmniRoute extraction verification for commit `18123f98de82557415986375b5049207710aaa92`. Inspect the mapper and combined gate output. If blockers remain, trace each remaining import/table finding to concrete pinned-source evidence before changing the verifier. Do not copy or modify pinned source files and do not begin immutable extraction until the full Phase 1 gate passes.
+
+
+## Completion 060 — mapper path normalization correction
+
+- Run #103 on verifier commit `18123f98de82557415986375b5049207710aaa92` confirmed the primary and supplemental analyzers still PASS, while the mapper reported 4 unresolved first-party imports and 7 DB-table findings.
+- The unresolved import sample included real files present in the pinned tree, including `src/app/api/agent-skills/coverage/route.ts` and `open-sse/services/responsesToolCallState.ts`. This proves the remaining import failures were resolver normalization defects, not missing pinned-source files.
+- Corrected `resolveInternal()` to canonicalize all candidate bases with `path.resolve(root,...)` followed by `path.relative(root,...)`, eliminating ambiguous `..` path representations before lookup in the pinned tree index.
+- Pinned OmniRoute source remains untouched.
+- Verifier commit: `dda091d5b32b090624bb84997baa562b8958284d`.
+- Phase 1 is NOT yet PASS; fresh verification is required.
+
+### Next work prompt
+Inspect the fresh verification run for `dda091d5b32b090624bb84997baa562b8958284d`. Confirm whether the 4 false-negative imports disappear. Then trace every remaining DB-table finding against the pinned migration tree and runtime schema evidence. Do not suppress a finding unless the pinned source proves it is non-OmniRoute-owned or intentionally external. Do not begin immutable extraction until the complete Phase 1 gate passes.
