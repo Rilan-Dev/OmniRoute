@@ -747,3 +747,27 @@ Completion 053: **PASS for the demonstrated absolute package-root resolver defec
 
 ### Next-work prompt
 Inspect the Actions run triggered by this verifier repair. Read the primary scanner result first. If unresolved imports remain, inspect representative records and determine whether they are another resolver defect or genuine closure gaps; repair only evidence-proven verifier defects. If primary becomes clean, inspect supplemental and mapper outputs in order, then Phase 7, reconciliation, and the combined fail-closed gate. Do not begin Phase 2 until the complete machine gate genuinely PASSes.
+
+
+## Completion 055 — Closure mapper comment-parser defect
+
+### Planned
+Inspect the first complete machine run after Completion 054 and repair only concrete verifier defects.
+
+### Completed
+- Primary closure scanner now passes with `unresolved: 0` on 12,562 scanned files and 22,328 edges.
+- Supplemental closure analyzer passes with zero blockers.
+- The combined gate reached the mapper and exposed 169 `unresolved-first-party-imports` plus 32 DB-table findings.
+- Inspected mapper samples and reproduced a verifier bug in `stripJsComments`: entering `//` or `/* */` comment state did not skip the comment characters, so commented-out import examples were still fed to the import regex.
+- Corrected the mapper comment-state handling so comment contents are masked/skipped while newlines are preserved.
+- Mapper-only verifier commit: `4cb4adbb912ab2b17c9025cfa5575efc06d1a21f`.
+- No pinned OmniRoute source files changed.
+
+### Not done
+The mapper has not yet been rerun after this correction. The 32 DB-table findings remain unclassified until the next machine result proves whether they are parser defects, runtime-created schema, system tables, or genuine migration gaps.
+
+### Gate
+Completion 055: **PASS for the demonstrated comment-stripping defect. Overall Phase 1 remains OPEN.**
+
+### Next-work prompt
+Inspect the Actions run for `4cb4adbb912ab2b17c9025cfa5575efc06d1a21f`. Verify primary and supplemental remain green, then inspect mapper blockers. Do not suppress DB findings without tracing each class to concrete pinned-source evidence.
