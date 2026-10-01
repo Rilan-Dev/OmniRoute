@@ -65,11 +65,11 @@ function collectLiteralImports(text){
 const imports=[], unresolved=[], generatedRuntimeReferences=[];
 for(const f of codeFiles){
   for(const item of collectLiteralImports(read(f))){
-    const spec=item.spec;const runtimeRootRelative=f==="scripts/check/check-docs-counts-sync.mjs"&&spec.startsWith("./");const target=runtimeRootRelative?resolveInternal("root",spec):resolveInternal(f,spec);
+    const spec=item.spec;const resolutionSpec=/^[.#]?(?:[^?#]*)(?:[?#].*)?$/.test(spec)&&/^(?:\.|@\/|@omniroute\/)/.test(spec)?spec.replace(/[?#].*$/,""):spec;const runtimeRootRelative=f==="scripts/check/check-docs-counts-sync.mjs"&&resolutionSpec.startsWith("./");const target=runtimeRootRelative?resolveInternal("root",resolutionSpec):resolveInternal(f,resolutionSpec);
     if(target) imports.push({from:f,spec,target,dynamic:item.dynamic});
     else if(spec.startsWith(".")||spec.startsWith("@/")||spec.startsWith("@omniroute/")){
-      const candidate=norm(path.normalize(runtimeRootRelative?spec.slice(2):path.join(path.dirname(f),spec)));
-      if(/(?:^|\/)dist\//.test(spec)||candidate==="dist"||candidate.startsWith("dist/")||candidate===".next"||candidate.startsWith(".next/")||candidate===".build"||candidate.startsWith(".build/"))
+      const candidate=norm(path.normalize(runtimeRootRelative?resolutionSpec.slice(2):path.join(path.dirname(f),resolutionSpec)));
+      if(/(?:^|\/)dist\//.test(resolutionSpec)||candidate==="dist"||candidate.startsWith("dist/")||candidate===".next"||candidate.startsWith(".next/")||candidate===".build"||candidate.startsWith(".build/")||candidate.startsWith(".source/")||candidate.startsWith("obsidian-plugin/")||(f==="scripts/dev/standalone-server-ws.mjs"&&resolutionSpec==="./server.js"))
         generatedRuntimeReferences.push({from:f,spec,candidate});
       else if(f==="scripts/build/prepublish.ts"&&spec==="./http-method-guard.cjs")
         generatedRuntimeReferences.push({from:f,spec,candidate});
@@ -94,7 +94,7 @@ function stripJsComments(s){let o="",i=0,state="code",quote="";while(i<s.length)
 function extractSqlStrings(s){const out=[];let i=0;while(i<s.length){const q=s[i];if(q==="\""||q==="'"||q==="\`"){let j=i+1,b="";while(j<s.length){if(s[j]==="\\"){b+=s[j]+(s[j+1]||"");j+=2;continue}if(s[j]===q){out.push(b);i=j+1;break}b+=s[j];j++}if(j>=s.length)i=j;continue}i++}return out}
 const SQL_CLAUSE_WORDS=new Set(["SET","WHERE","VALUES","SELECT","RETURNING","FROM","JOIN","ON","GROUP","ORDER","LIMIT","OFFSET","UNION","EXCEPT","INTERSECT"]);
 for(const f of codeFiles.filter(f=>f.startsWith("src/lib/db/"))){const s=stripJsComments(read(f)),sqlParts=extractSqlStrings(s),tables=new Set(),columns=new Map();for(const sql of sqlParts){if(!/^\s*(?:SELECT|WITH|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP|TRUNCATE)\b/i.test(sql))continue;for(const m of sql.matchAll(/\b(?:FROM|JOIN|UPDATE|INTO|DELETE\s+FROM|CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|ALTER\s+TABLE)\s+["']?([A-Za-z0-9_.$-]+)/gi)){const table=m[1];if(!SQL_CLAUSE_WORDS.has(table.toUpperCase()))tables.add(table)}}for(const m of s.matchAll(/\b([A-Za-z_][A-Za-z0-9_]*)\s*\.\s*([A-Za-z_][A-Za-z0-9_]*)\b/g)){if(!columns.has(m[1]))columns.set(m[1],new Set());columns.get(m[1]).add(m[2])}if(tables.size)dbModules.push({module:f,tables:[...tables],qualified_column_usage:Object.fromEntries([...columns].map(([k,v])=>[k,[...v]]))})}
-const runtimeSchemaEvidence=[];for(const module of dbModules){const raw=stripJsComments(read(module.module));for(const sql of extractSqlStrings(raw)){for(const m of sql.matchAll(/\\bCREATE\\s+TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?["']?([A-Za-z_][A-Za-z0-9_.$-]*)["']?/gi)){runtimeSchemaEvidence.push({module:module.module,table:m[1],kind:"runtime-create-table"});}}}
+const runtimeSchemaEvidence=[];for(const module of dbModules){const raw=stripJsComments(read(module.module));for(const sql of extractSqlStrings(raw)){for(const m of sql.matchAll(/\bCREATE\s+TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?["']?([A-Za-z_][A-Za-z0-9_.$-]*)["']?/gi)){runtimeSchemaEvidence.push({module:module.module,table:m[1],kind:"runtime-create-table"});}}}
 const runtimeTables=new Set(runtimeSchemaEvidence.map(x=>x.table));
 const ignoredSqliteTables=new Set(["sqlite_master","sqlite_temp_master","sqlite_sequence"]);
 const unknownDb=dbModules.flatMap(x=>x.tables.filter(t=>!schema.has(t)&&!runtimeTables.has(t)&&!ignoredSqliteTables.has(t)&&t!=="$").map(t=>({module:x.module,table:t})));if(unknownDb.length)blockers.push({kind:"db-table-not-found-in-migrations",count:unknownDb.length,sample:unknownDb.slice(0,12)});
