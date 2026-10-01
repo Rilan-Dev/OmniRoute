@@ -65,11 +65,11 @@ function collectLiteralImports(text){
 const imports=[], unresolved=[], generatedRuntimeReferences=[];
 for(const f of codeFiles){
   for(const item of collectLiteralImports(read(f))){
-    const spec=item.spec,target=resolveInternal(f,spec);
+    const spec=item.spec;const runtimeRootRelative=f==="scripts/check/check-docs-counts-sync.mjs"&&spec.startsWith("./");const target=runtimeRootRelative?resolveInternal("root",spec):resolveInternal(f,spec);
     if(target) imports.push({from:f,spec,target,dynamic:item.dynamic});
     else if(spec.startsWith(".")||spec.startsWith("@/")||spec.startsWith("@omniroute/")){
-      const candidate=norm(path.normalize(path.join(path.dirname(f),spec)));
-      if(candidate==="dist"||candidate.startsWith("dist/")||candidate===".next"||candidate.startsWith(".next/")||candidate===".build"||candidate.startsWith(".build/"))
+      const candidate=norm(path.normalize(runtimeRootRelative?spec.slice(2):path.join(path.dirname(f),spec)));
+      if(/(?:^|\/)dist\//.test(spec)||candidate==="dist"||candidate.startsWith("dist/")||candidate===".next"||candidate.startsWith(".next/")||candidate===".build"||candidate.startsWith(".build/"))
         generatedRuntimeReferences.push({from:f,spec,candidate});
       else if(f==="scripts/build/prepublish.ts"&&spec==="./http-method-guard.cjs")
         generatedRuntimeReferences.push({from:f,spec,candidate});
