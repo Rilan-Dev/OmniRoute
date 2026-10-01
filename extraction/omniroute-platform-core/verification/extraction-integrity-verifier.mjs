@@ -10,7 +10,7 @@ const sourceRoot=path.resolve(process.argv[2]||".");
 const extractedRoot=path.resolve(process.argv[3]||"extraction/omniroute-platform-core/omniroute-source");
 const outPath=path.resolve(process.argv[4]||"extraction/omniroute-platform-core/verification/extraction-integrity-report.json");
 const blockers=[];
-const run=(cwd,args)=>{const r=spawnSync("git",args,{cwd,encoding:"utf8"});return r.status===0?r.stdout:null};
+const run=(cwd,args)=>{const r=spawnSync("git",args,{cwd,encoding:"utf8",maxBuffer:64*1024*1024});return r.status===0?r.stdout:null};
 const commit=run(sourceRoot,["rev-parse","HEAD"])?.trim();
 const tree=run(sourceRoot,["rev-parse","HEAD^{tree}"])?.trim();
 if(commit!==EXPECTED_COMMIT) blockers.push({kind:"wrong-source-checkout",actual:commit,expected:EXPECTED_COMMIT});
