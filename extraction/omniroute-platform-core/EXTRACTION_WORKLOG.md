@@ -788,3 +788,17 @@ Inspect the Actions run for `4cb4adbb912ab2b17c9025cfa5575efc06d1a21f`. Verify p
   4. Kept generated `dist/.next/.build` references classified as generated/runtime rather than silently resolving them.
 - **No pinned OmniRoute source commit/tree was modified.**
 - **Next:** rerun the verifier workflow, inspect the new mapper counts. Only investigate any remaining first-party imports or DB tables that survive the lexical/runtime-evidence fixes; do not weaken the gate or suppress unknown findings without source evidence.
+
+## Completion 057 — Mapper runtime import classification correction
+
+- **Verifier commit:** `384eb297c22c67322ff99a87621d1f3cec378c18`
+- Actions Run #94 completed and confirmed the previous lexical import parser was correct, but the mapper still reported **98** first-party imports and **24** DB tables.
+- Traced the 98 imports to two concrete runtime-generation cases:
+  - package test/runtime references to generated `dist/` artifacts;
+  - `scripts/check/check-docs-counts-sync.mjs`, which executes root-relative TypeScript paths from `cwd=ROOT`.
+- Corrected mapper classification without broad fallback:
+  - generated `dist/` references are classified as generated-runtime;
+  - the exact docs-counts checker receives root-relative resolution only for that exact source file.
+- Traced the DB evidence fix and found a verifier typo: the runtime CREATE TABLE regex contained an over-escaped word-boundary, so runtime-created tables were never recorded. Corrected it to the actual word boundary.
+- **No pinned OmniRoute source commit/tree was modified.**
+- **Next:** let the push-triggered verifier run; inspect whether mapper reaches zero blockers. If DB findings remain, trace each surviving table against runtime SQL/migrations before changing classification.
