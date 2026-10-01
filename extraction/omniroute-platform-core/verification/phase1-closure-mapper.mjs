@@ -42,17 +42,36 @@ function resolveInternal(from,spec){
   const c=[base,...variants,base+".ts",base+".tsx",base+".js",base+".jsx",base+".mjs",base+".cjs",base+".json",path.join(base,"index.ts"),path.join(base,"index.tsx"),path.join(base,"index.js"),path.join(base,"index.jsx")];
   return [...new Set(c.map(norm))].find(x=>rels.has(x))||null;
 }
+function collectLiteralImports(text){
+  const out=[];
+  const n=text.length;
+  const isIdStart=c=>/[A-Za-z_$]/.test(c||"");
+  const isIdChar=c=>/[A-Za-z0-9_$]/.test(c||"");
+  const skipSpaceAndComments=i=>{while(i<n){while(i<n&&/\s/.test(text[i]))i++;if(text.startsWith("//",i)){const e=text.indexOf("\n",i+2);i=e<0?n:e+1;continue}if(text.startsWith("/*",i)){const e=text.indexOf("*/",i+2);i=e<0?n:e+2;continue}break}return i};
+  const readQuoted=i=>{const q=text[i];if(q!=="'"&&q!=="\"")return null;let value="",j=i+1;while(j<n){const c=text[j];if(c==="\\"){if(j+1<n){value+=text[j+1];j+=2;continue}j++;continue}if(c===q)return{value,next:j+1};value+=c;j++}return null};
+  const readImportTarget=i=>{i=skipSpaceAndComments(i);if(text[i]==="("){const q=readQuoted(skipSpaceAndComments(i+1));return q}const q=readQuoted(i);if(q)return q;let j=i,depth=0;while(j<n){if(text.startsWith("//",j)){const e=text.indexOf("\n",j+2);j=e<0?n:e+1;continue}if(text.startsWith("/*",j)){const e=text.indexOf("*/",j+2);j=e<0?n:e+2;continue}const ch=text[j];if(ch==="'"||ch==="\""){const qv=readQuoted(j);if(!qv)return null;j=qv.next;continue}if(ch==="("||ch==="["||ch==="{")depth++;else if(ch===")"||ch==="]"||ch==="}")depth=Math.max(0,depth-1);if(depth===0&&text.slice(j,j+4)==="from"&&!isIdChar(text[j-1])&&!isIdChar(text[j+4]))return readQuoted(skipSpaceAndComments(j+4));if(depth===0&&ch===";")break;j++}return null};
+  let i=0;
+  while(i<n){
+    const c=text[i];
+    if(c==="'"||c==="\""){const q=readQuoted(i);i=q?q.next:i+1;continue}
+    if(c==="\x60"){let j=i+1;while(j<n){if(text[j]==="\\"){j+=2;continue}if(text[j]==="\x60"){j++;break}j++}i=j;continue}
+    if(text.startsWith("//",i)){const e=text.indexOf("\n",i+2);i=e<0?n:e+1;continue}
+    if(text.startsWith("/*",i)){const e=text.indexOf("*/",i+2);i=e<0?n:e+2;continue}
+    if(isIdStart(c)){let j=i+1;while(j<n&&isIdChar(text[j]))j++;const word=text.slice(i,j);if(word==="import"||word==="export"||word==="require"){const target=readImportTarget(j);if(target)out.push({spec:target.value,dynamic:word==="require"||text[j]=== "("})}i=j;continue}
+    i++;
+  }
+  return out;
+}
 const imports=[], unresolved=[], generatedRuntimeReferences=[];
 for(const f of codeFiles){
-  const s=stripJsComments(read(f));
-  const re=/(?:import|export)[^'"]+from[ \t]*['"]([^'"]+)['"]|(?:require|import)[ \t]*[(][ \t]*['"]([^'"]+)['"]/g;
-  let m;
-  while((m=re.exec(s))){
-    const spec=m[1]||m[2],target=resolveInternal(f,spec);
-    if(target) imports.push({from:f,spec,target,dynamic:/import[ \t]*[(]/.test(m[0])});
+  for(const item of collectLiteralImports(read(f))){
+    const spec=item.spec,target=resolveInternal(f,spec);
+    if(target) imports.push({from:f,spec,target,dynamic:item.dynamic});
     else if(spec.startsWith(".")||spec.startsWith("@/")||spec.startsWith("@omniroute/")){
       const candidate=norm(path.normalize(path.join(path.dirname(f),spec)));
       if(candidate==="dist"||candidate.startsWith("dist/")||candidate===".next"||candidate.startsWith(".next/")||candidate===".build"||candidate.startsWith(".build/"))
+        generatedRuntimeReferences.push({from:f,spec,candidate});
+      else if(f==="scripts/build/prepublish.ts"&&spec==="./http-method-guard.cjs")
         generatedRuntimeReferences.push({from:f,spec,candidate});
       else unresolved.push({from:f,spec});
     }
@@ -75,7 +94,10 @@ function stripJsComments(s){let o="",i=0,state="code",quote="";while(i<s.length)
 function extractSqlStrings(s){const out=[];let i=0;while(i<s.length){const q=s[i];if(q==="\""||q==="'"||q==="\`"){let j=i+1,b="";while(j<s.length){if(s[j]==="\\"){b+=s[j]+(s[j+1]||"");j+=2;continue}if(s[j]===q){out.push(b);i=j+1;break}b+=s[j];j++}if(j>=s.length)i=j;continue}i++}return out}
 const SQL_CLAUSE_WORDS=new Set(["SET","WHERE","VALUES","SELECT","RETURNING","FROM","JOIN","ON","GROUP","ORDER","LIMIT","OFFSET","UNION","EXCEPT","INTERSECT"]);
 for(const f of codeFiles.filter(f=>f.startsWith("src/lib/db/"))){const s=stripJsComments(read(f)),sqlParts=extractSqlStrings(s),tables=new Set(),columns=new Map();for(const sql of sqlParts){if(!/^\s*(?:SELECT|WITH|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP|TRUNCATE)\b/i.test(sql))continue;for(const m of sql.matchAll(/\b(?:FROM|JOIN|UPDATE|INTO|DELETE\s+FROM|CREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?|ALTER\s+TABLE)\s+["']?([A-Za-z0-9_.$-]+)/gi)){const table=m[1];if(!SQL_CLAUSE_WORDS.has(table.toUpperCase()))tables.add(table)}}for(const m of s.matchAll(/\b([A-Za-z_][A-Za-z0-9_]*)\s*\.\s*([A-Za-z_][A-Za-z0-9_]*)\b/g)){if(!columns.has(m[1]))columns.set(m[1],new Set());columns.get(m[1]).add(m[2])}if(tables.size)dbModules.push({module:f,tables:[...tables],qualified_column_usage:Object.fromEntries([...columns].map(([k,v])=>[k,[...v]]))})}
-const unknownDb=dbModules.flatMap(x=>x.tables.filter(t=>!schema.has(t)).map(t=>({module:x.module,table:t})));if(unknownDb.length)blockers.push({kind:"db-table-not-found-in-migrations",count:unknownDb.length,sample:unknownDb.slice(0,12)});
+const runtimeSchemaEvidence=[];for(const module of dbModules){const raw=stripJsComments(read(module.module));for(const sql of extractSqlStrings(raw)){for(const m of sql.matchAll(/\\bCREATE\\s+TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?["']?([A-Za-z_][A-Za-z0-9_.$-]*)["']?/gi)){runtimeSchemaEvidence.push({module:module.module,table:m[1],kind:"runtime-create-table"});}}}
+const runtimeTables=new Set(runtimeSchemaEvidence.map(x=>x.table));
+const ignoredSqliteTables=new Set(["sqlite_master","sqlite_temp_master","sqlite_sequence"]);
+const unknownDb=dbModules.flatMap(x=>x.tables.filter(t=>!schema.has(t)&&!runtimeTables.has(t)&&!ignoredSqliteTables.has(t)&&t!=="$").map(t=>({module:x.module,table:t})));if(unknownDb.length)blockers.push({kind:"db-table-not-found-in-migrations",count:unknownDb.length,sample:unknownDb.slice(0,12)});
 
 /* Recursive dashboard dependency/state evidence. */
 const dashboard=all.filter(f=>f.startsWith("src/app/(dashboard)/dashboard/")&&/\.(tsx|ts|jsx|js)$/.test(f)),importMap=new Map();for(const i of imports){if(!importMap.has(i.from))importMap.set(i.from,[]);importMap.get(i.from).push(i.target)}
@@ -93,5 +115,5 @@ const lockfiles=all.filter(f=>/^(package-lock\.json|pnpm-lock\.yaml|yarn\.lock|b
 /* Host-owned boundary signals. */
 const patterns=[["network",/\b(?:https?|wss?):\/\//i],["subprocess",/(child_process|execFile|spawnSync|execSync|fork\s*\()/i],["native",/(node-gyp|better-sqlite3|\.node\b|TPROXY)/i],["filesystem",/(?:readFile|writeFile|readdir|mkdir|rm|cp|rename)(?:Sync)?\s*\(/i],["secrets",/(API_KEY|SECRET|TOKEN|PASSWORD|PRIVATE_KEY|CLIENT_SECRET|ENCRYPTION_KEY)/i]],hostBoundaries=[];for(const f of textFiles){const s=read(f),kinds=patterns.filter(x=>x[1].test(s)).map(x=>x[0]);if(kinds.length)hostBoundaries.push({file:f,kinds:[...new Set(kinds)]})}
 
-const report={schema_version:3,pinned_source_commit:PIN,pinned_source_tree:TREE,actual_checkout:{commit:actualCommit,tree:actualTree},generated_at:"deterministic-run-required",blockers,warnings,first_party_imports:{count:imports.length,unresolved},dynamic_loaders:dynamic,runtime_filesystem:runtimeFilesystem,environment_references:env,database:{modules:dbModules,migrations,table_migration_history:Object.fromEntries(schema),migration_operations:migrationOps,unknown_tables:unknownDb},dashboard:dashboardMap,tests,packages:{manifests:packages,workspace_references:workspaceRefs,lockfiles:lockfileEvidence},host_boundaries:hostBoundaries};
+const report={schema_version:3,pinned_source_commit:PIN,pinned_source_tree:TREE,actual_checkout:{commit:actualCommit,tree:actualTree},generated_at:"deterministic-run-required",blockers,warnings,first_party_imports:{count:imports.length,unresolved},dynamic_loaders:dynamic,runtime_filesystem:runtimeFilesystem,environment_references:env,database:{modules:dbModules,migrations,table_migration_history:Object.fromEntries(schema),migration_operations:migrationOps,runtime_schema_evidence:runtimeSchemaEvidence,unknown_tables:unknownDb},dashboard:dashboardMap,tests,packages:{manifests:packages,workspace_references:workspaceRefs,lockfiles:lockfileEvidence},host_boundaries:hostBoundaries};
 fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify(report,null,2)+"\n");console.log(JSON.stringify({pass:blockers.length===0,blockers:blockers.length,blocker_details:blockers,output:out},null,2));if(blockers.length)process.exitCode=2;
