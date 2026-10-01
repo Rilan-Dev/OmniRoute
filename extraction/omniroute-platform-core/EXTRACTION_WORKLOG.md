@@ -901,3 +901,28 @@ Inspect the fresh remote verification after Completion 061 and correct only veri
 
 ### Next-work prompt
 Inspect the next Actions run for `8b93707bfe8fc6930c1af0921aae524ecaf0e635`. Require mapper unresolved imports and DB-table blockers to reach zero. Then inspect Phase 7 and the combined gate outputs; only after all gates pass may immutable source extraction begin.
+
+
+## Completion 063 — repair verifier syntax regression and rerun Phase 1
+
+### Planned
+Inspect the remote verification for Completion 062. If the verifier itself fails, correct only the proven verifier defect, rerun the complete pinned-source verification, and continue to the Phase 7/combined gate outputs only when the mapper executes successfully.
+
+### Completed
+- Actions Run 36864698475 / job 110377189409 executed against the exact pinned OmniRoute source commit 453918ab64f147604576e72d33e2bbfc12b2d1af and tree 76f3546d48a7293b199b7571d13808bebadb6d1f.
+- Primary closure scanner remained PASS: 12,562 files, 5,902 source files, 22,328 edges, 0 unresolved imports.
+- Supplemental closure analyzer remained PASS: 24,164 files, 5,599 source files, 0 blockers.
+- The mapper did not execute because Completion 062 contained a JavaScript syntax error at the generated-runtime classification branch: an else-if statement had no body. This is a verifier-only defect; it does not indicate a pinned-source closure problem.
+- Removed only the malformed empty else-if branch. No pinned OmniRoute source file was changed.
+- Verifier repair commit: dec80ffc9e30c9eb1926746b59c0c6b14c893009.
+
+### Not done
+- The repaired mapper has not yet completed a fresh remote run.
+- Phase 7 second pass, reconciliation, and the combined Phase 1 gate have not yet been evaluated for the repaired verifier.
+- No immutable source extraction or host adapter work has started.
+
+### Gate
+Completion 063: verifier syntax repaired. Phase 1 remains OPEN until a fresh run executes mapper, Phase 7, reconciliation, and the combined gate successfully.
+
+### Next-work prompt
+Inspect the fresh Actions run for dec80ffc9e30c9eb1926746b59c0c6b14c893009. Record the mapper blocker count and exact findings. If mapper blockers are zero, inspect Phase 7 second-pass/reconciliation and the combined Phase 1 gate, including exact pinned commit/tree checks. Do not begin immutable extraction until the complete Phase 1 gate passes.
