@@ -35,7 +35,7 @@ function resolveInternal(from,spec){
       base=path.join(workspace.root,subpath || "src/index");
     } else base=path.join(path.dirname(from),spec);
   }
-  base=norm(path.normalize(base));
+  base=norm(path.relative(root,path.resolve(root,base)));
   const extMap={".js":[".js",".ts",".tsx",".jsx",".mjs",".cjs"],".jsx":[".jsx",".tsx",".js"],".mjs":[".mjs",".ts",".js"],".cjs":[".cjs",".ts",".js"],".ts":[".ts",".tsx",".js"],".tsx":[".tsx",".ts",".js"]};
   const ext=path.extname(base),stem=ext?base.slice(0,-ext.length):base;
   const variants=ext&&extMap[ext]?extMap[ext].map(e=>stem+e):[];
