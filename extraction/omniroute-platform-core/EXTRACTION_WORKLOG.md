@@ -1093,3 +1093,45 @@ Completion 069: Phase 1 remains PASS. Phase 2 remains IN PROGRESS pending a fres
 
 ### Next-work prompt
 Inspect the fresh Actions run for 6884184ba0fe3adeb5d669e5e2ce68395ad74cd4. Require the complete Phase 1 chain to remain PASS and the integrity verifier to report exact pinned commit/tree plus zero missing, extra, mode, and blob-hash mismatches. If it passes, close Phase 2 and proceed to the machine-verifiable Phase 3 exact-source manifest/inventory without modifying immutable source files.
+
+
+## Completion 070 — Phase 2 integrity PASS; Phase 3 exact-source manifest started
+
+### Planned
+Inspect the fresh CI run after the integrity-verifier buffer repair. Require the complete Phase 1 chain to remain PASS and the immutable snapshot verifier to prove exact source commit/tree, complete entry coverage, and zero missing, extra, mode, or blob-hash mismatches. After a genuine Phase 2 PASS, begin Phase 3 with a deterministic machine-verifiable exact-source manifest. Do not modify immutable source files.
+
+### Completed
+- Inspected Actions run 130 / job 110594353604 on branch `extraction/omniroute-platform-core`.
+- Exact pinned source checkout passed:
+  - commit `453918ab64f147604576e72d33e2bbfc12b2d1af`
+  - tree `76f3546d48a7293b199b7571d13808bebadb6d1f`
+- Complete Phase 1 + Phase 7 chain passed:
+  - primary closure: 12,562 files / 22,328 edges / 0 unresolved
+  - supplemental closure: 24,164 files / 5,599 source files / 0 blockers
+  - mapper: 0 blockers
+  - Phase 7 second pass: 0 blockers
+  - reconciliation: 21,731 candidates / 0 blockers
+  - combined Phase 1 gate: PASS / 0 blockers
+- Immutable extraction integrity verifier passed:
+  - source entries: 24,267
+  - extracted files: 24,267
+  - missing: 0
+  - extra: 0
+  - mode mismatches: 0
+  - blob-hash mismatches: 0
+- This closes Phase 2. The pinned source and committed immutable snapshot were not modified.
+- Started Phase 3 by adding `verification/phase3-exact-source-manifest.mjs`. It deterministically enumerates the pinned Git tree, records path/mode/type/blob identity for every source entry, emits summary counts, and computes a canonical SHA-256 manifest digest.
+- Wired the Phase 3 generator into the existing CI verification job immediately after the integrity verifier.
+- Updated `EXTRACTION_MANIFEST.md` to record Phase 1 PASS, Phase 2 closure, and Phase 3 IN PROGRESS.
+
+### Not done
+- The first CI run containing the Phase 3 generator has not yet been inspected.
+- The generated Phase 3 JSON manifest is intentionally CI output, not a hand-maintained committed artifact.
+- Capability-to-exact-root inventory, host-boundary contract definitions, and adapter interfaces remain not started.
+- No host integration has started.
+
+### Gate
+Completion 070: Phase 1 PASS. Phase 2 PASS. Phase 3 IN PROGRESS. Immutable source remains protected and unmodified.
+
+### Next-work prompt
+Inspect the fresh CI run for the Phase 3 generator. Require the exact pinned commit/tree, a 24,267-entry manifest, and a deterministic manifest SHA-256. Then create the Phase 3 capability/root inventory mapping each reusable capability to immutable source roots, dependency closure, persistence/schema roots, API/UI roots, host-boundary signals, and product-only exclusions. Keep all source bytes immutable; only manifests, verifiers, and adapter contracts may change.
