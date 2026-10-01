@@ -5,7 +5,7 @@
   "classification": {"A":"reusable implementation","B":"immutable first-party dependency closure","C":"host adapter boundary","D":"product-only"},
   "capabilities": [
     {"id":"provider-registry","tier":1,"class":["A","B"],"roots":["open-sse/config/providerRegistry.ts","open-sse/config/providerModels.ts","src/lib/providers","src/app/api/providers"]},
-    {"id":"model-registry-capabilities","tier":1,"class":["A","B"],"roots":["src/lib/model","open-sse/config","src/app/api/providers"]},
+    {"id":"model-registry-capabilities","tier":1,"class":["A","B"],"roots":["src/lib/modelCapabilities.ts","src/lib/modelMetadataRegistry.ts","src/lib/providerModels","open-sse/config","open-sse/services/model.ts","src/app/api/providers"]},
     {"id":"credential-account-pooling","tier":1,"class":["A","B"],"roots":["src/lib/providers","src/app/api/providers"]},
     {"id":"oauth-credential-lifecycle","tier":1,"class":["A","B","C"],"roots":["src/lib/oauth","src/lib/providers","src/app/api/providers"]},
     {"id":"routing","tier":1,"class":["A","B"],"roots":["src/lib/routing","open-sse/services"]},
@@ -19,7 +19,7 @@
     {"id":"streaming-protocol-translation","tier":1,"class":["A","B"],"roots":["open-sse","src/app/api"]},
     {"id":"mcp","tier":1,"class":["A","B","C"],"roots":["open-sse/mcp-server","src/app/api"]},
     {"id":"a2a","tier":1,"class":["A","B","C"],"roots":["src/lib/a2a","src/app/api"]},
-    {"id":"tools","tier":1,"class":["A","B","C"],"roots":["src/lib/tools","src/app/api"]},
+    {"id":"tools","tier":1,"class":["A","B","C"],"roots":["open-sse/mcp-server/tools","src/lib/skills","src/lib/toolPolicy.ts","src/app/api"]},
     {"id":"skills","tier":1,"class":["A","B","C"],"roots":["src/lib/agentSkills","skills","src/app/api"]},
     {"id":"plugins","tier":1,"class":["A","B","C"],"roots":["src/lib/plugins","src/app/api"]},
     {"id":"multimodal","tier":1,"class":["A","B","C"],"roots":["open-sse","src/lib","src/app/api"]},
