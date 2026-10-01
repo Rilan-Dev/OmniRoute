@@ -1068,3 +1068,28 @@ Completion 068: Phase 1 remains PASS. Phase 2 remains IN PROGRESS pending a fres
 
 ### Next-work prompt
 Inspect the fresh Actions run for the verifier repair. Require exact source commit/tree match and a nonzero source-entry count with zero missing, extra, mode, and blob-hash mismatches. If integrity passes, close Phase 2 and create the machine-verifiable Phase 3 exact-source manifest/inventory without modifying immutable source files.
+
+
+## Completion 069 — Phase 2 integrity verifier buffer limit corrected
+
+### Planned
+Inspect the latest immutable-snapshot integrity run. Preserve the pinned source and immutable snapshot, and repair only verifier defects demonstrated by CI.
+
+### Completed
+- The latest full CI run reached the entire Phase 1 evidence chain successfully: primary closure 12,562 files / 22,328 edges / 0 unresolved; supplemental 0 blockers; mapper 0 blockers; Phase 7 second pass 0 blockers; reconciliation 21,731 candidates / 0 blockers; combined Phase 1 gate PASS / 0 blockers.
+- The only failing step was the immutable extraction-integrity verifier.
+- Its report showed source_entry_count=0 while the immutable snapshot contained 24,267 files.
+- The verifier used Node's default spawnSync output buffer while enumerating the full pinned Git tree with git ls-tree -r -z HEAD --. The full tree output exceeds that default buffer, causing the command result to be discarded and the verifier to report an empty source map.
+- Increased the verifier's Git command maxBuffer to 64 MiB. This changes only verifier execution capacity; it does not alter source contents, tree identity, or extraction contents.
+- Repair commit: 6884184ba0fe3adeb5d669e5e2ce68395ad74cd4.
+
+### Not done
+- A fresh CI run after commit 6884184ba0fe3adeb5d669e5e2ce68395ad74cd4 has not yet been inspected.
+- Phase 2 closure remains OPEN until the integrity report proves exact source commit/tree, nonzero source-entry count, and zero missing, extra, mode, and blob-hash mismatches.
+- Phase 3 manifest/inventory work remains blocked on the Phase 2 integrity gate.
+
+### Gate
+Completion 069: Phase 1 remains PASS. Phase 2 remains IN PROGRESS pending a fresh immutable-snapshot integrity PASS.
+
+### Next-work prompt
+Inspect the fresh Actions run for 6884184ba0fe3adeb5d669e5e2ce68395ad74cd4. Require the complete Phase 1 chain to remain PASS and the integrity verifier to report exact pinned commit/tree plus zero missing, extra, mode, and blob-hash mismatches. If it passes, close Phase 2 and proceed to the machine-verifiable Phase 3 exact-source manifest/inventory without modifying immutable source files.
