@@ -802,3 +802,16 @@ Inspect the Actions run for `4cb4adbb912ab2b17c9025cfa5575efc06d1a21f`. Verify p
 - Traced the DB evidence fix and found a verifier typo: the runtime CREATE TABLE regex contained an over-escaped word-boundary, so runtime-created tables were never recorded. Corrected it to the actual word boundary.
 - **No pinned OmniRoute source commit/tree was modified.**
 - **Next:** let the push-triggered verifier run; inspect whether mapper reaches zero blockers. If DB findings remain, trace each surviving table against runtime SQL/migrations before changing classification.
+
+## Completion 058 — mapper survivor tracing and verifier correction
+
+- Inspected Run #100 (`36858079179`) against verifier commit `ef739dbd744362cc5b6033a8468277b57ad4904c`.
+- Primary closure scanner: PASS — 12,562 files, 5,902 source files, 22,328 edges, 0 unresolved.
+- Supplemental closure analyzer: PASS — 24,164 files, 5,599 source files, 0 blockers.
+- Closure mapper still failed with 13 first-party import findings and 24 DB-table findings.
+- Traced the 13 import findings to regex literals in unit-test fixtures (for example assertions matching from module paths); the lexical scanner was interpreting regex contents as module imports. This is verifier false-positive behavior, not a pinned-source closure gap.
+- Traced DB findings to runtime/core schema rather than migration-only schema: OmniRoute defines some tables directly in src/lib/db/core.ts and runtime helpers, while memory_fts is a SQLite virtual table. The mapper's runtime-schema regex was still over-escaped and did not recognize these declarations.
+- Corrected the mapper to skip regex literals in its lexical import collector and to recognize both CREATE TABLE and CREATE VIRTUAL TABLE runtime schema evidence.
+- New verifier commit: eaa759b072db476a641b14be02854f2612a2c4cb.
+- No pinned OmniRoute source commit/tree content was modified.
+- Next: inspect the push-triggered verification run for eaa759b...; if mapper survivors remain, trace each survivor to actual source/runtime semantics before changing classification. Phase 1 remains closed/fail until the combined gate passes.
