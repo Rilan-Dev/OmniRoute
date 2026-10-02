@@ -13,8 +13,9 @@
 - Phase 1 closure: PASS; exact pinned commit/tree, primary closure, supplemental closure, mapper, Phase 7 second pass, reconciliation, and combined gate all passed with zero blockers.
 - Phase 2 exact source extraction: COMPLETE; immutable source tree is present under `omniroute-source/` and CI integrity verification passes with 24,267 source entries and zero missing/extra/mode/blob mismatches.
 - Phase 3 manifests: COMPLETE; exact-source manifest, capability/root inventory, and host-boundary contracts are machine-verified in CI against the pinned source.
-- Phase 4 contracts/adapters: IN PROGRESS; host adapter interface specifications are defined, implementation is intentionally not started.
-- Phase 5 verification: PASS for the current immutable snapshot; integrity verifier is wired into CI.
+- Phase 4 contracts/adapters: COMPLETE; nine host-owned adapter contracts are machine-verified against the pinned source.
+- Phase 5 adapter validation: PASS; deterministic host-side fakes, bridge behavior, tenant isolation, secret redaction, and adapter-failure semantics are verified in CI.
+- Phase 6 host integration harness: IN PROGRESS; generic host composition is being verified without modifying or monkey-patching the immutable core.
 - Phase 7 independent reusable-capability second pass: PASS; 21,731 candidates reconciled with zero blockers.
 - Host integration: BLOCKED until Phase 3 manifest/inventory and Phase 4 contracts/adapters are complete.
 
@@ -53,3 +54,9 @@ No pinned upstream source file was modified. The committed `omniroute-source/` s
 - Machine-readable contract set: `verification/phase4-adapter-contracts.json`
 - Scope: identity/tenancy, credential secrets, persistence, billing/entitlements, RAG/memory, observability, notifications, branding, and deployment/runtime.
 - These are host-owned interfaces only; no immutable OmniRoute source file is modified.
+
+## Phase 6 host integration harness
+- Specification: `PHASE-6-HOST-INTEGRATION-HARNESS.md`
+- Reference host: `host-adapters/phase6-reference-host.mjs`
+- Verifier: `verification/phase6-host-integration-verifier.mjs`
+- The harness proves host authorization, opaque core invocation, secret redaction, and tenant isolation without claiming a production host integration.
