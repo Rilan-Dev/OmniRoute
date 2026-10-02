@@ -1463,3 +1463,27 @@ Completion 080: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 
 
 ### Next-work prompt
 Implement the Phase 7 deterministic core export manifest/verifier in host-owned extraction tooling only. It must consume the already verified immutable snapshot and existing exact-source/capability/contract manifests, record exact source commit/tree and deterministic package membership, and fail closed on source drift, missing/extra immutable entries, or host-policy leakage. Add the verifier to CI after Phase 6. Do not edit `omniroute-source/`, do not rewrite first-party source, and do not alter provider/routing/quota/compression/MCP/A2A behavior.
+## Completion 081 — Phase 7 deterministic export verifier implemented
+
+### Planned
+Implement the Phase 7 machine gate in host-owned extraction tooling, using the already verified source/integrity/capability/adapter/host reports as inputs and refusing source drift or host-policy leakage.
+
+### Completed
+- Added `verification/phase7-core-export-verifier.mjs`.
+- The verifier requires the exact pinned source commit `453918ab64f147604576e72d33e2bbfc12b2d1af` and tree `76f3546d48a7293b199b7571d13808bebadb6d1f`.
+- It requires Phase 1 gate, extraction integrity, Phase 3 exact-source/capability evidence, Phase 4 adapter contracts, Phase 5 validation, and Phase 6 host-integration reports to pass with no blockers.
+- It records deterministic package inputs, immutable-source identity/count, host-owned roots, policy constraints, and a canonical descriptor SHA-256.
+- It explicitly fails if host-policy directories appear inside the immutable package or if immutable source/integrity counts drift.
+- Added the Phase 7 verifier to `.github/workflows/omniroute-extraction-verification.yml` after the Phase 6 verifier.
+- CI run #171 (`37076873152`) was triggered for the new verifier and is currently in progress.
+- No immutable `omniroute-source/` file was modified.
+
+### Not done
+- Phase 7 is not closed until run #171 completes with the new export verifier reporting PASS / 0 blockers.
+- No production host integration has started.
+
+### Gate
+Completion 081: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 PASS. Phase 6 PASS. Phase 7 IN PROGRESS — deterministic export verifier implemented; fresh CI proof pending.
+
+### Next-work prompt
+Inspect CI run #171 / job `111068647200`. Require all prior gates plus `phase7-core-export-report.json` to report PASS with zero blockers and exact source pinning. If it passes, close Phase 7 and define the next reusable distribution/consumer validation phase. If it fails, correct only the demonstrated host-owned verifier defect; never edit `omniroute-source/` or alter provider/routing/quota/compression/MCP/A2A semantics.
