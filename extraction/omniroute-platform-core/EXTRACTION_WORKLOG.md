@@ -1383,3 +1383,30 @@ Completion 077: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 
 
 ### Next-work prompt
 Inspect the fresh Phase 5 Actions run and require the Phase 5 verifier to PASS with zero blockers, exact source pinning, clean extraction integrity, and all nine contract tests green. If it passes, close Phase 5 and define the next implementation phase from the verified seams only. If it fails, inspect the concrete failure and correct only the host-side verifier/adapter tooling; never edit `omniroute-source/` or change provider/routing semantics.
+
+
+## Completion 078 — Phase 6 host integration harness started
+
+### Planned
+Advance from the verified Phase 5 host-side adapter behavior into a generic host-consumer boundary. Prove that a host can compose identity/authorization, entitlements, adapter state, an opaque core invocation, and host observability without editing or monkey-patching the immutable OmniRoute source.
+
+### Completed
+- Confirmed the latest completed Phase 5 CI run 159 / job 111064959604 passed the complete Phase 1–4 chain and the Phase 5 verifier with zero blockers.
+- Added `PHASE-6-HOST-INTEGRATION-HARNESS.md` documenting the generic host composition boundary and fail-closed invariants.
+- Added `host-adapters/phase6-reference-host.mjs`, a deterministic reference consumer that exercises the existing Phase 5 bridge/fakes.
+- Added `verification/phase6-host-integration-verifier.mjs`, requiring the exact pinned source commit/tree, Phase 2 integrity PASS, nine Phase 4 contracts, Phase 5 PASS, successful reference-host execution, deterministic authorization denial, exactly-once opaque core invocation, tenant isolation, and secret redaction.
+- Wired the Phase 6 verifier into the extraction CI workflow.
+- Updated `EXTRACTION_MANIFEST.md` to close the stale Phase 4/5 status and record Phase 6 IN PROGRESS.
+- No immutable OmniRoute source file was modified; no provider/model/routing/quota/compression/MCP/A2A behavior was changed.
+
+### Not done
+- The Phase 6 verifier has not yet received a fresh CI PASS.
+- No production host application has been integrated.
+- The reference harness does not claim arbitrary database, secret-manager, RAG, billing, or deployment compatibility.
+- Immutable source extraction remains unchanged and protected.
+
+### Gate
+Completion 078: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 PASS. Phase 6 IN PROGRESS pending fresh CI execution of the host integration harness.
+
+### Next-work prompt
+Inspect the fresh Actions run triggered by the Phase 6 verifier. Require the complete Phase 1–5 chain to remain PASS and `phase6-host-integration-report.json` to report PASS with zero blockers. If it fails, correct only the host-side harness/verifier defect demonstrated by the run. If it passes, close Phase 6 and define the next reusable-core packaging/export phase without modifying `omniroute-source/`.
