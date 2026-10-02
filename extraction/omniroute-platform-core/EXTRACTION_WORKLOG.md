@@ -1347,3 +1347,39 @@ Completion 076: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 
 
 ### Next-work prompt
 Continue with Phase 5 implementation only in host-owned extraction tooling/adapter space. Create deterministic fake adapters and contract tests for all nine Phase 4 contracts, prove tenant isolation, secret redaction, and deterministic adapter-failure behavior, and keep every unproven generic replacement explicitly unresolved. Do not edit `omniroute-source/`, do not monkey-patch provider/routing semantics, and rerun the exact-source/integrity gates after the host-side implementation.
+
+
+## Completion 077 — Phase 5 host-side adapter fakes and behavioral verifier added
+
+### Planned
+Implement the first Phase 5 host-owned validation layer from the Phase 5 seam specification. Cover all nine Phase 4 contracts with deterministic fake adapters and a bridge-level contract test suite proving tenant isolation, secret redaction, deterministic authorization failure, and preservation of opaque core routing results. Add a machine verifier and CI invocation without modifying the immutable OmniRoute source.
+
+### Completed
+- Added host-owned deterministic fake adapters under `extraction/omniroute-platform-core/host-adapters/` for identity/tenancy, credential secrets, persistence, billing/entitlements, RAG/memory, observability, notifications, branding, and deployment/runtime.
+- Added the host-owned bridge `phase5-bridge.mjs`, which performs authorization before core invocation and redacts sensitive fields before observability emission.
+- Added `phase5-adapter-contract-tests.mjs` covering all nine Phase 4 contracts.
+- The tests explicitly cover:
+  - tenant-isolated memory writes/searches;
+  - secret storage without emitting the raw secret through the bridge;
+  - sensitive observability redaction;
+  - idempotent entitlement consumption;
+  - deterministic authorization failure that prevents core invocation;
+  - exactly-once opaque core invocation and unchanged provider/routing result;
+  - notification, branding, deployment, persistence, and identity contract behavior.
+- Added `phase5-adapter-contract-verifier.mjs`, which requires the exact pinned source commit/tree, all nine host-owned contracts, a clean extraction-integrity report, and a passing Phase 5 behavioral test suite.
+- Wired the Phase 5 verifier into the extraction CI workflow after the Phase 4 verifier.
+- No immutable OmniRoute source file was modified.
+- CI runs were triggered for the new host-side artifacts; the latest run is still in progress.
+
+### Not done
+- The fresh Phase 5 CI run has not yet completed.
+- Phase 5 is not closed until the Phase 5 verifier reports PASS with zero blockers and all prior Phase 1/2/3/4 gates remain PASS.
+- No real host application adapters have been integrated.
+- No generic PostgreSQL/Supabase replacement, generic secret-manager replacement, or replacement of core RAG/memory implementations has been claimed.
+- No provider/model/routing/quota/compression/MCP/A2A semantics have been changed.
+
+### Gate
+Completion 077: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 IN PROGRESS — host-side deterministic adapters and verifier implemented; CI behavioral proof pending.
+
+### Next-work prompt
+Inspect the fresh Phase 5 Actions run and require the Phase 5 verifier to PASS with zero blockers, exact source pinning, clean extraction integrity, and all nine contract tests green. If it passes, close Phase 5 and define the next implementation phase from the verified seams only. If it fails, inspect the concrete failure and correct only the host-side verifier/adapter tooling; never edit `omniroute-source/` or change provider/routing semantics.
