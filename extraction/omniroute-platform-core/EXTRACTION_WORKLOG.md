@@ -1203,3 +1203,52 @@ Completion 072: Phase 1 PASS. Phase 2 PASS. Phase 3 IN PROGRESS pending a fresh 
 
 ### Next-work prompt
 Inspect the fresh Actions run after commit e1f3ca8da7d22e67c326be9e085a6395dcdca077. Require capability-root verification to report zero failures and the host-boundary contract verifier to PASS with exact source pinning. If both pass, close Phase 3 and begin Phase 4 with adapter interface specifications only; do not modify immutable source files.
+
+
+## Completion 073 — Phase 3 closed; Phase 4 adapter interfaces specified
+
+### Planned
+Inspect the corrected Phase 3 CI run after the capability-root correction. If capability-root and host-boundary verification both pass while all earlier integrity gates remain green, close Phase 3 and begin Phase 4 with specification-only host adapter interfaces. Do not implement adapters or modify immutable OmniRoute source bytes.
+
+### Completed
+- Inspected Actions run 143 / job 110612272145 on the extraction branch.
+- Exact pinned source checkout remained:
+  - commit `453918ab64f147604576e72d33e2bbfc12b2d1af`
+  - tree `76f3546d48a7293b199b7571d13808bebadb6d1f`
+- Complete Phase 1 chain remained PASS:
+  - primary closure: 12,562 scanned files / 5,902 source files / 22,328 edges / 0 unresolved
+  - supplemental closure: 24,164 files / 5,599 source files / 0 blockers
+  - mapper: 0 blockers
+  - Phase 7 second pass: 0 blockers
+  - reconciliation: 21,731 candidates / 0 blockers
+  - combined Phase 1 gate: PASS / 0 blockers
+- Phase 2 immutable integrity remained PASS:
+  - source entries: 24,267
+  - extracted files: 24,267
+  - missing: 0
+  - extra: 0
+  - mode mismatches: 0
+  - blob-hash mismatches: 0
+- Phase 3 exact-source manifest remained exact:
+  - 24,267 entries
+  - manifest SHA-256 `b406d593ecfac0efa02b64081c99815d8fdf33e64f10d57c348fc8e75f7135fb`
+- Phase 3 capability-root inventory verifier passed with 32 capability records and zero failures.
+- Phase 3 host-boundary contract verifier passed with 9 contracts and zero failures.
+- Phase 3 is therefore closed.
+- Added Phase 4 specification-only artifacts:
+  - `PHASE-4-ADAPTER-INTERFACES.md`
+  - `verification/phase4-adapter-contracts.json`
+- The contracts cover identity/tenancy, credential secret storage, persistence, billing/entitlements, RAG/memory, observability, notifications, branding/product UI, and deployment/runtime.
+- No immutable OmniRoute source file was modified.
+
+### Not done
+- No adapter implementation has started.
+- Phase 4 contracts have not yet been machine-verified by a dedicated CI verifier.
+- No host integration has started.
+- No provider/routing behavior has been changed.
+
+### Gate
+Completion 073: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 IN PROGRESS — specification-only, pending dedicated contract verification.
+
+### Next-work prompt
+Add a dedicated Phase 4 contract verifier that validates the machine-readable adapter contract set against the Phase 3 host-boundary contracts and capability inventory, including exact pinned commit/tree, unique contract IDs, required method declarations, host ownership, and forbidden immutable-source modifications. Run it in CI. If it passes, define implementation-level adapter injection seams for the host application without editing the immutable `omniroute-source/` tree. Keep provider/routing semantics inside the reusable core and host-specific policy in adapters.
