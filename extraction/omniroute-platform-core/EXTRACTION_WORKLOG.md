@@ -1310,3 +1310,40 @@ Completion 075: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 IN PROGRESS �
 
 ### Next-work prompt
 Inspect the fresh Actions run for df87890d215701e018fbd05153a19168b2caede2. Require Phase 4 adapter verification to PASS with zero blockers, exact source commit/tree, all nine contracts checked, nine Phase 3 boundaries checked, and no immutable-source modification. If it passes, close Phase 4 and begin specification of implementation-level adapter injection seams only in host-owned code; do not edit the pinned omniroute-source/ tree or alter provider/routing semantics.
+
+
+## Completion 076 — Phase 4 closed; Phase 5 injection seams specified
+
+### Planned
+Inspect the corrected Phase 4 CI execution, require the adapter verifier to pass with exact source pinning and zero blockers, then advance to Phase 5 by defining implementation-level host adapter injection seams without editing the immutable OmniRoute snapshot.
+
+### Completed
+- Inspected Actions run `37073510214` (run #152) for branch `extraction/omniroute-platform-core`.
+- Confirmed the complete verification job `111058140332` succeeded.
+- Phase 1 primary closure: PASS — 12,562 files, 5,902 source files, 22,328 edges, 0 unresolved imports.
+- Supplemental closure: PASS — 24,164 files, 5,599 source files, 1,085 dynamic imports, 16 repository-bounded dynamic imports, 17 runtime-resolved dynamic imports, 1,141 filesystem signals, 1,836 DB references, 0 blockers.
+- Closure mapper: PASS / 0 blockers.
+- Phase 7 second pass: PASS / 0 blockers.
+- Phase 7 reconciliation: PASS / 0 blockers across 21,731 candidates; 18,071 reusable-capability candidates, 3,613 reusable-platform-source candidates, 34 reusable-with-host-boundary candidates, and 13 product-only candidates.
+- Combined Phase 1 gate: PASS / 0 blockers.
+- Extraction integrity: PASS with 24,267 source entries and 24,267 extracted entries.
+- Exact-source manifest: PASS for commit `453918ab64f147604576e72d33e2bbfc12b2d1af` and tree `76f3546d48a7293b199b7571d13808bebadb6d1f`.
+- Phase 3 capability inventory: PASS with 32 capabilities.
+- Phase 3 host-boundary contracts: PASS with 9 contracts.
+- Phase 4 adapter contract verifier: PASS with 9 contracts, all 9 Phase 3 boundaries checked, exact source pinning, and `immutable_source_modification: false`.
+- Closed Phase 4; no adapter implementation has been placed into the immutable source.
+- Added `PHASE-5-INJECTION-SEAMS.md`, distinguishing genuine existing source injection points from host-wrapper seams and unproven generic replacements.
+- Confirmed from the pinned source that SQLite driver loading/probing, telemetry fetch/clock, and cache construction have explicit local injection/configuration points, while generic identity, secret-store, billing, RAG, notification, branding, and deployment contracts remain host-wrapper boundaries rather than invented core APIs.
+- Immutable OmniRoute source remains untouched.
+
+### Not done
+- No Phase 5 adapter implementation has started.
+- No host application has been integrated.
+- No generic PostgreSQL/Supabase/etc. persistence replacement is claimed; the existing `SqliteAdapter` is explicitly treated as SQLite-specific.
+- No provider/model/routing/quota/MCP/A2A semantics have been changed.
+
+### Gate
+Completion 076: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 IN PROGRESS — injection seams specified; implementation and behavioral contract verification pending.
+
+### Next-work prompt
+Continue with Phase 5 implementation only in host-owned extraction tooling/adapter space. Create deterministic fake adapters and contract tests for all nine Phase 4 contracts, prove tenant isolation, secret redaction, and deterministic adapter-failure behavior, and keep every unproven generic replacement explicitly unresolved. Do not edit `omniroute-source/`, do not monkey-patch provider/routing semantics, and rerun the exact-source/integrity gates after the host-side implementation.
