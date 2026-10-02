@@ -1285,3 +1285,28 @@ Completion 074: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 IN PROGRESS �
 
 ### Next-work prompt
 Inspect the fresh Actions run for the Phase 4 verifier. Require all prior gates to remain PASS and `phase4-adapter-contract-report.json` to report PASS with zero blockers and exact source pinning. If it passes, close Phase 4 and begin the next phase by specifying implementation-level adapter injection seams in host-owned code only; do not edit `omniroute-source/`, do not change provider/routing semantics, and keep host policy outside the immutable core.
+
+## Completion 075 — Phase 4 CI invocation corrected
+
+### Planned
+Inspect the first Phase 4 CI execution. Preserve the confirmed Phase 1/2/3 passes, identify any Phase 4-only failure, and correct verifier orchestration only when the failure is proven to be in the verification tooling rather than the immutable source.
+
+### Completed
+- Inspected Actions run 150 / job 111054864765.
+- Confirmed the underlying evidence chain remained green: Phase 1 combined gate PASS / 0 blockers; Phase 7 second pass PASS / 0 blockers; Phase 7 reconciliation PASS / 0 blockers; extraction integrity PASS; exact-source manifest PASS; Phase 3 capability inventory PASS; Phase 3 host-boundary contracts PASS.
+- The Phase 4 failure was traced to a deterministic workflow argument-order defect. The verifier expects root, sourceRoot, contractsPath, boundaryPath, inventoryPath, output, but CI supplied the pinned source worktree as root, shifting every subsequent argument.
+- Corrected .github/workflows/omniroute-extraction-verification.yml to invoke Phase 4 with the extraction checkout as root and the pinned source worktree as sourceRoot.
+- Verified phase4-adapter-contracts.json contains the expected nine host-owned contracts, required methods, exact source pin, and Phase 4 rules.
+- Verifier commit: df87890d215701e018fbd05153a19168b2caede2.
+- Immutable OmniRoute source remains untouched.
+
+### Not done
+- A fresh Actions run after df87890d215701e018fbd05153a19168b2caede2 has not yet been inspected.
+- Phase 4 remains OPEN until the corrected verifier reports PASS with zero blockers.
+- No adapter implementation or injection seam has started.
+
+### Gate
+Completion 075: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 IN PROGRESS — CI invocation corrected, pending fresh PASS.
+
+### Next-work prompt
+Inspect the fresh Actions run for df87890d215701e018fbd05153a19168b2caede2. Require Phase 4 adapter verification to PASS with zero blockers, exact source commit/tree, all nine contracts checked, nine Phase 3 boundaries checked, and no immutable-source modification. If it passes, close Phase 4 and begin specification of implementation-level adapter injection seams only in host-owned code; do not edit the pinned omniroute-source/ tree or alter provider/routing semantics.
