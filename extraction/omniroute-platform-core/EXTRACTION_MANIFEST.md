@@ -15,9 +15,10 @@
 - Phase 3 manifests: COMPLETE; exact-source manifest, capability/root inventory, and host-boundary contracts are machine-verified in CI against the pinned source.
 - Phase 4 contracts/adapters: COMPLETE; nine host-owned adapter contracts are machine-verified against the pinned source.
 - Phase 5 adapter validation: PASS; deterministic host-side fakes, bridge behavior, tenant isolation, secret redaction, and adapter-failure semantics are verified in CI.
-- Phase 6 host integration harness: IN PROGRESS; generic host composition is being verified without modifying or monkey-patching the immutable core.
+- Phase 6 host integration harness: COMPLETE; CI PASS with exact source pinning, zero blockers, deterministic authorization denial, opaque-result preservation, tenant isolation, and secret redaction.
 - Phase 7 independent reusable-capability second pass: PASS; 21,731 candidates reconciled with zero blockers.
-- Host integration: BLOCKED until Phase 3 manifest/inventory and Phase 4 contracts/adapters are complete.
+- Phase 7 reusable-core packaging/export: IN PROGRESS; deterministic export manifest/verifier is the next machine-gated step.
+- Host integration: BLOCKED until a concrete production host is intentionally selected and its host-owned adapters are implemented against the verified contracts.
 
 ## Phase 7 artifact
 - verification/phase7-second-pass.mjs
@@ -60,3 +61,8 @@ No pinned upstream source file was modified. The committed `omniroute-source/` s
 - Reference host: `host-adapters/phase6-reference-host.mjs`
 - Verifier: `verification/phase6-host-integration-verifier.mjs`
 - The harness proves host authorization, opaque core invocation, secret redaction, and tenant isolation without claiming a production host integration.
+
+## Phase 7 reusable-core packaging/export
+- Specification: `PHASE-7-CORE-PACKAGING.md`
+- Scope: deterministic export metadata and verifier for the already verified immutable core plus host-neutral contracts/manifests.
+- No source rewrite, provider/routing semantic change, or host-policy insertion is permitted.
