@@ -1252,3 +1252,36 @@ Completion 073: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 IN PROGRESS �
 
 ### Next-work prompt
 Add a dedicated Phase 4 contract verifier that validates the machine-readable adapter contract set against the Phase 3 host-boundary contracts and capability inventory, including exact pinned commit/tree, unique contract IDs, required method declarations, host ownership, and forbidden immutable-source modifications. Run it in CI. If it passes, define implementation-level adapter injection seams for the host application without editing the immutable `omniroute-source/` tree. Keep provider/routing semantics inside the reusable core and host-specific policy in adapters.
+
+
+## Completion 074 — Phase 4 contract verifier added
+
+### Planned
+Add a dedicated machine verifier for the Phase 4 adapter contract set. Validate exact pinned commit/tree, contract uniqueness and completeness, required methods, host ownership, capability references, mandatory boundary rules, and that the pinned immutable source worktree is still clean and exact. Wire the verifier into CI without changing immutable OmniRoute source files.
+
+### Completed
+- Added `verification/phase4-adapter-contract-verifier.mjs`.
+- The verifier checks:
+  - exact source commit `453918ab64f147604576e72d33e2bbfc12b2d1af`
+  - exact source tree `76f3546d48a7293b199b7571d13808bebadb6d1f`
+  - Phase 4 contract JSON validity and unique IDs
+  - all nine Phase 3 host-boundary contracts are represented
+  - required method declarations for each method-bearing adapter
+  - host ownership of every adapter contract
+  - every Phase 3 capability reference resolves to the capability inventory
+  - mandatory Phase 4 dependency/boundary rules
+  - exact pinned source worktree commit/tree and clean status
+- Wired the Phase 4 verifier into `.github/workflows/omniroute-extraction-verification.yml` after the Phase 3 host-boundary verifier.
+- No immutable OmniRoute source file was modified.
+
+### Not done
+- The fresh CI run containing the Phase 4 verifier has not yet been inspected.
+- Phase 4 is not closed until the verifier reports PASS with zero blockers.
+- No adapter implementation or injection seam has been added.
+- No host integration or provider/routing semantic change has started.
+
+### Gate
+Completion 074: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 IN PROGRESS — dedicated verifier added, pending CI PASS.
+
+### Next-work prompt
+Inspect the fresh Actions run for the Phase 4 verifier. Require all prior gates to remain PASS and `phase4-adapter-contract-report.json` to report PASS with zero blockers and exact source pinning. If it passes, close Phase 4 and begin the next phase by specifying implementation-level adapter injection seams in host-owned code only; do not edit `omniroute-source/`, do not change provider/routing semantics, and keep host policy outside the immutable core.
