@@ -12,8 +12,8 @@
 - Phase 0 architecture/source audit: substantially documented.
 - Phase 1 closure: PASS; exact pinned commit/tree, primary closure, supplemental closure, mapper, Phase 7 second pass, reconciliation, and combined gate all passed with zero blockers.
 - Phase 2 exact source extraction: COMPLETE; immutable source tree is present under `omniroute-source/` and CI integrity verification passes with 24,267 source entries and zero missing/extra/mode/blob mismatches.
-- Phase 3 manifests: IN PROGRESS; deterministic exact-source manifest generator added at `verification/phase3-exact-source-manifest.mjs`.
-- Phase 4 contracts/adapters: NOT STARTED.
+- Phase 3 manifests: COMPLETE; exact-source manifest, capability/root inventory, and host-boundary contracts are machine-verified in CI against the pinned source.
+- Phase 4 contracts/adapters: IN PROGRESS; host adapter interface specifications are defined, implementation is intentionally not started.
 - Phase 5 verification: PASS for the current immutable snapshot; integrity verifier is wired into CI.
 - Phase 7 independent reusable-capability second pass: PASS; 21,731 candidates reconciled with zero blockers.
 - Host integration: BLOCKED until Phase 3 manifest/inventory and Phase 4 contracts/adapters are complete.
@@ -47,3 +47,9 @@ The eventual extraction verifier must compare copied source blobs and trees agai
 
 ## Immutable source status
 No pinned upstream source file was modified. The committed `omniroute-source/` snapshot is the exact pinned source tree and is protected by the CI integrity verifier.
+
+## Phase 4 adapter interface specifications
+- Specification: `PHASE-4-ADAPTER-INTERFACES.md`
+- Machine-readable contract set: `verification/phase4-adapter-contracts.json`
+- Scope: identity/tenancy, credential secrets, persistence, billing/entitlements, RAG/memory, observability, notifications, branding, and deployment/runtime.
+- These are host-owned interfaces only; no immutable OmniRoute source file is modified.
