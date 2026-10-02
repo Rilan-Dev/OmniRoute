@@ -38,7 +38,7 @@ else {
       if(!r.allowed?.ok) blockers.push({kind:"allowed-request-failed"});
       if(r.denied?.ok!==false||r.denied?.code!=="FORBIDDEN") blockers.push({kind:"authorization-failure-not-deterministic"});
       if(r.invocations!==1) blockers.push({kind:"core-invocation-count",actual:r.invocations,expected:1});
-      if(r.allowed.result?.provider!=="opaque-provider"||r.allowed.result?.model!=="opaque-model") blockers.push({kind:"opaque-core-result-changed"});
+      if(r.allowed.result?.provider!=="opaque-provider"||r.allowed.result?.model!=="opaque-model"||r.allowed.result?.summary?.apiKey!=="should-not-leak"||r.allowed.result?.summary?.answer!=="core-result") blockers.push({kind:"opaque-core-result-changed"});
       if(JSON.stringify(r.tenantA)!=="[]"||r.tenantB?.length!==1) blockers.push({kind:"tenant-isolation-failure"});
       const leaked=r.observabilityEvents?.some(e=>JSON.stringify(e).includes("should-not-leak"));
       if(leaked) blockers.push({kind:"secret-redaction-failure"});
