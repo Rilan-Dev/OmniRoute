@@ -1435,3 +1435,31 @@ Completion 079: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 
 
 ### Next-work prompt
 Inspect the fresh Actions run triggered by the Phase 6 verifier update. Require exact source pinning, clean integrity, Phase 4/5 PASS, and Phase 6 PASS with zero blockers. If any failure appears, correct only the demonstrated host-side harness/verifier defect. Do not modify omniroute-source/ or alter provider/routing/compression/MCP/A2A semantics.
+
+## Completion 080 — Phase 6 closed; Phase 7 packaging/export opened
+
+### Planned
+Inspect the fresh Phase 6 verification execution, require the full prior evidence chain to remain green, close Phase 6 only on an actual machine PASS, and then advance to the reusable-core packaging/export phase without changing the immutable source.
+
+### Completed
+- Inspected GitHub Actions run `37076499210` / run #168, job `111067482130`.
+- Confirmed the complete Phase 1 evidence chain remains green: primary closure PASS with 12,562 scanned files, 5,902 source files, 22,328 edges, 0 unresolved; supplemental closure PASS with 24,164 scanned files, 5,599 source files, 0 blockers; closure mapper PASS / 0 blockers; Phase 7 second pass PASS / 0 blockers; Phase 7 reconciliation PASS / 0 blockers across 21,731 candidates; combined Phase 1 gate PASS / 0 blockers.
+- Confirmed extraction integrity: PASS, 24,267 source entries and 24,267 extracted entries.
+- Confirmed exact-source manifest: PASS for commit `453918ab64f147604576e72d33e2bbfc12b2d1af` and tree `76f3546d48a7293b199b7571d13808bebadb6d1f`.
+- Confirmed Phase 4: PASS / 9 contracts / immutable source modification false.
+- Confirmed Phase 5: PASS / 0 blockers.
+- Confirmed Phase 6: PASS / 0 blockers with the exact pinned source commit/tree.
+- Closed Phase 6 in the manifest.
+- Added `PHASE-7-CORE-PACKAGING.md` defining the next reusable-core packaging/export gate: deterministic export metadata, exact source identity preservation, separation of immutable source from host adapters/policy, external dependency inventory, and fail-closed reproducibility verification.
+- No immutable `omniroute-source/` file was modified.
+
+### Not done
+- Phase 7 packaging/export verifier has not yet been implemented.
+- No production host integration has started.
+- No provider/model/routing/quota/compression/MCP/A2A semantics have been changed.
+
+### Gate
+Completion 080: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 PASS. Phase 6 PASS. Phase 7 IN PROGRESS — packaging/export specification added; deterministic export manifest/verifier pending.
+
+### Next-work prompt
+Implement the Phase 7 deterministic core export manifest/verifier in host-owned extraction tooling only. It must consume the already verified immutable snapshot and existing exact-source/capability/contract manifests, record exact source commit/tree and deterministic package membership, and fail closed on source drift, missing/extra immutable entries, or host-policy leakage. Add the verifier to CI after Phase 6. Do not edit `omniroute-source/`, do not rewrite first-party source, and do not alter provider/routing/quota/compression/MCP/A2A behavior.
