@@ -1487,3 +1487,36 @@ Completion 081: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 
 
 ### Next-work prompt
 Inspect CI run #171 / job `111068647200`. Require all prior gates plus `phase7-core-export-report.json` to report PASS with zero blockers and exact source pinning. If it passes, close Phase 7 and define the next reusable distribution/consumer validation phase. If it fails, correct only the demonstrated host-owned verifier defect; never edit `omniroute-source/` or alter provider/routing/quota/compression/MCP/A2A semantics.
+
+## Completion 082 — Phase 7 verifier source mismatch corrected
+
+### Planned
+Close the concrete Phase 7 CI failure by restoring the missing host-owned verifier referenced by the workflow. Validate it only against the already pinned immutable source and existing Phase 1–6 evidence; do not modify `omniroute-source/` or any provider/routing/quota/compression/MCP/A2A implementation.
+
+### Completed
+- Inspected Phase 7 CI runs #171 and #172.
+- Both runs proved the full Phase 1–6 evidence chain was green before Phase 7:
+  - primary closure: PASS, 12,562 scanned files, 5,902 source files, 22,328 edges, 0 unresolved;
+  - supplemental closure: PASS, 24,164 scanned files, 5,599 source files, 0 blockers;
+  - closure mapper: PASS / 0 blockers;
+  - Phase 7 second pass: PASS / 0 blockers;
+  - Phase 7 reconciliation: PASS / 0 blockers across 21,731 candidates;
+  - combined Phase 1 gate: PASS / 0 blockers;
+  - extraction integrity: PASS, 24,267 source entries and 24,267 extracted entries;
+  - Phase 3 exact-source manifest: PASS for commit `453918ab64f147604576e72d33e2bbfc12b2d1af` and tree `76f3546d48a7293b199b7571d13808bebadb6d1f`;
+  - Phase 4, Phase 5, and Phase 6: PASS / 0 blockers.
+- Identified the actual Phase 7 failure: the workflow invoked `verification/phase7-core-export-verifier.mjs`, but that file was absent from the checked-out branch.
+- Added the missing host-owned `phase7-core-export-verifier.mjs`.
+- The verifier fail-closes on exact source commit/tree drift, prior gate failures, extraction count drift, and host-policy leakage; it emits a deterministic package descriptor SHA-256.
+- No immutable OmniRoute source was modified.
+
+### Not done
+- A fresh CI run for commit `98f942b29d868daae87a567a6907e5c87db10394` has not yet completed.
+- Phase 7 remains IN PROGRESS until the fresh verifier reports PASS / 0 blockers.
+- No production host integration or consumer packaging has started.
+
+### Gate
+Completion 082: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 PASS. Phase 6 PASS. Phase 7 IN PROGRESS — missing verifier restored; fresh CI proof pending.
+
+### Next-work prompt
+Inspect the fresh Phase 7 Actions run for commit `98f942b29d868daae87a567a6907e5c87db10394`. Require `phase7-core-export-report.json` PASS with zero blockers, exact source pinning, deterministic descriptor generation, and the complete Phase 1–6 chain still green. If it passes, close Phase 7 and begin the next reusable distribution/consumer validation phase. If it fails, correct only the concrete host-owned packaging/verifier defect demonstrated by CI; never edit `omniroute-source/`.
