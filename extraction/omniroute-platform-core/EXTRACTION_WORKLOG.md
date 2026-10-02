@@ -1410,3 +1410,28 @@ Completion 078: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 
 
 ### Next-work prompt
 Inspect the fresh Actions run triggered by the Phase 6 verifier. Require the complete Phase 1–5 chain to remain PASS and `phase6-host-integration-report.json` to report PASS with zero blockers. If it fails, correct only the host-side harness/verifier defect demonstrated by the run. If it passes, close Phase 6 and define the next reusable-core packaging/export phase without modifying `omniroute-source/`.
+
+
+## Completion 079 — Phase 6 verifier strengthened for exact opaque-result preservation
+
+### Planned
+Continue the Phase 6 host-integration verification without changing the immutable OmniRoute source. Review the reference-host contract and make the machine gate prove that the host returns the opaque core result unchanged, while observability still receives a redacted representation.
+
+### Completed
+- Reviewed the Phase 6 reference host, bridge, and verifier against the pinned-source boundary.
+- Confirmed authorization occurs before the opaque core invocation and denied requests cannot invoke the core.
+- Confirmed tenant-isolated memory behavior and observability redaction are exercised by the reference host.
+- Strengthened verification/phase6-host-integration-verifier.mjs so the gate checks the opaque core result's provider, model, and summary fields, not only provider/model metadata.
+- This specifically proves that the host boundary does not silently rewrite the core result while the observability path remains redacted.
+- Immutable omniroute-source/ remains untouched.
+
+### Not done
+- A fresh GitHub Actions PASS for Phase 6 has not yet been observed through the available GitHub connector surface.
+- Phase 6 remains IN PROGRESS until the full workflow reports zero blockers.
+- No production host integration has started.
+
+### Gate
+Completion 079: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 PASS. Phase 6 IN PROGRESS — verifier strengthened; fresh CI proof pending.
+
+### Next-work prompt
+Inspect the fresh Actions run triggered by the Phase 6 verifier update. Require exact source pinning, clean integrity, Phase 4/5 PASS, and Phase 6 PASS with zero blockers. If any failure appears, correct only the demonstrated host-side harness/verifier defect. Do not modify omniroute-source/ or alter provider/routing/compression/MCP/A2A semantics.
