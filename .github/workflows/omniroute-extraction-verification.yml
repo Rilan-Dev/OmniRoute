@@ -35,6 +35,7 @@ jobs:
           node extraction/omniroute-platform-core/verification/phase3-exact-source-manifest.mjs ../omniroute-source extraction/omniroute-platform-core/verification/phase3-exact-source-manifest.json
           node extraction/omniroute-platform-core/verification/phase3-capability-root-inventory.mjs ../omniroute-source extraction/omniroute-platform-core/verification/phase3-capability-root-inventory.json
           node extraction/omniroute-platform-core/verification/phase3-host-boundary-contract-verifier.mjs ../omniroute-source extraction/omniroute-platform-core/verification/phase3-capability-root-inventory.json extraction/omniroute-platform-core/verification/phase3-host-boundary-contracts.json
+          node extraction/omniroute-platform-core/verification/phase4-adapter-contract-verifier.mjs ../omniroute-source extraction/omniroute-platform-core/verification/phase4-adapter-contracts.json extraction/omniroute-platform-core/verification/phase3-host-boundary-contracts.json extraction/omniroute-platform-core/verification/phase3-capability-root-inventory.json extraction/omniroute-platform-core/verification/phase4-adapter-contract-report.json
 
       - name: Upload raw verification reports
         if: always()
