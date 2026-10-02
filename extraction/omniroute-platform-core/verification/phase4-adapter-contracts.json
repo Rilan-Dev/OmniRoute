@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "source_commit": "453918ab64f147604576e72d33e2bbfc12b2d1af",
+  "source_tree": "76f3546d48a7293b199b7571d13808bebadb6d1f",
+  "phase": 4,
+  "status": "specification-only",
+  "immutable_source_modification": false,
+  "contracts": [
+    {
+      "id": "identity-tenancy",
+      "interface": "IdentityTenancyAdapter",
+      "host_owned": true,
+      "required_methods": [
+        "resolvePrincipal",
+        "authorize"
+      ]
+    },
+    {
+      "id": "credential-secret-store",
+      "interface": "CredentialSecretStoreAdapter",
+      "host_owned": true,
+      "required_methods": [
+        "getSecret",
+        "putSecret",
+        "deleteSecret"
+      ],
+      "secret_logging_forbidden": true
+    },
+    {
+      "id": "persistence-database",
+      "interface": "PlatformPersistenceAdapter",
+      "host_owned": true,
+      "required_methods": [
+        "transaction",
+        "read",
+        "write",
+        "delete"
+      ]
+    },
+    {
+      "id": "billing-entitlements",
+      "interface": "BillingEntitlementsAdapter",
+      "host_owned": true,
+      "required_methods": [
+        "getEntitlements",
+        "consume"
+      ]
+    },
+    {
+      "id": "rag-memory-store",
+      "interface": "RagMemoryStoreAdapter",
+      "host_owned": true,
+      "required_methods": [
+        "upsert",
+        "search",
+        "delete"
+      ],
+      "tenant_isolation_required": true
+    },
+    {
+      "id": "observability-sink",
+      "interface": "ObservabilitySinkAdapter",
+      "host_owned": true,
+      "required_methods": [
+        "emit"
+      ],
+      "sensitive_payloads_default_forbidden": true
+    },
+    {
+      "id": "notification-delivery",
+      "interface": "NotificationDeliveryAdapter",
+      "host_owned": true,
+      "required_methods": [
+        "send"
+      ]
+    },
+    {
+      "id": "branding-product-ui",
+      "interface": "ProductBranding",
+      "host_owned": true,
+      "required_fields": [
+        "productName"
+      ]
+    },
+    {
+      "id": "deployment-runtime",
+      "interface": "DeploymentRuntimeAdapter",
+      "host_owned": true,
+      "required_methods": [
+        "getConfig",
+        "health"
+      ]
+    }
+  ],
+  "rules": [
+    "Adapters are explicit dependencies.",
+    "Host policy stays outside immutable source.",
+    "No source rewrite is permitted during Phase 4.",
+    "Core provider/routing semantics cannot be changed by adapters."
+  ]
+}
