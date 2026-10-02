@@ -1520,3 +1520,28 @@ Completion 082: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 
 
 ### Next-work prompt
 Inspect the fresh Phase 7 Actions run for commit `98f942b29d868daae87a567a6907e5c87db10394`. Require `phase7-core-export-report.json` PASS with zero blockers, exact source pinning, deterministic descriptor generation, and the complete Phase 1–6 chain still green. If it passes, close Phase 7 and begin the next reusable distribution/consumer validation phase. If it fails, correct only the concrete host-owned packaging/verifier defect demonstrated by CI; never edit `omniroute-source/`.
+
+
+## Completion 083 — Phase 7 export verifier restored on the active extraction branch
+
+### Planned
+Continue from Completion 082 by inspecting the fresh Phase 7 CI execution for the pinned extraction workflow. Require the existing Phase 1–6 evidence chain to remain machine-green, then close Phase 7 only when the export verifier itself executes and reports PASS with zero blockers.
+
+### Completed
+- Inspected GitHub Actions run #171 (37076873152), job 111068647200.
+- The complete Phase 1–6 evidence chain executed successfully before the Phase 7 step: primary closure PASS — 12,562 files, 5,902 source files, 22,328 edges, 0 unresolved imports; supplemental closure PASS — 24,164 files, 5,599 source files, 1,085 dynamic imports, 16 repository-bounded dynamic imports, 17 runtime-resolved dynamic imports, 1,141 filesystem signals, 1,836 DB references, 0 blockers; closure mapper PASS / 0 blockers; Phase 7 second pass PASS / 0 blockers; Phase 7 reconciliation PASS / 0 blockers across 21,731 candidates; combined Phase 1 gate PASS / 0 blockers; extraction integrity PASS — 24,267 source entries and 24,267 extracted entries; exact-source manifest PASS — commit 453918ab64f147604576e72d33e2bbfc12b2d1af, tree 76f3546d48a7293b199b7571d13808bebadb6d1f; Phase 3 PASS / 32 capabilities; Phase 4 PASS / 9 contracts / immutable source modification false; Phase 5 PASS / 0 blockers; Phase 6 PASS / 0 blockers.
+- The only failure was the Phase 7 executable itself: the checked-out commit used by run #171 did not contain verification/phase7-core-export-verifier.mjs, producing a deterministic Node MODULE_NOT_FOUND failure.
+- Confirmed the host-owned export verifier now exists on the active extraction branch at extraction/omniroute-platform-core/verification/phase7-core-export-verifier.mjs.
+- Reviewed the verifier against the existing Phase 3 manifest schema: it consumes source.entries, exact source commit/tree, integrity counts, Phase 1–6 reports, and the pinned source worktree; it does not modify omniroute-source/.
+- No pinned OmniRoute source file was modified.
+
+### Not done
+- A fresh CI execution containing the restored Phase 7 verifier has not yet been observed.
+- Phase 7 remains IN PROGRESS until the verifier executes and reports PASS with zero blockers.
+- No production host integration or distribution release has started.
+
+### Gate
+Completion 083: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 PASS. Phase 6 PASS. Phase 7 IN PROGRESS — verifier restored and schema-reviewed; fresh machine execution pending.
+
+### Next-work prompt
+Observe the next Actions run on extraction/omniroute-platform-core. Require the Phase 7 export verifier to execute successfully and report PASS with zero blockers, exact source commit/tree, matching 24,267-entry integrity counts, no host-policy leakage, and a deterministic descriptor hash. If it passes, close Phase 7 and begin the next reusable-core distribution/consumer validation phase. If it fails, inspect only the concrete verifier or packaging defect demonstrated by CI; never modify omniroute-source/ or alter provider/routing/quota/compression/MCP/A2A semantics.
