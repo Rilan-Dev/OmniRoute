@@ -1818,3 +1818,41 @@ Completion 093: supplemental reuse audit recorded. Current Phase 9 host verifica
 
 ### Next-work prompt
 Continue from the current Phase 9 CI state. In parallel with host-verifier closure, use `SUPPLEMENTAL_REUSE_GAP_AUDIT.md` as the checklist for a source-closure audit of the newly identified families. For each family, prove whether it is already represented by the current extraction, only deferred to Phase 7, or genuinely missing. Do not copy or modify pinned source until the corresponding immutable closure is machine-proven.
+
+## Completion 094 — Phase 9 revalidation: host checkout remains blocked by missing token
+
+### Planned
+Continue Phase 9 readiness verification for the selected Clara AI Platform host after the workspace-path correction. Require the complete Phase 1–8 chain to remain green and require the dedicated Clara host verifier to execute.
+
+### Completed
+- Inspected the fresh Actions run for workflow commit `8993423b057dd9a74db959869e8cc80ab5a3fdad`.
+- The complete Phase 1–8 verification chain passed again with zero blockers:
+  - Primary closure: PASS — 12,562 scanned files, 5,902 source files, 22,328 edges, 0 unresolved.
+  - Supplemental closure: PASS — 24,164 scanned files, 0 blockers.
+  - Closure mapper: PASS — 0 blockers.
+  - Phase 7 second pass: PASS — 0 blockers.
+  - Phase 7 reconciliation: PASS — 21,731 candidates, 0 blockers.
+  - Combined Phase 1 gate: PASS — 0 blockers.
+  - Extraction integrity: PASS — 24,267 source entries and 24,267 extracted entries.
+  - Phase 3 exact manifest/capability/boundary verification: PASS.
+  - Phase 4 adapter contracts: PASS — 9 contracts, immutable source modification false.
+  - Phase 5 adapter validation: PASS.
+  - Phase 6 host integration harness: PASS.
+  - Phase 7 core export: PASS — descriptor SHA-256 `20451498014656f240d625b11dd1f14a8cde8a2ce766dc52e7405542c172b279`.
+  - Phase 8 consumer validation: PASS — all 9 consumer scenarios.
+- The workflow now correctly checks out Clara into the in-workspace path `clara-host`; the previous outside-workspace defect is therefore resolved.
+- The next concrete failure is now explicit: `actions/checkout@v4` for `Rilan-Dev/Clara-AI-Platform` fails with `Input required and not supplied: token`.
+- Because the selected Clara repository cannot be checked out, the dedicated Phase 9 verifier does not execute. This is an Actions credential prerequisite, not an OmniRoute source or verifier defect.
+- No pinned OmniRoute source file or `omniroute-source/` entry was modified.
+
+### Not done
+- `CLARA_HOST_REPO_TOKEN` has not been supplied to the Actions workflow.
+- `phase9-clara-host-report.json` has not been produced for this attempt.
+- Phase 9 remains IN PROGRESS.
+- No production deployment or host-integration completion is claimed.
+
+### Gate
+Completion 094: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 PASS. Phase 6 PASS. Phase 7 PASS. Phase 8 PASS. Phase 9 IN PROGRESS — blocked at authenticated Clara checkout because the required token input is missing.
+
+### Next-work prompt
+Configure the repository Actions secret `CLARA_HOST_REPO_TOKEN` with read access to `Rilan-Dev/Clara-AI-Platform`, then rerun/inspect the extraction verification workflow. Require Clara checkout success, the complete Phase 1–8 chain to remain green, and `phase9-clara-host-report.json` to report PASS with zero blockers. If the verifier fails after checkout, correct only the concrete host-side evidence/contract defect demonstrated by that run; never modify `omniroute-source/` or OmniRoute provider/routing/quota/compression/MCP/A2A semantics.
