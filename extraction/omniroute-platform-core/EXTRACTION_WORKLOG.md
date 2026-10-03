@@ -1733,3 +1733,29 @@ Completion 090: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 
 
 ### Next-work prompt
 Inspect the next Actions run on extraction/omniroute-platform-core. Require the authenticated Clara checkout to succeed and require phase9-clara-host-report.json to report PASS with zero blockers while preserving the exact OmniRoute source commit/tree and the complete Phase 1–8 green chain. If the secret is unavailable, report that explicit environment prerequisite rather than weakening the verifier. If the Phase 9 verifier fails after checkout, correct only the concrete Clara host-side evidence/contract defect demonstrated by CI; never modify omniroute-source/ or OmniRoute provider/routing/quota/compression/MCP/A2A semantics.
+
+
+## Completion 091 — Phase 9 blocked by Actions secret prerequisite
+
+### Planned
+Continue Phase 9 validation for the selected Clara AI Platform host. Require the authenticated Clara checkout and then require the Phase 9 verifier to run with the complete Phase 1–8 evidence chain unchanged.
+
+### Completed
+- Inspected the newest extraction CI run #204 (37113537635) on extraction/omniroute-platform-core.
+- The exact pinned OmniRoute source worktree was created successfully and the complete Phase 1–7 evidence-collection step completed successfully before the host checkout.
+- The dedicated Checkout selected Clara host step failed; Verify selected Clara host was therefore skipped.
+- Confirmed the workflow is correctly configured to use actions/checkout@v4 against Rilan-Dev/Clara-AI-Platform, ref feature/ai-core-from-doable-source, with secrets.CLARA_HOST_REPO_TOKEN.
+- This is an Actions environment prerequisite, not evidence of a Phase 9 contract defect. The verifier was not executed, so Phase 9 cannot be claimed PASS.
+- No immutable OmniRoute source file or omniroute-source/ entry was modified.
+
+### Not done
+- The repository secret CLARA_HOST_REPO_TOKEN with read access to the selected private Clara repository has not been demonstrated as available to the workflow.
+- phase9-clara-host-report.json has not been produced by CI for the current authenticated checkout attempt.
+- Phase 9 remains IN PROGRESS.
+- No production deployment is claimed.
+
+### Gate
+Completion 091: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 PASS. Phase 6 PASS. Phase 7 PASS. Phase 8 PASS. Phase 9 IN PROGRESS — blocked before verifier execution by the Actions secret/host-checkout prerequisite.
+
+### Next-work prompt
+Provide/configure CLARA_HOST_REPO_TOKEN as a repository Actions secret with read access to Rilan-Dev/Clara-AI-Platform, then inspect the next extraction Actions run. Require the Clara checkout to succeed, the complete Phase 1–8 chain to remain green, and phase9-clara-host-report.json to report PASS with zero blockers. If the Phase 9 verifier then fails, correct only the concrete Clara host-side evidence/contract defect demonstrated by CI; never modify omniroute-source/ or OmniRoute provider/routing/quota/compression/MCP/A2A semantics.
