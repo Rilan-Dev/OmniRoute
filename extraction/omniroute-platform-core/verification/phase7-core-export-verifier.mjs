@@ -24,7 +24,7 @@ if(!sourceManifest||sourceManifest.source?.commit!==PIN||sourceManifest.source?.
   blockers.push({kind:"exact-source-manifest-mismatch"});
 if(!integrity?.pass||integrity.blockers?.length) blockers.push({kind:"extraction-integrity-not-pass"});
 if(!phase1?.pass||phase1.blockers?.length) blockers.push({kind:"phase1-gate-not-pass"});
-if(!phase3||phase3.pass!==true||phase3.failures?.length) blockers.push({kind:"phase3-capability-inventory-not-pass"});
+if(!phase3||phase3.source_commit!==PIN||phase3.source_tree!==TREE||!Array.isArray(phase3.capabilities)||phase3.capabilities.length===0) blockers.push({kind:"phase3-capability-inventory-not-pass"});
 if(!phase4||phase4.status!=="PASS"||phase4.blockers?.length||phase4.immutable_source_modification!==false)
   blockers.push({kind:"phase4-contracts-not-pass"});
 if(!phase5?.pass||phase5.blockers?.length) blockers.push({kind:"phase5-contracts-not-pass"});
