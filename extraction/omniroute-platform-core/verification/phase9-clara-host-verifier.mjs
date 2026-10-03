@@ -71,11 +71,15 @@ for (const [name, report] of Object.entries(reports)) {
     blockers.push({ kind: "wrong-source-tree", report: name, actual: report.pinned_source_tree, expected: TREE });
   if (Array.isArray(report.blockers) && report.blockers.length)
     blockers.push({ kind: "upstream-phase-blockers", report: name, count: report.blockers.length });
-  if (report.pass === false) blockers.push({ kind: "upstream-phase-failed", report: name });
+  const reportPassed = report.pass === true || report.status === "PASS" || report.status === "pass";
+  if (report.pass === false || report.status === "FAIL" || report.status === "fail" || report.status === "BLOCKED" || report.status === "blocked")
+    blockers.push({ kind: "upstream-phase-failed", report: name });
 }
 if (reports.integrity?.pass !== true) blockers.push({ kind: "phase2-integrity-not-pass" });
-if (reports.phase7?.pass !== true) blockers.push({ kind: "phase7-export-not-pass" });
-if (reports.phase8?.pass !== true) blockers.push({ kind: "phase8-consumer-not-pass" });
+if (!(reports.phase7 && (reports.phase7.pass === true || reports.phase7.status === "PASS" || reports.phase7.status === "pass")))
+  blockers.push({ kind: "phase7-export-not-pass" });
+if (!(reports.phase8 && (reports.phase8.pass === true || reports.phase8.status === "PASS" || reports.phase8.status === "pass")))
+  blockers.push({ kind: "phase8-consumer-not-pass" });
 
 const required = {
   identity_tenancy: [
@@ -124,8 +128,7 @@ const invariants = {
     /assertTenantScope/.test(context) && /TENANT_SCOPE_MISMATCH/.test(context),
   secret_redaction_fail_closed:
     /transferPolicy:\s*"never"/.test(adapter) && /PlatformSecretAccessError/.test(adapter) && /async get\(\)[\s\S]*throw new PlatformSecretAccessError/.test(adapter),
-  opaque_runtime_result:
-    /return \{ config, providerName, model, stream, grounding \}/.test(runtime),
+  opaque_runtime_result: /return\s*\{\s*config,\s*providerName,\s*model,\s*stream,\s*grounding\s*\}/.test(runtime),
   registry_fails_closed:
     /ALREADY_REGISTERED/.test(registry) && /UnknownAdapterError/.test(registry) && /AdaptersNotRegisteredError/.test(registry),
   adapter_tests_present:
