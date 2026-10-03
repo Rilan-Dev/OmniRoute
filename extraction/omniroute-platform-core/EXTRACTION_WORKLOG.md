@@ -1880,3 +1880,27 @@ Completion 095: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 
 
 ### Next-work prompt
 Inspect the fresh push-triggered extraction verification run from this commit. Require the Clara checkout to use `clara-host`, authenticate with `CLARA_HOST_REPO_TOKEN`, preserve the complete Phase 1–8 green chain, and execute `phase9-clara-host-verifier.mjs`. Claim Phase 9 PASS only when its report has zero blockers. If it fails after checkout, correct only the demonstrated Clara host-side defect.
+
+
+## Completion 096 — Fresh Phase 9 verification run triggered after credential configuration
+
+### Planned
+Trigger a fresh extraction verification run from the current workflow definition now that `CLARA_HOST_REPO_TOKEN` has been configured. Require the in-workspace Clara checkout, complete Phase 1–8 chain, and genuine Phase 9 verifier execution.
+
+### Completed
+- Confirmed the active branch workflow uses the corrected in-workspace checkout path `clara-host`.
+- Confirmed the workflow is configured with `secrets.CLARA_HOST_REPO_TOKEN`.
+- Confirmed the active branch head contains the Phase 9 prerequisite checkpoint.
+- Added this checkpoint solely to trigger a fresh push-based verification run against the current workflow definition.
+- Pinned OmniRoute source remains unchanged at commit `453918ab64f147604576e72d33e2bbfc12b2d1af`, tree `76f3546d48a7293b199b7571d13808bebadb6d1f`.
+
+### Not done
+- Fresh Phase 9 CI result is pending.
+- Phase 9 remains IN PROGRESS until `phase9-clara-host-report.json` is produced with zero blockers.
+- No production deployment is claimed.
+
+### Gate
+Completion 096: Phase 1–8 remain previously verified PASS. Phase 9 IN PROGRESS — fresh run against the current workflow definition is required.
+
+### Next-work prompt
+Inspect the push-triggered verification run for this commit. Require Clara checkout authentication, Phase 1–8 green status, and Phase 9 verifier execution. If Phase 9 fails, fix only the concrete host-side contract/evidence defect demonstrated by CI; never modify `omniroute-source/` or the pinned OmniRoute source semantics.
