@@ -11,7 +11,8 @@ const exportPath=path.resolve(process.argv[4]||"extraction/omniroute-platform-co
 const phase4Path=path.resolve(process.argv[5]||"extraction/omniroute-platform-core/verification/phase4-adapter-contracts.json");
 const phase5Path=path.resolve(process.argv[6]||"extraction/omniroute-platform-core/verification/phase5-adapter-contract-report.json");
 const phase6Path=path.resolve(process.argv[7]||"extraction/omniroute-platform-core/verification/phase6-host-integration-report.json");
-const out=path.resolve(process.argv[8]||"extraction/omniroute-platform-core/verification/phase8-consumer-report.json");
+const phase3ManifestPath=path.resolve(process.argv[8]||"extraction/omniroute-platform-core/verification/phase3-exact-source-manifest.json");
+const out=path.resolve(process.argv[9]||"extraction/omniroute-platform-core/verification/phase8-consumer-report.json");
 const PIN="453918ab64f147604576e72d33e2bbfc12b2d1af";
 const TREE="76f3546d48a7293b199b7571d13808bebadb6d1f";
 const blockers=[];
@@ -23,8 +24,11 @@ const exported=readJson(exportPath);
 const phase4=readJson(phase4Path);
 const phase5=readJson(phase5Path);
 const phase6=readJson(phase6Path);
+const sourceManifest=readJson(phase3ManifestPath);
 if(!exported||exported.status!=="PASS") blockers.push({kind:"phase7-export-not-pass"});
 if(exported?.source_commit!==PIN||exported?.source_tree!==TREE) blockers.push({kind:"export-pin-mismatch"});
+if(!sourceManifest||sourceManifest.source?.commit!==PIN||sourceManifest.source?.tree!==TREE||!Array.isArray(sourceManifest.entries)) blockers.push({kind:"source-manifest-unavailable"});
+if(sourceManifest&&exported&&sourceManifest.manifest_sha256!==exported.descriptor?.immutable?.manifest_sha256) blockers.push({kind:"export-descriptor-membership-mismatch"});
 if(!phase4||phase4.source_commit!==PIN||phase4.source_tree!==TREE||phase4.contracts?.length!==9) blockers.push({kind:"adapter-contract-incompatibility"});
 if(!phase5?.pass||phase5.blockers?.length) blockers.push({kind:"phase5-contracts-not-pass"});
 if(!phase6||phase6.status!=="PASS"||phase6.blockers?.length) blockers.push({kind:"phase6-consumer-boundary-not-pass"});
@@ -46,6 +50,24 @@ try {
       const identity=JSON.parse(run.stdout);
       if(identity.package_name!=="omniroute"||identity.version!=="3.8.52") blockers.push({kind:"package-identity-failure"});
     } catch { blockers.push({kind:"consumer-fixture-invalid-output"}); }
+  }
+
+  if(sourceManifest?.entries?.length){
+    const expectedPaths=new Set(sourceManifest.entries.map(e=>e.path));
+    const consumerPaths=[];
+    const collect=(dir,rel="")=>{
+      for(const e of fs.readdirSync(dir,{withFileTypes:true})){
+        if(e.name===".git") continue;
+        const p=path.join(rel,e.name), full=path.join(dir,e.name);
+        if(e.isDirectory()&&!e.isSymbolicLink()) collect(full,p); else consumerPaths.push(p.replaceAll(path.sep,"/"));
+      }
+    };
+    collect(consumer);
+    const actualPaths=new Set(consumerPaths);
+    const missing=sourceManifest.entries.filter(e=>!actualPaths.has(e.path)).map(e=>e.path);
+    const extra=consumerPaths.filter(p=>!expectedPaths.has(p));
+    if(missing.length) blockers.push({kind:"consumer-missing-package-entries",count:missing.length,sample:missing.slice(0,20)});
+    if(extra.length) blockers.push({kind:"consumer-extra-package-entries",count:extra.length,sample:extra.slice(0,20)});
   }
 
   const expectedTopLevel=fs.readdirSync(sourceRoot).sort();
