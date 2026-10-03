@@ -1904,3 +1904,30 @@ Completion 096: Phase 1–8 remain previously verified PASS. Phase 9 IN PROGRESS
 
 ### Next-work prompt
 Inspect the push-triggered verification run for this commit. Require Clara checkout authentication, Phase 1–8 green status, and Phase 9 verifier execution. If Phase 9 fails, fix only the concrete host-side contract/evidence defect demonstrated by CI; never modify `omniroute-source/` or the pinned OmniRoute source semantics.
+
+
+## Completion 097 — Phase 9 verifier corrected for actual evidence schemas
+
+### Planned
+Inspect the authenticated Clara host verification result from the latest run. Correct only verifier defects proven by the report schema and pinned Clara source evidence, then require a fresh CI execution of the Phase 9 gate.
+
+### Completed
+- Authenticated Clara checkout now succeeds in Actions run #212; the selected branch checked out at host commit `e241da50867f4da9a007a97d70d3eccf36a54465`.
+- The complete OmniRoute Phase 1–8 chain remained machine-green in the same run, including exact pinned source commit `453918ab64f147604576e72d33e2bbfc12b2d1af`, tree `76f3546d48a7293b199b7571d13808bebadb6d1f`, 24,267-entry integrity, Phase 7 descriptor, and all Phase 8 consumer scenarios.
+- Phase 9 then executed and exposed three blockers.
+- Two blockers were verifier schema handling defects: Phase 4/6/7/8 reports use `status: "PASS"` rather than a boolean `pass: true`, so the Phase 9 verifier incorrectly treated valid upstream evidence as absent/not-passing.
+- The third blocker was an overly strict source-text matcher for Clara's opaque runtime result. The actual return is multiline and semantically returns the required `config`, `providerName`, `model`, `stream`, and `grounding` fields; the previous regex required the exact one-line formatting.
+- Hardened only the host-owned Phase 9 verifier to accept the established PASS status schema and whitespace-tolerant opaque-result evidence.
+- Verifier repair commit: `c4c7a531100b33909bfd784d90f8383e1d78430f`.
+- No pinned OmniRoute source file and no immutable `omniroute-source/` entry was modified.
+
+### Not done
+- A fresh Actions run for `c4c7a531100b33909bfd784d90f8383e1d78430f` has not yet been observed.
+- Phase 9 remains IN PROGRESS until the corrected verifier reports PASS with zero blockers.
+- No production deployment is claimed.
+
+### Gate
+Completion 097: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 PASS. Phase 6 PASS. Phase 7 PASS. Phase 8 PASS. Phase 9 IN PROGRESS — authenticated host checkout proven; three Phase 9 verifier findings corrected; fresh machine proof pending.
+
+### Next-work prompt
+Inspect the fresh Actions run for `c4c7a531100b33909bfd784d90f8383e1d78430f`. Require the complete Phase 1–8 chain to remain green and `phase9-clara-host-report.json` to report PASS with zero blockers. If it passes, close Phase 9 and proceed to the next reusable-core consumer validation/extraction phase. If it fails, inspect only the concrete Clara host-side evidence defect and never modify `omniroute-source/` or OmniRoute provider/routing/quota/compression/MCP/A2A semantics.
