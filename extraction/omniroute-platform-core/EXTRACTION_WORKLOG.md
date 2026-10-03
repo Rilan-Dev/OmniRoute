@@ -1680,3 +1680,30 @@ Completion 088: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 
 
 ### Next-work prompt
 Implement the Phase 9 host-owned adapter package in Clara outside any immutable OmniRoute source snapshot. Start with identity/tenancy and persistence, then credential-secret, billing/entitlements, RAG/memory, observability, notification, branding, and deployment/runtime adapters. Use only existing Clara evidence and proven OmniRoute injection points; do not invent a generic replacement API. Add deterministic contract tests, authorization-before-core and tenant-isolation tests, secret-redaction tests, opaque-result tests, and a dedicated Phase 9 verifier. Require the complete Phase 1–8 chain and unchanged OmniRoute Git-tree/blob identity before claiming Phase 9 PASS.
+
+
+## Completion 089 — Phase 9 Clara host verifier wired
+
+### Planned
+Advance Phase 9 using the explicitly selected Clara AI Platform host. Verify the existing Clara-owned adapter seam against all nine Phase 4 contracts without modifying the immutable OmniRoute snapshot.
+
+### Completed
+- Inspected the selected Clara branch `feature/ai-core-from-doable-source` and confirmed the existing `src/modules/ai-platform-core/` host seam, including execution-context, adapter registry, Clara bindings, runtime seam, and deterministic unit-test files.
+- Confirmed concrete Clara ownership evidence for persistence, billing/entitlements, RAG, analytics/audit, notifications/email, branding, and deployment/runtime.
+- Added `verification/phase9-clara-host-verifier.mjs`.
+- The verifier requires the complete Phase 1–8 evidence chain, exact OmniRoute source commit/tree, nine host-contract evidence families, tenant/K​B fail-closed context, authorization before provider invocation, secret denial, opaque runtime results, deterministic adapter registry behavior, adapter tests, and no runtime import of the copied Doable reference.
+- Added `verification/PHASE-9-CLARA-HOST-INTEGRATION.md`.
+- Wired a clean checkout of the exact selected Clara branch into the extraction CI workflow and runs the Phase 9 verifier after Phase 8.
+- Updated `EXTRACTION_MANIFEST.md` to reflect Phase 9 as the active machine-verification gate.
+- No pinned OmniRoute source file and no `omniroute-source/` entry was modified.
+
+### Not done
+- Fresh CI proof for Phase 9 is pending.
+- Phase 9 remains IN PROGRESS until the dedicated verifier reports PASS with zero blockers.
+- No production deployment is claimed.
+
+### Gate
+Completion 089: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 PASS. Phase 6 PASS. Phase 7 PASS. Phase 8 PASS. Phase 9 IN PROGRESS — Clara host verifier implemented and CI-wired; fresh proof pending.
+
+### Next-work prompt
+Inspect the fresh Actions run for the Phase 9 verifier. Require Phase 1–8 to remain green and `phase9-clara-host-report.json` to report PASS with zero blockers. If it fails, correct only the concrete host-side verifier/contract evidence defect demonstrated by CI; never modify `omniroute-source/` or provider/routing/quota/compression/MCP/A2A semantics.
