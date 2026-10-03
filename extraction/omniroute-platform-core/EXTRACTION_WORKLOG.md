@@ -1707,3 +1707,29 @@ Completion 089: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 
 
 ### Next-work prompt
 Inspect the fresh Actions run for the Phase 9 verifier. Require Phase 1–8 to remain green and `phase9-clara-host-report.json` to report PASS with zero blockers. If it fails, correct only the concrete host-side verifier/contract evidence defect demonstrated by CI; never modify `omniroute-source/` or provider/routing/quota/compression/MCP/A2A semantics.
+
+
+## Completion 090 — Phase 9 CI host checkout authentication corrected
+
+### Planned
+Continue Phase 9 validation for the explicitly selected Clara AI Platform host. Preserve the complete Phase 1–8 evidence chain and obtain a genuine Phase 9 verifier run without changing the immutable OmniRoute source.
+
+### Completed
+- Inspected the newest Phase 9 CI run after the verifier was wired.
+- Confirmed the complete Phase 1–8 chain was machine-green in that run: Phase 1 combined gate PASS with 0 blockers; Phase 2 extraction integrity PASS with 24,267/24,267 entries; Phase 3 exact manifest/capability/boundary evidence PASS; Phase 4 adapter contracts PASS; Phase 5 PASS; Phase 6 PASS; Phase 7 core export PASS; Phase 8 consumer scenarios PASS with all nine scenarios green.
+- Confirmed the Phase 9 verifier itself was not reached because the CI runner could not authenticate the private Clara-AI-Platform repository; the failure occurred at the raw HTTPS clone with an authentication error.
+- Replaced the unauthenticated raw clone with a dedicated actions/checkout@v4 step for feature/ai-core-from-doable-source, using the explicit CLARA_HOST_REPO_TOKEN secret and a separate checkout-verification step.
+- The immutable OmniRoute source pin remains unchanged at commit 453918ab64f147604576e72d33e2bbfc12b2d1af, tree 76f3546d48a7293b199b7571d13808bebadb6d1f.
+- No provider, routing, quota, compression, MCP, A2A, or other OmniRoute source semantics were modified.
+
+### Not done
+- Phase 9 is not closed yet.
+- A repository secret named CLARA_HOST_REPO_TOKEN must be available to the Actions workflow with read access to the selected Clara repository.
+- Fresh CI proof of phase9-clara-host-report.json is still pending.
+- No production deployment is claimed.
+
+### Gate
+Completion 090: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 PASS. Phase 6 PASS. Phase 7 PASS. Phase 8 PASS. Phase 9 IN PROGRESS — CI authentication path corrected; fresh authenticated host-verifier proof pending.
+
+### Next-work prompt
+Inspect the next Actions run on extraction/omniroute-platform-core. Require the authenticated Clara checkout to succeed and require phase9-clara-host-report.json to report PASS with zero blockers while preserving the exact OmniRoute source commit/tree and the complete Phase 1–8 green chain. If the secret is unavailable, report that explicit environment prerequisite rather than weakening the verifier. If the Phase 9 verifier fails after checkout, correct only the concrete Clara host-side evidence/contract defect demonstrated by CI; never modify omniroute-source/ or OmniRoute provider/routing/quota/compression/MCP/A2A semantics.
