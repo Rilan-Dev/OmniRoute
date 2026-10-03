@@ -19,7 +19,7 @@
 - Phase 7 independent reusable-capability second pass: PASS; 21,731 candidates reconciled with zero blockers.
 - Phase 7 reusable-core packaging/export: COMPLETE; CI run #176 passed the deterministic export verifier with zero blockers, exact source identity, 24,267 immutable entries, and descriptor SHA-256 `20451498014656f240d625b11dd1f14a8cde8a2ce766dc52e7405542c172b279`.
 - Phase 8 distribution/consumer validation: COMPLETE; CI run #191 passed the independent consumer verifier with zero blockers, exact package membership, adapter compatibility, clean import, authorization ordering, opaque-result preservation, tenant isolation, secret redaction, and tamper/missing/extra-entry fail-closed scenarios.
-- Phase 9 host integration readiness: IN PROGRESS; production host selection and host-owned adapter implementation remain intentionally pending explicit host selection.
+- Phase 9 host integration readiness: IN PROGRESS; Clara AI Platform is now explicitly selected as the host consumer, and the nine host-owned adapter boundaries are mapped. Adapter implementation and dedicated Phase 9 machine verification remain pending.
 - Host integration: BLOCKED until a concrete production host is intentionally selected and its host-owned adapters are implemented against the verified contracts.
 
 ## Phase 7 artifact
@@ -82,3 +82,10 @@ No pinned upstream source file was modified. The committed `omniroute-source/` s
 - Specification: `PHASE-9-HOST-INTEGRATION-READINESS.md`
 - Scope: explicit host selection and production adapter implementation outside the immutable core.
 - No production host is selected yet; the Phase 8 reference consumer remains the validated fixture.
+
+## Phase 9 host selection
+- Host-selection record: `PHASE-9-CLARA-HOST-SELECTION.md`
+- Selected consumer: `Rilan-Dev/Clara-AI-Platform`, branch `feature/ai-core-from-doable-source`.
+- Scope: host-owned adapter implementation only; `omniroute-source/` remains immutable.
+- All nine Phase 4 contracts have been mapped to existing Clara ownership boundaries and evidence locations.
+- Phase 9 is not complete until deterministic adapter tests and a dedicated machine verifier pass.
