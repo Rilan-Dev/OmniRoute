@@ -1599,3 +1599,28 @@ Completion 085: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 
 
 ### Next-work prompt
 Inspect the next Actions run on `extraction/omniroute-platform-core`. Require the complete Phase 1–7 chain to remain PASS and `phase8-consumer-report.json` to report PASS with zero blockers, exact source commit/tree, Phase 7 descriptor identity, clean consumer import, adapter compatibility, and all tamper/missing/extra-entry fail-closed scenarios. If CI fails, correct only the concrete Phase 8 host-side fixture/verifier defect demonstrated by the run; never edit `omniroute-source/` or change provider/routing/quota/compression/MCP/A2A semantics.
+
+
+## Completion 086 — Phase 8 consumer membership gate hardened
+
+### Planned
+Continue Phase 8 by validating the independent consumer against the exact Phase 7 package descriptor and exact Phase 3 source membership, while preserving the immutable source and host-adapter boundary.
+
+### Completed
+- Inspected the Phase 8 consumer verifier and workflow invocation after the initial implementation.
+- Found and corrected a concrete host-owned verifier defect: the Phase 8 output path used argument 7, which was the Phase 6 report path; the output is now argument 9 after adding the Phase 3 manifest input.
+- Added an exact Phase 3 manifest input to Phase 8 and fail-closed checks for pinned source identity, manifest availability, and descriptor membership-hash agreement.
+- Added consumer package membership checks for missing and extra entries against the exact Phase 3 manifest, excluding only the copied worktree .git metadata.
+- Updated CI to pass the Phase 3 exact-source manifest into the Phase 8 verifier.
+- No pinned OmniRoute source file or immutable omniroute-source/ entry was modified.
+
+### Not done
+- Fresh CI proof for the hardened Phase 8 verifier is pending.
+- Phase 8 remains IN PROGRESS until the consumer report passes with zero blockers and all required scenarios are machine-green.
+- No production host integration or deployment has started.
+
+### Gate
+Completion 086: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 PASS. Phase 6 PASS. Phase 7 PASS. Phase 8 IN PROGRESS — consumer verifier hardened; fresh CI proof pending.
+
+### Next-work prompt
+Inspect the newest Actions run on extraction/omniroute-platform-core. Require the complete Phase 1–7 chain to remain PASS and phase8-consumer-report.json to report PASS with zero blockers, exact source commit/tree, Phase 7 descriptor identity, exact Phase 3 membership agreement, clean consumer import, adapter compatibility, authorization-before-core evidence, opaque-result preservation, tenant isolation, secret redaction, and tamper/missing/extra-entry fail-closed scenarios. If it fails, correct only the concrete host-side Phase 8 defect demonstrated by CI; never modify omniroute-source/ or provider/routing/quota/compression/MCP/A2A semantics.
