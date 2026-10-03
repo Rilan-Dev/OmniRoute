@@ -8,6 +8,7 @@
     "omniroute-reset-password": "bin/reset-password.mjs"
   },
   "files": [
+    "config/cli-tools-manifest.json",
     "bin/",
     "dist/",
     "@omniroute/",
@@ -92,7 +93,7 @@
   },
   "homepage": "https://omniroute.online",
   "scripts": {
-    "dev": "node --max-old-space-size=8192 scripts/dev/run-next.mjs dev",
+    "dev": "node api.js && node --max-old-space-size=8192 scripts/dev/run-next.mjs dev",
     "prebuild:docs": "node scripts/docs/gen-openapi-module.mjs",
     "gen:provider-reference": "bun scripts/docs/gen-provider-reference.ts",
     "bench:compression": "bun scripts/compression/benchmark.ts",
@@ -108,7 +109,7 @@
     "release:sync-changelog-i18n": "node scripts/release/sync-changelog-i18n.mjs",
     "prebuild": "npm run check:native-deps",
     "prebuild:fast": "npm run check:native-deps",
-    "build": "node scripts/build/build-next-isolated.mjs",
+    "build": "node api.js && node scripts/build/build-next-isolated.mjs",
     "build:fast": "cross-env OMNIROUTE_SKIP_STANDALONE=1 node scripts/build/build-next-isolated.mjs",
     "build:secure": "OMNIROUTE_BUILD_PROFILE=minimal node scripts/build/build-next-isolated.mjs",
     "build:backend": "cross-env OMNIROUTE_BUILD_BACKEND_ONLY=1 node scripts/build/build-next-isolated.mjs",
@@ -117,7 +118,7 @@
     "omniroute:verify": "node scripts/check/omniroute-verify.mjs",
     "build:release": "rm -rf .build dist && OMNIROUTE_BUILD_SHA=$(git rev-parse --short HEAD) npm run build && npm run build:cli && node scripts/build/write-build-sha.mjs",
     "build:native:tproxy": "cd src/mitm/tproxy/native && npx --yes node-gyp rebuild",
-    "start": "node scripts/dev/run-next.mjs start",
+    "start": "node api.js && node scripts/dev/run-next.mjs start",
     "start:fast": "cross-env OMNIROUTE_SKIP_STANDALONE=1 node scripts/dev/run-next.mjs start",
     "homolog": "node scripts/homolog/run.mjs",
     "lint": "eslint . --cache --cache-location .eslintcache --suppressions-location config/quality/eslint-suppressions.json",
@@ -147,6 +148,7 @@
     "test:security": "cross-env DISABLE_SQLITE_AUTO_BACKUP=true node --import tsx/esm --import ./open-sse/utils/setupPolyfill.ts --import ./tests/_setup/isolateDataDir.ts --test tests/unit/security-fase01.test.ts",
     "test:property": "cross-env DISABLE_SQLITE_AUTO_BACKUP=true node --import tsx/esm --test --test-force-exit tests/unit/correctness/*.property.test.ts",
     "check:cycles": "node scripts/check/check-cycles.mjs",
+    "check:cycles:ratchet": "node scripts/check/check-cycles.mjs --ratchet",
     "check:route-validation:t06": "node scripts/check/check-route-validation.mjs",
     "check:any-budget:t11": "node scripts/check/check-t11-any-budget.mjs",
     "check:docs-sync": "node scripts/check/check-docs-sync.mjs",
@@ -242,6 +244,8 @@
     "quality:relax-baselines": "node scripts/quality/relax-baselines.mjs",
     "quality:refresh-model-lifecycle": "node scripts/quality/refresh-model-lifecycle.mjs",
     "quality:gate": "npm run quality:collect && npm run quality:ratchet -- --allow-missing",
+    "check:gate-manifest": "node scripts/quality/gate-manifest.mjs",
+    "check:quality-skill-contract": "node scripts/quality/check-skill-contract.mjs",
     "quality:scan": "node scripts/quality/run-all-gates.mjs",
     "quality:scan:fast": "node scripts/quality/run-all-gates.mjs --fast",
     "audit:deps": "npm audit --audit-level=critical && (npm audit --audit-level=high || echo '::warning::high-severity advisories present (non-blocking)') && npm run audit:electron",
@@ -300,6 +304,7 @@
     "i18n:check-keys:cli": "node scripts/i18n/check-key-completeness.mjs --catalog=cli"
   },
   "dependencies": {
+    "@agentclientprotocol/sdk": "1.4.0",
     "@aws-sdk/client-bedrock-runtime": "^3.1120.0",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
@@ -433,6 +438,7 @@
     "glob": "^13.0.6",
     "httpyac": "^6.16.7",
     "husky": "^9.1.7",
+    "istanbul-lib-instrument": "6.0.3",
     "jscpd": "^4.3.0",
     "jsdom": "^30.0.1",
     "junit-to-ctrf": "^0.0.14",
