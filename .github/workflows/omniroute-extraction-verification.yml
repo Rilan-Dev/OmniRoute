@@ -45,14 +45,14 @@ jobs:
         with:
           repository: Rilan-Dev/Clara-AI-Platform
           ref: feature/ai-core-from-doable-source
-          path: ../clara-host
+          path: clara-host
           fetch-depth: 1
           token: ${{ secrets.CLARA_HOST_REPO_TOKEN }}
 
       - name: Verify selected Clara host checkout
         run: |
-          test "$(git -C ../clara-host rev-parse --abbrev-ref HEAD)" = "feature/ai-core-from-doable-source"
-          node extraction/omniroute-platform-core/verification/phase9-clara-host-verifier.mjs ../clara-host extraction/omniroute-platform-core/verification/extraction-integrity-report.json extraction/omniroute-platform-core/verification/phase4-adapter-contract-report.json extraction/omniroute-platform-core/verification/phase5-adapter-contract-report.json extraction/omniroute-platform-core/verification/phase6-host-integration-report.json extraction/omniroute-platform-core/verification/phase7-core-export-report.json extraction/omniroute-platform-core/verification/phase8-consumer-report.json extraction/omniroute-platform-core/verification/phase9-clara-host-report.json
+          test "$(git -C clara-host rev-parse --abbrev-ref HEAD)" = "feature/ai-core-from-doable-source"
+          node extraction/omniroute-platform-core/verification/phase9-clara-host-verifier.mjs clara-host extraction/omniroute-platform-core/verification/extraction-integrity-report.json extraction/omniroute-platform-core/verification/phase4-adapter-contract-report.json extraction/omniroute-platform-core/verification/phase5-adapter-contract-report.json extraction/omniroute-platform-core/verification/phase6-host-integration-report.json extraction/omniroute-platform-core/verification/phase7-core-export-report.json extraction/omniroute-platform-core/verification/phase8-consumer-report.json extraction/omniroute-platform-core/verification/phase9-clara-host-report.json
 
       - name: Upload raw verification reports
         if: always()
