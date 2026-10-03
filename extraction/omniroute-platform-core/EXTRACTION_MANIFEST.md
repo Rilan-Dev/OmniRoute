@@ -18,7 +18,8 @@
 - Phase 6 host integration harness: COMPLETE; CI PASS with exact source pinning, zero blockers, deterministic authorization denial, opaque-result preservation, tenant isolation, and secret redaction.
 - Phase 7 independent reusable-capability second pass: PASS; 21,731 candidates reconciled with zero blockers.
 - Phase 7 reusable-core packaging/export: COMPLETE; CI run #176 passed the deterministic export verifier with zero blockers, exact source identity, 24,267 immutable entries, and descriptor SHA-256 `20451498014656f240d625b11dd1f14a8cde8a2ce766dc52e7405542c172b279`.
-- Phase 8 distribution/consumer validation: IN PROGRESS; independent consumer fixture/verifier added and wired after the Phase 7 export verifier; fresh CI proof pending.
+- Phase 8 distribution/consumer validation: COMPLETE; CI run #191 passed the independent consumer verifier with zero blockers, exact package membership, adapter compatibility, clean import, authorization ordering, opaque-result preservation, tenant isolation, secret redaction, and tamper/missing/extra-entry fail-closed scenarios.
+- Phase 9 host integration readiness: IN PROGRESS; production host selection and host-owned adapter implementation remain intentionally pending explicit host selection.
 - Host integration: BLOCKED until a concrete production host is intentionally selected and its host-owned adapters are implemented against the verified contracts.
 
 ## Phase 7 artifact
@@ -74,4 +75,10 @@ No pinned upstream source file was modified. The committed `omniroute-source/` s
 ## Phase 8 distribution/consumer validation
 - Specification: `PHASE-8-DISTRIBUTION-CONSUMER-VALIDATION.md`
 - Scope: independent consumer verification of the exact Phase 7 package through host-owned adapters.
-- Production deployment remains blocked until a concrete host is intentionally selected and passes consumer validation.
+- CI run #191 / job 111159911217: PASS / 0 blockers.
+- All nine consumer scenarios passed, including clean import, package identity, authorization-before-core, opaque-result preservation, tenant isolation, secret redaction, and tamper/missing/extra-entry fail-closed checks.
+
+## Phase 9 host integration readiness
+- Specification: `PHASE-9-HOST-INTEGRATION-READINESS.md`
+- Scope: explicit host selection and production adapter implementation outside the immutable core.
+- No production host is selected yet; the Phase 8 reference consumer remains the validated fixture.
