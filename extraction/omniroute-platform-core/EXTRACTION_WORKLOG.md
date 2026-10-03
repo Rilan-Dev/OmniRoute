@@ -1573,3 +1573,29 @@ Completion 084: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 
 
 ### Next-work prompt
 Implement the Phase 8 independent consumer fixture and machine verifier in host-owned extraction tooling. Consume only the exact Phase 7 export descriptor and verified immutable snapshot; prove package identity, clean consumer integrity, adapter contract compatibility, authorization denial before core invocation, opaque result preservation, tenant isolation, secret redaction, and fail-closed behavior for tampering/missing/extra entries. Add it to CI after the Phase 7 export verifier. Do not edit omniroute-source/, do not rewrite first-party source, and do not alter provider/routing/quota/compression/MCP/A2A behavior.
+
+## Completion 085 — Phase 8 independent consumer validation implemented
+
+### Planned
+Implement the Phase 8 consumer fixture and machine verifier from the verified Phase 7 export. Validate exact package identity, adapter compatibility, clean consumer import, and fail-closed behavior for tampering, missing entries, and extra entries without modifying the immutable OmniRoute snapshot.
+
+### Completed
+- Added the host-owned independent consumer fixture: `host-adapters/phase8-consumer-fixture.mjs`.
+- Added `verification/phase8-consumer-verifier.mjs` with exact pinned commit/tree checks and Phase 7 export-descriptor dependency.
+- The verifier checks Phase 4 adapter compatibility, Phase 5 validation, and Phase 6 host-boundary evidence before accepting the consumer.
+- The fixture imports the immutable snapshot's package metadata and verifies the expected OmniRoute package identity/version and required reusable roots.
+- Added deterministic consumer probes for tampering, missing entries, and extra entries, with restoration checks so the fixture itself cannot leave the consumer mutated.
+- Wired Phase 8 into CI immediately after the Phase 7 export verifier and passed the Phase 6 report explicitly into the Phase 8 verifier.
+- Updated `EXTRACTION_MANIFEST.md` to record Phase 8 as IN PROGRESS.
+- No pinned OmniRoute source file or immutable `omniroute-source/` entry was modified.
+
+### Not done
+- The fresh CI run containing the Phase 8 verifier has not yet been inspected.
+- Phase 8 is not closed until the independent consumer report is PASS with zero blockers.
+- No production host integration or deployment has started.
+
+### Gate
+Completion 085: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 PASS. Phase 6 PASS. Phase 7 PASS. Phase 8 IN PROGRESS — independent consumer verifier implemented; fresh CI proof pending.
+
+### Next-work prompt
+Inspect the next Actions run on `extraction/omniroute-platform-core`. Require the complete Phase 1–7 chain to remain PASS and `phase8-consumer-report.json` to report PASS with zero blockers, exact source commit/tree, Phase 7 descriptor identity, clean consumer import, adapter compatibility, and all tamper/missing/extra-entry fail-closed scenarios. If CI fails, correct only the concrete Phase 8 host-side fixture/verifier defect demonstrated by the run; never edit `omniroute-source/` or change provider/routing/quota/compression/MCP/A2A semantics.
