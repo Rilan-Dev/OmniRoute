@@ -1656,3 +1656,27 @@ Completion 087: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 
 
 ### Next-work prompt
 Select the concrete host application intentionally before implementation. Record the host's ownership boundary and map all nine Phase 4 contracts to host-owned implementations. Then implement only outside omniroute-source/, add deterministic contract/integration tests and a machine verifier, and require the complete Phase 1–8 evidence chain plus unchanged immutable Git-tree/blob identity before claiming Phase 9 PASS.
+
+## Completion 088 — Phase 9 host selected: Clara AI Platform
+
+### Planned
+Advance Phase 9 only after an explicit host selection. Record the concrete consumer and map all nine Phase 4 host-owned contracts without modifying the immutable OmniRoute source snapshot.
+
+### Completed
+- Reviewed the current extraction state: Phase 1 through Phase 8 are machine-verified PASS; Phase 9 was the only open gate.
+- Selected `Rilan-Dev/Clara-AI-Platform` on `feature/ai-core-from-doable-source` as the concrete Phase 9 host consumer.
+- Verified the Clara repository structure and existing ownership evidence for authentication/tenancy, PostgreSQL persistence, billing/plan guards, RAG/knowledge-base APIs, email/notifications, product/deployment surfaces.
+- Added `PHASE-9-CLARA-HOST-SELECTION.md` with the exact OmniRoute source pin, host boundary, and nine-contract mapping.
+- Updated `EXTRACTION_MANIFEST.md` to record Clara as the selected host while keeping Phase 9 IN PROGRESS.
+- No pinned OmniRoute source file and no `omniroute-source/` entry was modified.
+
+### Not done
+- No production adapter implementation has started in Clara.
+- No Phase 9 machine verifier or deterministic adapter test suite has been added yet.
+- No production deployment is claimed.
+
+### Gate
+Completion 088: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 PASS. Phase 6 PASS. Phase 7 PASS. Phase 8 PASS. Phase 9 IN PROGRESS — Clara selected and all nine adapter boundaries mapped; implementation and machine verification pending.
+
+### Next-work prompt
+Implement the Phase 9 host-owned adapter package in Clara outside any immutable OmniRoute source snapshot. Start with identity/tenancy and persistence, then credential-secret, billing/entitlements, RAG/memory, observability, notification, branding, and deployment/runtime adapters. Use only existing Clara evidence and proven OmniRoute injection points; do not invent a generic replacement API. Add deterministic contract tests, authorization-before-core and tenant-isolation tests, secret-redaction tests, opaque-result tests, and a dedicated Phase 9 verifier. Require the complete Phase 1–8 chain and unchanged OmniRoute Git-tree/blob identity before claiming Phase 9 PASS.
