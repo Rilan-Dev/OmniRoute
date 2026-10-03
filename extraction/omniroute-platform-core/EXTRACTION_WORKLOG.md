@@ -1856,3 +1856,27 @@ Completion 094: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 
 
 ### Next-work prompt
 Configure the repository Actions secret `CLARA_HOST_REPO_TOKEN` with read access to `Rilan-Dev/Clara-AI-Platform`, then rerun/inspect the extraction verification workflow. Require Clara checkout success, the complete Phase 1–8 chain to remain green, and `phase9-clara-host-report.json` to report PASS with zero blockers. If the verifier fails after checkout, correct only the concrete host-side evidence/contract defect demonstrated by that run; never modify `omniroute-source/` or OmniRoute provider/routing/quota/compression/MCP/A2A semantics.
+
+
+## Completion 095 — Phase 9 authenticated rerun prerequisite revalidated
+
+### Planned
+After the host repository credential was configured, rerun the extraction verification against the current workflow definition. Require the current in-workspace Clara checkout path, the complete Phase 1–8 chain, and a genuine Phase 9 verifier result.
+
+### Completed
+- Confirmed the repository branch now contains the corrected Phase 9 checkout path `clara-host` inside the GitHub Actions workspace.
+- Confirmed the current workflow still uses `secrets.CLARA_HOST_REPO_TOKEN`.
+- Reran the previous failed workflow attempt `37114749280`; Phase 1–8 completed successfully again.
+- The rerun still used the historical workflow definition attached to that old attempt and therefore failed at the obsolete `../clara-host` path before the Phase 9 verifier. This does not test the newly corrected workflow definition.
+- No OmniRoute pinned source or `omniroute-source/` content was modified.
+
+### Not done
+- A fresh workflow run using the current workflow definition has not yet produced the Phase 9 host report.
+- Phase 9 remains IN PROGRESS.
+- No production deployment is claimed.
+
+### Gate
+Completion 095: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 PASS. Phase 6 PASS. Phase 7 PASS. Phase 8 PASS. Phase 9 IN PROGRESS — fresh run against the current workflow definition is required.
+
+### Next-work prompt
+Inspect the fresh push-triggered extraction verification run from this commit. Require the Clara checkout to use `clara-host`, authenticate with `CLARA_HOST_REPO_TOKEN`, preserve the complete Phase 1–8 green chain, and execute `phase9-clara-host-verifier.mjs`. Claim Phase 9 PASS only when its report has zero blockers. If it fails after checkout, correct only the demonstrated Clara host-side defect.
