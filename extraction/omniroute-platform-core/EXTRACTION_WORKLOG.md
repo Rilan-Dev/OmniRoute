@@ -1624,3 +1624,35 @@ Completion 086: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 
 
 ### Next-work prompt
 Inspect the newest Actions run on extraction/omniroute-platform-core. Require the complete Phase 1–7 chain to remain PASS and phase8-consumer-report.json to report PASS with zero blockers, exact source commit/tree, Phase 7 descriptor identity, exact Phase 3 membership agreement, clean consumer import, adapter compatibility, authorization-before-core evidence, opaque-result preservation, tenant isolation, secret redaction, and tamper/missing/extra-entry fail-closed scenarios. If it fails, correct only the concrete host-side Phase 8 defect demonstrated by CI; never modify omniroute-source/ or provider/routing/quota/compression/MCP/A2A semantics.
+
+## Completion 087 — Phase 8 closed; Phase 9 host integration readiness opened
+
+### Planned
+Inspect the fresh Phase 8 CI execution after the membership-gate hardening. Require the full Phase 1–7 chain to remain green and the independent consumer verifier to prove exact package membership and fail-closed tamper/missing/extra-entry behavior. Only after a genuine PASS should the extraction advance to a host-integration readiness phase.
+
+### Completed
+- Inspected GitHub Actions run #191 (37107898783) / job 111159911217 on extraction/omniroute-platform-core.
+- Exact pinned source remained commit 453918ab64f147604576e72d33e2bbfc12b2d1af, tree 76f3546d48a7293b199b7571d13808bebadb6d1f.
+- Phase 1 remained PASS: primary closure 12,562 scanned / 5,902 source / 22,328 edges / 0 unresolved; supplemental closure 24,164 scanned / 5,599 source / 0 blockers; mapper PASS / 0 blockers; Phase 7 second pass PASS / 0 blockers; reconciliation 21,731 candidates / 0 blockers; combined gate PASS / 0 blockers.
+- Phase 2 integrity remained PASS: 24,267 source entries / 24,267 extracted entries, with zero missing/extra/mode/blob mismatches.
+- Phase 3 remained PASS: exact source manifest, 32 capability records, and 9 host-boundary contracts.
+- Phase 4 remained PASS: 9 adapter contracts, immutable-source modification false.
+- Phase 5 remained PASS / 0 blockers.
+- Phase 6 remained PASS / 0 blockers.
+- Phase 7 export verifier remained PASS / 0 blockers with descriptor SHA-256 20451498014656f240d625b11dd1f14a8cde8a2ce766dc52e7405542c172b279.
+- Phase 8 consumer verifier passed with zero blockers. All nine scenarios passed: clean consumer import, package identity, authorization before core, opaque-result preservation, tenant isolation, secret redaction, tamper fail-closed, missing-entry fail-closed, and extra-entry fail-closed.
+- Updated the extraction manifest to close Phase 8.
+- Added PHASE-9-HOST-INTEGRATION-READINESS.md, defining the next boundary without selecting a production host implicitly.
+- No pinned OmniRoute source file was modified.
+
+### Not done
+- No production host has been selected.
+- No production host adapter implementation has started.
+- No provider/model/routing/quota/compression/MCP/A2A semantics have been changed.
+- Phase 9 machine verifier and host-specific adapter implementation remain pending explicit host selection.
+
+### Gate
+Completion 087: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 PASS. Phase 6 PASS. Phase 7 PASS. Phase 8 PASS. Phase 9 IN PROGRESS — host integration readiness specification added; production host selection remains explicit and pending.
+
+### Next-work prompt
+Select the concrete host application intentionally before implementation. Record the host's ownership boundary and map all nine Phase 4 contracts to host-owned implementations. Then implement only outside omniroute-source/, add deterministic contract/integration tests and a machine verifier, and require the complete Phase 1–8 evidence chain plus unchanged immutable Git-tree/blob identity before claiming Phase 9 PASS.
