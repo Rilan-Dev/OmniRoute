@@ -40,8 +40,17 @@ jobs:
           node extraction/omniroute-platform-core/verification/phase6-host-integration-verifier.mjs . ../omniroute-source extraction/omniroute-platform-core/verification/extraction-integrity-report.json extraction/omniroute-platform-core/verification/phase4-adapter-contracts.json extraction/omniroute-platform-core/verification/phase5-adapter-contract-report.json extraction/omniroute-platform-core/verification/phase6-host-integration-report.json
           node extraction/omniroute-platform-core/verification/phase7-core-export-verifier.mjs . extraction/omniroute-platform-core/verification/phase7-core-export-report.json
           node extraction/omniroute-platform-core/verification/phase8-consumer-verifier.mjs . ../omniroute-source extraction/omniroute-platform-core/verification/phase7-core-export-report.json extraction/omniroute-platform-core/verification/phase4-adapter-contracts.json extraction/omniroute-platform-core/verification/phase5-adapter-contract-report.json extraction/omniroute-platform-core/verification/phase6-host-integration-report.json extraction/omniroute-platform-core/verification/phase3-exact-source-manifest.json extraction/omniroute-platform-core/verification/phase8-consumer-report.json
-          git clone --no-checkout --depth 1 --branch feature/ai-core-from-doable-source https://github.com/Rilan-Dev/Clara-AI-Platform.git ../clara-host
-          git -C ../clara-host checkout feature/ai-core-from-doable-source
+      - name: Checkout selected Clara host
+        uses: actions/checkout@v4
+        with:
+          repository: Rilan-Dev/Clara-AI-Platform
+          ref: feature/ai-core-from-doable-source
+          path: ../clara-host
+          fetch-depth: 1
+          token: ${{ secrets.CLARA_HOST_REPO_TOKEN }}
+
+      - name: Verify selected Clara host checkout
+        run: |
           test "$(git -C ../clara-host rev-parse --abbrev-ref HEAD)" = "feature/ai-core-from-doable-source"
           node extraction/omniroute-platform-core/verification/phase9-clara-host-verifier.mjs ../clara-host extraction/omniroute-platform-core/verification/extraction-integrity-report.json extraction/omniroute-platform-core/verification/phase4-adapter-contract-report.json extraction/omniroute-platform-core/verification/phase5-adapter-contract-report.json extraction/omniroute-platform-core/verification/phase6-host-integration-report.json extraction/omniroute-platform-core/verification/phase7-core-export-report.json extraction/omniroute-platform-core/verification/phase8-consumer-report.json extraction/omniroute-platform-core/verification/phase9-clara-host-report.json
 
