@@ -1759,3 +1759,39 @@ Completion 091: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 
 
 ### Next-work prompt
 Provide/configure CLARA_HOST_REPO_TOKEN as a repository Actions secret with read access to Rilan-Dev/Clara-AI-Platform, then inspect the next extraction Actions run. Require the Clara checkout to succeed, the complete Phase 1–8 chain to remain green, and phase9-clara-host-report.json to report PASS with zero blockers. If the Phase 9 verifier then fails, correct only the concrete Clara host-side evidence/contract defect demonstrated by CI; never modify omniroute-source/ or OmniRoute provider/routing/quota/compression/MCP/A2A semantics.
+
+## Completion 092 — Phase 9 checkout workspace-path defect corrected
+
+### Planned
+Continue Phase 9 validation for the selected Clara AI Platform host. Inspect the latest authenticated checkout attempt and correct only the concrete CI defect demonstrated by the run.
+
+### Completed
+- Inspected extraction Actions run #205 (37114749280).
+- Confirmed the complete Phase 1–8 evidence chain remained green in the same run:
+  - Phase 1 combined gate: PASS, 0 blockers.
+  - Phase 2 extraction integrity: PASS, 24,267/24,267 entries.
+  - Phase 3: PASS, exact pinned source manifest, 32 capability records, 9 host-boundary contracts.
+  - Phase 4: PASS, 9 contracts, immutable-source modification false.
+  - Phase 5: PASS, 0 blockers.
+  - Phase 6: PASS, 0 blockers.
+  - Phase 7: PASS, 0 blockers.
+  - Phase 8: PASS, all 9 consumer scenarios.
+- The selected Clara checkout did not fail because of repository authentication in this run. GitHub Actions rejected the checkout path because `../clara-host` was outside the repository workspace.
+- Corrected the workflow to check out Clara into `clara-host`, which is inside the Actions workspace, and updated the verifier invocation to use that path.
+- Workflow fix commit: `8993423b057dd9a74db959869e8cc80ab5a3fdad`.
+- The immutable OmniRoute source pin remains exactly:
+  - commit `453918ab64f147604576e72d33e2bbfc12b2d1af`
+  - tree `76f3546d48a7293b199b7571d13808bebadb6d1f`
+- No pinned OmniRoute source file or `omniroute-source/` entry was modified.
+
+### Not done
+- Fresh CI proof after the workspace-path correction is pending.
+- Phase 9 verifier has not yet produced a new PASS report after this correction.
+- No production deployment is claimed.
+
+### Gate
+Completion 092: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 PASS. Phase 6 PASS. Phase 7 PASS. Phase 8 PASS. Phase 9 IN PROGRESS — concrete Actions checkout-path defect corrected; fresh authenticated Clara checkout and Phase 9 verifier proof pending.
+
+### Next-work prompt
+Inspect the next Actions run for commit `8993423b057dd9a74db959869e8cc80ab5a3fdad`. Require the Clara checkout to succeed, the complete Phase 1–8 chain to remain green, and `phase9-clara-host-report.json` to report PASS with zero blockers. If checkout succeeds but the Phase 9 verifier fails, correct only the demonstrated Clara host-side evidence/contract defect; never modify `omniroute-source/` or OmniRoute provider/routing/quota/compression/MCP/A2A semantics.
+
