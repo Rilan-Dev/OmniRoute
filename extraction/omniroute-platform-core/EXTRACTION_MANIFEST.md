@@ -17,7 +17,8 @@
 - Phase 5 adapter validation: PASS; deterministic host-side fakes, bridge behavior, tenant isolation, secret redaction, and adapter-failure semantics are verified in CI.
 - Phase 6 host integration harness: COMPLETE; CI PASS with exact source pinning, zero blockers, deterministic authorization denial, opaque-result preservation, tenant isolation, and secret redaction.
 - Phase 7 independent reusable-capability second pass: PASS; 21,731 candidates reconciled with zero blockers.
-- Phase 7 reusable-core packaging/export: IN PROGRESS; deterministic export manifest/verifier is the next machine-gated step.
+- Phase 7 reusable-core packaging/export: COMPLETE; CI run #176 passed the deterministic export verifier with zero blockers, exact source identity, 24,267 immutable entries, and descriptor SHA-256 `20451498014656f240d625b11dd1f14a8cde8a2ce766dc52e7405542c172b279`.
+- Phase 8 distribution/consumer validation: IN PROGRESS; an independent consumer fixture and fail-closed distribution verifier are the next machine-gated steps.
 - Host integration: BLOCKED until a concrete production host is intentionally selected and its host-owned adapters are implemented against the verified contracts.
 
 ## Phase 7 artifact
@@ -64,5 +65,13 @@ No pinned upstream source file was modified. The committed `omniroute-source/` s
 
 ## Phase 7 reusable-core packaging/export
 - Specification: `PHASE-7-CORE-PACKAGING.md`
+- Verifier: `verification/phase7-core-export-verifier.mjs`
+- CI evidence: run #176 / job 111158229596, PASS / 0 blockers.
+- Descriptor SHA-256: `20451498014656f240d625b11dd1f14a8cde8a2ce766dc52e7405542c172b279`.
 - Scope: deterministic export metadata and verifier for the already verified immutable core plus host-neutral contracts/manifests.
 - No source rewrite, provider/routing semantic change, or host-policy insertion is permitted.
+
+## Phase 8 distribution/consumer validation
+- Specification: `PHASE-8-DISTRIBUTION-CONSUMER-VALIDATION.md`
+- Scope: independent consumer verification of the exact Phase 7 package through host-owned adapters.
+- Production deployment remains blocked until a concrete host is intentionally selected and passes consumer validation.
