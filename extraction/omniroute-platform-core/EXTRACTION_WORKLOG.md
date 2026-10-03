@@ -1545,3 +1545,31 @@ Completion 083: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 
 
 ### Next-work prompt
 Observe the next Actions run on extraction/omniroute-platform-core. Require the Phase 7 export verifier to execute successfully and report PASS with zero blockers, exact source commit/tree, matching 24,267-entry integrity counts, no host-policy leakage, and a deterministic descriptor hash. If it passes, close Phase 7 and begin the next reusable-core distribution/consumer validation phase. If it fails, inspect only the concrete verifier or packaging defect demonstrated by CI; never modify omniroute-source/ or alter provider/routing/quota/compression/MCP/A2A semantics.
+
+
+## Completion 084 — Phase 7 packaging/export closed; Phase 8 consumer validation opened
+
+### Planned
+Inspect the fresh Phase 7 CI execution, require the complete Phase 1–6 chain and deterministic export verifier to pass with exact source identity and zero blockers, then close Phase 7 and define the next independent distribution/consumer validation gate.
+
+### Completed
+- Inspected GitHub Actions run #176 (37107299764) / job 111158229596 on the active extraction branch.
+- Confirmed the complete Phase 1 evidence chain passed in the same machine execution: primary closure PASS (12,562 scanned, 5,902 source, 22,328 edges, 0 unresolved); supplemental closure PASS (24,164 scanned, 5,599 source, 0 blockers); closure mapper PASS / 0 blockers; Phase 7 second pass PASS / 0 blockers; Phase 7 reconciliation PASS / 0 blockers across 21,731 candidates; combined Phase 1 gate PASS / 0 blockers.
+- Confirmed immutable extraction integrity: PASS, 24,267 source entries and 24,267 extracted entries.
+- Confirmed exact source manifest: PASS for commit 453918ab64f147604576e72d33e2bbfc12b2d1af and tree 76f3546d48a7293b199b7571d13808bebadb6d1f.
+- Confirmed Phase 3 PASS / 32 capabilities; Phase 4 PASS / 9 contracts / immutable source modification false; Phase 5 PASS / 0 blockers; Phase 6 PASS / 0 blockers.
+- Confirmed Phase 7 core export verifier PASS / 0 blockers, 24,267 source entries, descriptor SHA-256 20451498014656f240d625b11dd1f14a8cde8a2ce766dc52e7405542c172b279.
+- Added the Phase 7 packaging specification and updated the extraction manifest to record Phase 7 as complete.
+- Added PHASE-8-DISTRIBUTION-CONSUMER-VALIDATION.md defining independent consumer validation scenarios and fail-closed requirements.
+- No pinned OmniRoute source file was modified.
+
+### Not done
+- Phase 8 consumer fixture/verifier has not yet been implemented.
+- No production host integration or deployment has started.
+- No provider/routing/quota/compression/MCP/A2A semantics have been changed.
+
+### Gate
+Completion 084: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 PASS. Phase 6 PASS. Phase 7 PASS. Phase 8 IN PROGRESS — distribution/consumer validation specification opened; independent consumer verifier pending.
+
+### Next-work prompt
+Implement the Phase 8 independent consumer fixture and machine verifier in host-owned extraction tooling. Consume only the exact Phase 7 export descriptor and verified immutable snapshot; prove package identity, clean consumer integrity, adapter contract compatibility, authorization denial before core invocation, opaque result preservation, tenant isolation, secret redaction, and fail-closed behavior for tampering/missing/extra entries. Add it to CI after the Phase 7 export verifier. Do not edit omniroute-source/, do not rewrite first-party source, and do not alter provider/routing/quota/compression/MCP/A2A behavior.
