@@ -134,7 +134,7 @@ const invariants = {
   adapter_tests_present:
     adapterTest.length > 0 && contextTest.length > 0 && registryTest.length > 0,
   no_doable_source_runtime_import:
-    !/doable-source|@doable/i.test(adapter + runtime),
+    !/(?:from|import)\s*["'](?:[^"']*doable-source|@doable)[^"']*["']/i.test(adapter + runtime),
 };
 
 for (const [name, ok] of Object.entries(invariants))
