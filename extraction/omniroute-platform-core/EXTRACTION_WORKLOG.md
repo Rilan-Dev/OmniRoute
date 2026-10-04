@@ -2022,3 +2022,20 @@ Reusable-core extraction and host-readiness evidence are complete. Phase 1–9 r
 
 ### Next-work prompt
 Use DOWNSTREAM-AGENT-HANDOFF.md plus CAPABILITY_INVENTORY.md and the immutable omniroute-source/ tree as the authoritative downstream handoff. For a new project, select the required capability family, preserve its first-party dependency closure, and build host-owned adapters without modifying the immutable snapshot.
+
+
+## Completion 101 — Phase 9 current-host rerun confirmed
+
+### Completed
+- Reran extraction verification job 111533082580 from run 37230885442 (attempt 2) against the current selected Clara branch rather than the earlier cached host commit.
+- Current Clara host checkout was 637707673eb16e9d62e8a865d63f310e50aad679.
+- Phase 9 dedicated verifier reported pass=true, contracts=9, blockers=0.
+- Compared the current host tip with the original Phase 9 verified adapter commit: intervening changes include project-control documentation and TypeScript configuration, but no AI-platform-core adapter implementation files changed.
+- Corrected Phase 9 documentation to record the precise implementation invariant instead of incorrectly describing all intervening host changes as documentation-only.
+- Immutable OmniRoute source pin and omniroute-source/ snapshot remain untouched.
+
+### Gate
+Phase 1–8 PASS. Phase 9 host readiness PASS and CLOSED with current-host machine verification. Production deployment remains unclaimed.
+
+### Next-work prompt
+Treat the verified OmniRoute snapshot and DOWNSTREAM-AGENT-HANDOFF.md as the reusable-core handoff. For future host implementation changes, rerun Phase 9; for future source-pin changes, rerun the complete extraction chain.
