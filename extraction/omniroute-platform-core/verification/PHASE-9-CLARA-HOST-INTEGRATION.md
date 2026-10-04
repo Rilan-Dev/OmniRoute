@@ -46,4 +46,4 @@ Phase 9 can pass only when:
 
 `verification/phase9-clara-host-verifier.mjs` is host-side evidence verification. It is intentionally read-only and never changes `omniroute-source/`.
 
-Phase 9 remains open until a fresh CI run proves this verifier PASS.
+Phase 9 readiness is CLOSED. Extraction verification rerun #218 attempt 2 checked the current selected Clara branch at host commit 637707673eb16e9d62e8a865d63f310e50aad679 and reported pass=true with blockers=0. This closes extraction-side host-readiness evidence; it does not claim production deployment.
