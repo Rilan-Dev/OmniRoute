@@ -1955,3 +1955,36 @@ Completion 098: Phase 1–8 PASS. Phase 9 IN PROGRESS — fresh authenticated ho
 
 ### Next-work prompt
 Inspect the fresh extraction verification run from this checkpoint. Require authenticated Clara checkout, Phase 1–8 green, and phase9-clara-host-report.json PASS with zero blockers. If Phase 9 fails, fix only the concrete Clara host-side evidence defect demonstrated by CI; never modify omniroute-source/ or pinned OmniRoute provider/routing/quota/compression/MCP/A2A semantics.
+
+
+## Completion 063 — Phase 9 false-positive verifier correction
+
+### Planned
+Inspect the fresh authenticated Clara host verification result after Completion 062. Correct only a concrete host-verifier defect demonstrated by the CI report and pinned Clara host source evidence.
+
+### Completed
+- Phase 1–8 evidence in Actions run #215 was machine-green:
+  - exact pinned OmniRoute source commit `453918ab64f147604576e72d33e2bbfc12b2d1af`
+  - exact pinned source tree `76f3546d48a7293b199b7571d13808bebadb6d1f`
+  - 24,267 source entries and matching extracted entries
+  - Phase 1 gate PASS with zero blockers
+  - Phase 7 second-pass PASS
+  - Phase 7 reconciliation PASS with 21,731 candidates and zero blockers
+  - Phase 8 consumer scenarios all PASS
+- Clara checkout authenticated successfully at host commit `138971e0836c258268f925e8c88d03929cc7546d`.
+- Phase 9 reported exactly one blocker.
+- Pinned Clara host inspection showed the blocker was a verifier false positive: `clara-runtime.ts` contains the prose phrase “extracted Doable source”, while it has no Doable-source import.
+- Hardened only `phase9-clara-host-verifier.mjs` so the check examines actual `from "..." / import "..."` module syntax rather than arbitrary source comments.
+- Verifier correction commit: `6ed5bdc38bd54e6b7d4fda7784c9acb88a1d7370`.
+- No pinned OmniRoute source file and no `omniroute-source/` entry was modified.
+
+### Not done
+- Fresh Actions proof for `6ed5bdc38bd54e6b7d4fda7784c9acb88a1d7370` is pending.
+- Phase 9 remains IN PROGRESS until the fresh report is PASS with zero blockers.
+- No production deployment is claimed.
+
+### Gate
+Completion 063: Phase 1–8 PASS. Phase 9 IN PROGRESS — one demonstrated verifier false positive corrected; fresh machine proof pending.
+
+### Next-work prompt
+Inspect the fresh Actions run for `6ed5bdc38bd54e6b7d4fda7784c9acb88a1d7370`. Require Phase 1–8 to remain green and `phase9-clara-host-report.json` to report PASS with zero blockers. If PASS, close Phase 9 and proceed to the reusable-core finalization/consumer validation phase. If FAIL, inspect only the concrete host-side evidence defect and never modify the pinned OmniRoute source semantics.
