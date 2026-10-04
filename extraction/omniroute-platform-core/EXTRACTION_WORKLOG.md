@@ -1931,3 +1931,27 @@ Completion 097: Phase 1 PASS. Phase 2 PASS. Phase 3 PASS. Phase 4 PASS. Phase 5 
 
 ### Next-work prompt
 Inspect the fresh Actions run for `c4c7a531100b33909bfd784d90f8383e1d78430f`. Require the complete Phase 1–8 chain to remain green and `phase9-clara-host-report.json` to report PASS with zero blockers. If it passes, close Phase 9 and proceed to the next reusable-core consumer validation/extraction phase. If it fails, inspect only the concrete Clara host-side evidence defect and never modify `omniroute-source/` or OmniRoute provider/routing/quota/compression/MCP/A2A semantics.
+
+
+## Completion 098 — Phase 9 fresh-run checkpoint after host credential configuration
+
+### Planned
+Continue Phase 9 using the corrected Clara host verifier and the authenticated host checkout. The required repository secret is now configured; the next proof must come from a fresh push-triggered extraction verification run.
+
+### Completed
+- Confirmed the selected Clara host remains Rilan-Dev/Clara-AI-Platform, branch feature/ai-core-from-doable-source.
+- Confirmed the extraction workflow uses the in-workspace clara-host checkout and secrets.CLARA_HOST_REPO_TOKEN.
+- Confirmed Phase 1–8 are already recorded as PASS and the immutable OmniRoute snapshot remains pinned to commit 453918ab64f147604576e72d33e2bbfc12b2d1af / tree 76f3546d48a7293b199b7571d13808bebadb6d1f.
+- Confirmed the current Phase 9 verifier contains the evidence-schema and multiline opaque-result fixes from Completion 097.
+- Added this controlled worklog checkpoint to trigger a fresh push-based verification run; no OmniRoute source semantics were changed.
+
+### Not done
+- Fresh Phase 9 CI proof is still pending.
+- Phase 9 remains IN PROGRESS until phase9-clara-host-report.json reports PASS with zero blockers.
+- No production deployment or host-integration completion is claimed.
+
+### Gate
+Completion 098: Phase 1–8 PASS. Phase 9 IN PROGRESS — fresh authenticated host verification required.
+
+### Next-work prompt
+Inspect the fresh extraction verification run from this checkpoint. Require authenticated Clara checkout, Phase 1–8 green, and phase9-clara-host-report.json PASS with zero blockers. If Phase 9 fails, fix only the concrete Clara host-side evidence defect demonstrated by CI; never modify omniroute-source/ or pinned OmniRoute provider/routing/quota/compression/MCP/A2A semantics.
