@@ -128,7 +128,7 @@ const invariants = {
     /assertTenantScope/.test(context) && /TENANT_SCOPE_MISMATCH/.test(context),
   secret_redaction_fail_closed:
     /transferPolicy:\s*"never"/.test(adapter) && /PlatformSecretAccessError/.test(adapter) && /async get\(\)[\s\S]*throw new PlatformSecretAccessError/.test(adapter),
-  opaque_runtime_result: /return\s*\{\s*config,\s*providerName,\s*model,\s*stream,\s*grounding\s*\}/.test(runtime),
+  opaque_runtime_result: /return\s*\{\s*config,\s*providerName:\s*provider\.getProviderName\(\),\s*model,\s*stream,\s*grounding\s*\}/.test(runtime),
   registry_fails_closed:
     /ALREADY_REGISTERED/.test(registry) && /UnknownAdapterError/.test(registry) && /AdaptersNotRegisteredError/.test(registry),
   adapter_tests_present:
