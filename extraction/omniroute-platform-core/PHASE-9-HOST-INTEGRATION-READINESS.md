@@ -37,4 +37,4 @@ Advance from the machine-verified reusable OmniRoute distribution into a deliber
 
 ## Current state
 
-No production host is selected by this phase specification. The reference consumer from Phase 8 remains the only validated host-side fixture. Production host implementation is intentionally pending an explicit host-selection decision.
+Phase 9 host readiness is CLOSED by deterministic extraction-side evidence. The selected consumer is Rilan-Dev/Clara-AI-Platform on feature/ai-core-from-doable-source. Fresh extraction verification rerun #218 attempt 2 checked the current Clara branch at host commit 637707673eb16e9d62e8a865d63f310e50aad679 and the dedicated Phase 9 verifier reported PASS with 9 contracts and 0 blockers. The immutable OmniRoute snapshot remains unchanged. This does not claim production deployment.
