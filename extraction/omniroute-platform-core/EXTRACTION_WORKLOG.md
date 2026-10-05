@@ -2063,3 +2063,26 @@ Reusable-core extraction: COMPLETE. Phase 1–9: PASS/CLOSED. Immutable source r
 
 ### Next-work prompt
 For a new AI project, use `DOWNSTREAM-AGENT-HANDOFF.md`, `CAPABILITY_INVENTORY.md`, `SUPPLEMENTAL_REUSE_GAP_AUDIT.md`, and the immutable `omniroute-source/` tree as the authoritative source. Select only the required capability closure and preserve its first-party dependencies. Re-run the appropriate integrity/host verification whenever the snapshot or host adapters change.
+
+## Completion 103 — Capability inventory reconciled with final extraction state
+
+### Planned
+Remove the last stale Phase 1 planning language from the capability inventory so downstream agents cannot mistake the completed extraction gate for an unfinished closure audit.
+
+### Completed
+- Updated `CAPABILITY_INVENTORY.md` to record the final machine-verified extraction state.
+- Clarified that Tier-1 and Tier-2 capability families are available from the immutable `omniroute-source/` snapshot.
+- Clarified that historical `deferred to Phase 7` labels describe planning order, not missing extraction.
+- Preserved the immutable source pin and all source semantics.
+- Confirmed the change is documentation-only; no `omniroute-source/` file changed.
+
+### Not done
+- No new source extraction is required for the pinned OmniRoute snapshot.
+- No npm packaging or production deployment is claimed.
+
+### Gate
+Reusable-core extraction remains COMPLETE. Phase 1–9 remain PASS/CLOSED.
+
+### Next-work prompt
+Downstream work should now consume the verified reusable core rather than continue extraction. For any new AI project, select a capability family from the inventory/gap audit, copy only its exact first-party dependency closure, and implement host-specific behavior through adapters.
+
