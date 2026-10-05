@@ -2039,3 +2039,27 @@ Phase 1–8 PASS. Phase 9 host readiness PASS and CLOSED with current-host machi
 
 ### Next-work prompt
 Treat the verified OmniRoute snapshot and DOWNSTREAM-AGENT-HANDOFF.md as the reusable-core handoff. For future host implementation changes, rerun Phase 9; for future source-pin changes, rerun the complete extraction chain.
+
+
+## Completion 102 — Reusable-core extraction status reconciled and downstream handoff confirmed
+
+### Planned
+Reconcile the final extraction documentation after the completed Phase 9 verification and confirm whether any source-family extraction remains outstanding before downstream reuse.
+
+### Completed
+- Revalidated the authoritative downstream handoff and extraction manifest on `extraction/omniroute-platform-core`.
+- Confirmed the immutable snapshot contains the complete pinned OmniRoute tree: 24,267 entries, pinned to commit `453918ab64f147604576e72d33e2bbfc12b2d1af` and root tree `76f3546d48a7293b199b7571d13808bebadb6d1f`.
+- Confirmed Phase 1 through Phase 9 are recorded as PASS/CLOSED, including Phase 7 reusable-capability reconciliation, Phase 8 independent consumer validation, and Phase 9 Clara host readiness.
+- Confirmed the downstream handoff explicitly covers the broad reusable platform surface: provider/model intelligence, routing/fallback, quota/usage/cost, compression/context, memory/RAG, caching, MCP/A2A, tools/skills/plugins, multimodal, safety, evaluation, search/web execution, orchestration, observability, jobs/events, durable/versioned state, and optional browser/CLI/remote-agent runtime infrastructure.
+- Corrected the extraction manifest's stale Phase 9 wording so the documented gate state matches the machine-proven PASS/CLOSED state.
+- No pinned OmniRoute source semantics were modified; this completion only reconciles extraction documentation.
+
+### Not done
+- No additional source extraction is outstanding for the pinned OmniRoute snapshot.
+- This does not create an npm package or claim a production deployment; downstream projects consume the immutable source snapshot through the documented host-adapter model.
+
+### Gate
+Reusable-core extraction: COMPLETE. Phase 1–9: PASS/CLOSED. Immutable source remains protected by the integrity verifier.
+
+### Next-work prompt
+For a new AI project, use `DOWNSTREAM-AGENT-HANDOFF.md`, `CAPABILITY_INVENTORY.md`, `SUPPLEMENTAL_REUSE_GAP_AUDIT.md`, and the immutable `omniroute-source/` tree as the authoritative source. Select only the required capability closure and preserve its first-party dependencies. Re-run the appropriate integrity/host verification whenever the snapshot or host adapters change.
