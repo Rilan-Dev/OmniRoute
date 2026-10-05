@@ -20,7 +20,7 @@
 - Phase 7 reusable-core packaging/export: COMPLETE; CI run #176 passed the deterministic export verifier with zero blockers, exact source identity, 24,267 immutable entries, and descriptor SHA-256 `20451498014656f240d625b11dd1f14a8cde8a2ce766dc52e7405542c172b279`.
 - Phase 8 distribution/consumer validation: COMPLETE; CI run #191 passed the independent consumer verifier with zero blockers, exact package membership, adapter compatibility, clean import, authorization ordering, opaque-result preservation, tenant isolation, secret redaction, and tamper/missing/extra-entry fail-closed scenarios.
 - Phase 9 host integration readiness: COMPLETE; Clara AI Platform is explicitly selected, the host-owned adapter seam is present on the selected branch, and dedicated Phase 9 machine verification passes with zero blockers. Extraction verification run #218 passed against the selected Clara branch; the subsequent host-branch commits changed project-control documentation and TypeScript configuration, but did not change the verified AI-platform-core adapter implementation.
-- Host integration: Phase 9 is the active gate; no production deployment is claimed until the dedicated Clara verifier passes.
+- Host integration: Phase 9 readiness is PASS/CLOSED; the dedicated Clara verifier passed with zero blockers. No production deployment is claimed by this extraction.
 
 ## Phase 7 artifact
 - verification/phase7-second-pass.mjs
