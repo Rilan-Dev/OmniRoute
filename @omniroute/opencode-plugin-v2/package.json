@@ -18,7 +18,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "node init && tsup",
     "clean": "rm -rf dist",
     "test": "node --import tsx/esm --test tests/*.test.ts",
     "prepublishOnly": "npm run clean && npm run build && npm test"
