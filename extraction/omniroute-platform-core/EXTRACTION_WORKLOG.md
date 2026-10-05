@@ -2125,3 +2125,11 @@ Perform one final verification checkpoint after the reusable-core handoff and ca
 ### Next-work prompt
 Stop extraction work for this pinned source. Downstream AI-agent projects should consume the immutable `omniroute-source/` snapshot through the documented host-adapter model. If the source pin changes, or a host adapter changes, reopen only the corresponding verification chain before reuse.
 
+## Completion 063 — Mapper classification correction
+- Corrected a verifier-only control-flow issue in `phase1-closure-mapper.mjs` so deliberate synthetic/negative test imports are warnings and generated-runtime references are classified without also becoming unresolved blockers.
+- Restored the intended POSIX `dist/` detection regex after reviewing the resulting commit diff.
+- Commits: `8a54bbd860639803bbb1ce079dce0979dfe7f472`, followed by corrective `2c1fca409807a9d09c6048aa37ba8f6cb18569af`.
+- Pinned OmniRoute source remains unchanged at commit `453918ab64f147604576e72d33e2bbfc12b2d1af` / tree `76f3546d48a7293b199b7571d13808bebadb6d1f`.
+- Verification status: awaiting a fresh push-triggered Actions result for the corrected verifier; Phase 1 is not declared PASS until the complete gate is observed.
+- Planned next: inspect the fresh mapper/gate reports; if clean, review Phase 7 reconciliation and the full combined gate before authorizing any immutable extraction.
+- Not done: no pinned source files have been modified or copied as a result of this verifier correction.
