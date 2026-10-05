@@ -44,6 +44,10 @@
 
 A capability may be **A+B+C**: the implementation is reusable, but its identity, tenancy, secret storage, billing, transport, or external-service ownership must be supplied by a host adapter.
 
-### Phase 1 conclusion
+### Final extraction conclusion
 
-Tier-1 closures are sufficiently bounded to drive Phase 2 extraction planning, but **machine-complete recursive closure is still required before copying**. The extraction gate therefore remains closed.
+The capability inventory is backed by the completed machine-verified extraction chain. Phase 1 closure passed with zero blockers, Phase 7 reconciliation/export passed with zero blockers, and the immutable source snapshot contains the exact pinned OmniRoute tree.
+
+Tier-1 and Tier-2 capability families are available for downstream selection through the immutable `omniroute-source/` snapshot. The `deferred to Phase 7` labels above describe the historical planning order; those families are now included in the verified reusable-core handoff and must be selected by dependency closure rather than copied ad hoc.
+
+For downstream projects, use this inventory together with `DOWNSTREAM-AGENT-HANDOFF.md` and `SUPPLEMENTAL_REUSE_GAP_AUDIT.md`.
