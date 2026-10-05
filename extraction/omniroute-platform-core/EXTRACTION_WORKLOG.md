@@ -2133,3 +2133,38 @@ Stop extraction work for this pinned source. Downstream AI-agent projects should
 - Verification status: awaiting a fresh push-triggered Actions result for the corrected verifier; Phase 1 is not declared PASS until the complete gate is observed.
 - Planned next: inspect the fresh mapper/gate reports; if clean, review Phase 7 reconciliation and the full combined gate before authorizing any immutable extraction.
 - Not done: no pinned source files have been modified or copied as a result of this verifier correction.
+
+
+## Completion 105 — Final reusable-core verification after mapper correction
+
+### Planned
+Close the temporary verifier-correction loop and confirm the extraction branch still proves the complete reusable OmniRoute source snapshot and downstream handoff.
+
+### Completed
+- Fresh GitHub Actions run #235 (`37388300365`) passed the complete extraction verification chain.
+- Primary closure scanner: PASS — 12,562 files, 5,902 source files, 22,328 edges, 0 unresolved.
+- Supplemental closure analyzer: PASS — 24,164 files, 5,599 source files, 0 blockers.
+- Closure mapper: PASS — zero blockers.
+- Phase 7 second pass: PASS — zero blockers.
+- Phase 7 reconciliation: PASS — 21,731 candidates; 18,071 reusable-capability candidates, 3,613 reusable-platform sources, 34 reusable-with-host-boundary, 13 product-only; zero blockers.
+- Combined Phase 1 gate: PASS with zero blockers.
+- Exact immutable source integrity: PASS — pinned commit 453918ab64f147604576e72d33e2bbfc12b2d1af, tree 76f3546d48a7293b199b7571d13808bebadb6d1f, 24,267 source entries and 24,267 extracted entries.
+- Phase 3 exact-source manifest: PASS.
+- Phase 4 adapter contracts: PASS — 9 contracts.
+- Phase 5 adapter validation: PASS with zero blockers.
+- Phase 6 host integration harness: PASS with zero blockers.
+- Phase 7 core export: PASS with zero blockers; descriptor SHA-256 20451498014656f240d625b11dd1f14a8cde8a2ce766dc52e7405542c172b279.
+- Phase 8 consumer validation: PASS; all nine consumer scenarios passed.
+- Phase 9 Clara host verification: PASS with zero blockers against the selected Clara branch.
+- The committed omniroute-source/ remains the exact pinned source snapshot; no pinned OmniRoute source semantics were changed.
+
+### Not done
+- No additional source extraction is outstanding for the pinned snapshot.
+- No npm publication is claimed.
+- No production deployment is claimed.
+
+### Gate
+**OmniRoute reusable-core extraction: COMPLETE. Phase 1–9: PASS/CLOSED. Downstream handoff: COMPLETE.**
+
+### Next-work prompt
+Stop modifying the extraction snapshot. For a new project, consume omniroute-source/ through DOWNSTREAM-AGENT-HANDOFF.md, CAPABILITY_INVENTORY.md, and SUPPLEMENTAL_REUSE_GAP_AUDIT.md. Select the smallest required first-party dependency closure and keep host identity, tenancy, secrets, persistence ownership, billing, branding, and deployment policy in adapters. Reopen verification only when the source pin or host adapter implementation changes.
