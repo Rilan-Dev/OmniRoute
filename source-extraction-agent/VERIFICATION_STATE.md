@@ -12,5 +12,5 @@ The package scripts, schemas, links and verifier fixture tests have been mirrore
 
 
 ## Latest workflow snapshot — 2026-10-10
-- No workflow run was returned for the latest observed PR head; package checks remain unconfirmed.
+- No workflow run was returned for the previously observed head 5e69a6f…; the subsequent verification-state update advanced HEAD, so package checks for current HEAD remain unconfirmed.
 Do not treat a queued/missing run as PASS. Continue independent work without repeatedly polling; update this record when a result is intentionally reviewed.
