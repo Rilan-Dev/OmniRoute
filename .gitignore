@@ -70,7 +70,6 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.env*
 # Local gitleaks artifacts (do not commit)
 gitleaks-local.json
 !.env.example
@@ -301,3 +300,4 @@ docker-compose.yml.bak
 
 # run-translation.mjs writes the state atomically via a per-process temp file
 /.i18n-state.json.*.tmp
+config.bat

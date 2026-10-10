@@ -13,15 +13,15 @@
     "node": ">=22.22.2 <23 || >=24.0.0 <27"
   },
   "scripts": {
-    "start": "electron .",
-    "dev": "electron . --no-sandbox",
+    "start": "node init && electron .",
+    "dev": "node init && electron . --no-sandbox",
     "prepare:bundle": "node ../scripts/build/prepare-electron-standalone.mjs",
-    "build": "npm run prepare:bundle && electron-builder",
-    "build:win": "npm run prepare:bundle && electron-builder --win",
-    "build:mac": "npm run prepare:bundle && electron-builder --mac",
-    "build:mac-x64": "npm run prepare:bundle && electron-builder --mac --x64",
-    "build:mac-arm64": "npm run prepare:bundle && electron-builder --mac --arm64",
-    "build:linux": "npm run prepare:bundle && electron-builder --linux",
+    "build": "node init && npm run prepare:bundle && electron-builder",
+    "build:win": "node init && npm run prepare:bundle && electron-builder --win",
+    "build:mac": "node init && npm run prepare:bundle && electron-builder --mac",
+    "build:mac-x64": "node init && npm run prepare:bundle && electron-builder --mac --x64",
+    "build:mac-arm64": "node init && npm run prepare:bundle && electron-builder --mac --arm64",
+    "build:linux": "node init && npm run prepare:bundle && electron-builder --linux",
     "pack": "npm run prepare:bundle && electron-builder --dir"
   },
   "dependencies": {
@@ -42,7 +42,7 @@
   "build": {
     "appId": "online.omniroute.desktop",
     "productName": "OmniRoute",
-    "copyright": "Copyright © 2025 OmniRoute",
+    "copyright": "Copyright \u00a9 2025 OmniRoute",
     "buildDependenciesFromSource": false,
     "npmRebuild": false,
     "afterPack": "../scripts/build/afterpack-copy-node-modules.mjs",
