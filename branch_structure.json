@@ -1,0 +1,21 @@
+{
+  "default_branch": "release/v3.8.52",
+  "branches": [
+    "docs/source-extraction-agent-sync-2026-10-10",
+    "extraction/omniroute-platform-core",
+    "origin",
+    "release/v3.8.52"
+  ],
+  "parent": {
+    "docs/source-extraction-agent-sync-2026-10-10": "release/v3.8.52",
+    "extraction/omniroute-platform-core": "release/v3.8.52",
+    "origin": "release/v3.8.52",
+    "release/v3.8.52": null
+  },
+  "order": [
+    "release/v3.8.52",
+    "docs/source-extraction-agent-sync-2026-10-10",
+    "extraction/omniroute-platform-core",
+    "origin"
+  ]
+}
