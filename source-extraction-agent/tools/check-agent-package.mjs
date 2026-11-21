@@ -21,7 +21,7 @@ const required = [
   "tools/verify-extraction.mjs", "tools/check-agent-package.mjs",
   "project-control/PROJECT_STATE.md", "project-control/CURRENT_PHASE.md",
   "project-control/NEXT_ACTION.md", "project-control/CHAT_CONTINUITY.md",
-  "project-control/VERIFICATION_STATE.md", "project-control/DECISIONS.md",
+  "VERIFICATION_STATE.md", "project-control/DECISIONS.md",
   "project-control/ISSUES.md", "project-control/RISKS.md", "project-control/ZAI_HANDOFF.md",
   "project-control/WORKLOG.md"
 ];
